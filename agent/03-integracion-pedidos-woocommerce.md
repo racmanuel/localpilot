@@ -30,16 +30,17 @@ Evitar convertir la lista en un dashboard. La información debe ser breve y acce
 
 Agregar panel **LocalPilot** con:
 
-- repartidor y estado;
-- fechas principales;
-- estado de geocodificación;
-- receptor y evidencia;
-- últimos eventos;
-- asignar, reasignar, retirar;
-- reintentar geocodificación y editar ubicación;
-- enlaces a evidencia.
+- resumen de estado, repartidor y validación puntual;
+- línea de progreso con las fechas principales;
+- prueba de entrega: receptor, motivo, notas y evidencia;
+- gestión contextual para asignar, reasignar o retirar;
+- mapa de auditoría con destino, GPS de entrega y radio histórico;
+- timeline de eventos con etiquetas traducidas, fecha y actor;
+- enlaces accesibles a evidencia y navegación externa.
 
 Las acciones destructivas o de cambio de estado requieren confirmación apropiada y validación en servidor.
+
+Los estados `delivered`, `failed` y `cancelled` son de solo lectura en el panel. La UI oculta las acciones de asignación y corrección del destino, y el handler rechaza también un POST manipulado.
 
 ### Historial visible
 
@@ -69,6 +70,8 @@ No editar directamente el bootstrap; entregar el registro de hooks al integrador
 8. Añadir notas privadas traducibles.
 9. Mostrar notices nativos de éxito/error.
 10. Cargar SelectWoo/JS únicamente en pantallas relevantes.
+11. Mantener el panel responsive a 320 px, operable con teclado y sin depender del color para comunicar estados.
+12. Obtener los últimos eventos en orden cronológico y traducir sus tipos técnicos mediante un helper central.
 
 ## Reglas
 
@@ -78,16 +81,21 @@ No editar directamente el bootstrap; entregar el registro de hooks al integrador
 - El selector solo lista repartidores activos.
 - La reasignación invalida inmediatamente al repartidor anterior.
 - La UI no implementa reglas de transición; pregunta al servicio.
+- Las entregas terminales no admiten reasignación, retiro ni corrección del destino.
+- Las confirmaciones y selección de acciones no usan handlers JavaScript inline.
 
 ## Criterios de aceptación
 
 - Las columnas aparecen en la lista HPOS sin romper ordenación o paginación.
 - Los filtros no exponen pedidos indebidos ni degradan toda la lista.
 - El panel carga y guarda en el editor HPOS.
+- El panel separa resumen, progreso, prueba, gestión, mapa y actividad sin crear una aplicación administrativa paralela.
 - Asignar y reasignar actualiza tabla, meta, evento y nota.
 - Retirar asignación elimina el acceso del conductor.
 - Un request repetido no genera dos asignaciones activas.
 - Los errores muestran notices nativos y conservan el pedido consistente.
+- Un POST manipulado no modifica una entrega terminal.
+- El timeline muestra etiquetas humanas y no imprime JSON de eventos.
 - No hay un menú principal ni un listado LocalPilot duplicado.
 
 ## Riesgos

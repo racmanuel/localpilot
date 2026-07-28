@@ -169,6 +169,8 @@ _lclplt_location_validation_distance
 _lclplt_location_validation_radius
 _lclplt_location_validation_accuracy
 _lclplt_location_validation_at
+_lclplt_location_validation_target_lat — snapshot del destino validado
+_lclplt_location_validation_target_lng — snapshot del destino validado
 ```
 
 ## Validación puntual de ubicación
@@ -185,7 +187,13 @@ lclplt_location_validation_mode: warning|blocking
 El cliente nunca envía un resultado confiable: `passed` o `outside_radius` se
 determinan en servidor mediante Haversine. Se conserva solo un resumen en el
 pedido (`status`, distancia, radio, precisión y fecha), no un historial de
-coordenadas.
+coordenadas. También se guarda un único snapshot privado del destino utilizado
+y el GPS puntual del repartidor para que el mapa administrativo reproduzca la
+decisión histórica aunque cambien los ajustes globales.
+
+Las coordenadas se conservan únicamente como meta privada de `WC_Order`. Los
+eventos pueden incluir el resumen de la validación, pero nunca latitud o
+longitud crudas.
 
 Resultados técnicos previstos:
 
@@ -208,6 +216,7 @@ En modo `blocking`, los resultados distintos de `passed` impiden completar.
 
 - una sola asignación activa por pedido;
 - completar/fallar una asignación terminal no repite side effects;
+- reasignar, retirar o corregir el destino de una asignación terminal se rechaza;
 - emails se correlacionan con `event_id`;
 - geocodificación exitosa/manual no se repite automáticamente;
 - upgrades de esquema son reentrantes.

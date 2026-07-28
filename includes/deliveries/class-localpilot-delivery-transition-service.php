@@ -208,9 +208,19 @@ class Localpilot_Delivery_Transition_Service {
 					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_RADIUS ]   = absint( $location['radius_meters'] ?? 0 );
 					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_ACCURACY ] = null === ( $location['accuracy_meters'] ?? null ) ? '' : (float) $location['accuracy_meters'];
 					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_AT ]       = sanitize_text_field( $location['validated_at'] ?? current_time( 'mysql', true ) );
-					if ( ! empty( $extra['location_driver_lat'] ) && ! empty( $extra['location_driver_lng'] ) ) {
-						$meta_updates[ Localpilot_Order_Delivery_Meta::DELIVERY_LOCATION_LAT ] = (float) $extra['location_driver_lat'];
-						$meta_updates[ Localpilot_Order_Delivery_Meta::DELIVERY_LOCATION_LNG ] = (float) $extra['location_driver_lng'];
+
+					$target_lat = self::normalise_coordinate( $location['target_latitude'] ?? null, -90, 90 );
+					$target_lng = self::normalise_coordinate( $location['target_longitude'] ?? null, -180, 180 );
+					if ( null !== $target_lat && null !== $target_lng ) {
+						$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_TARGET_LAT ] = $target_lat;
+						$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_TARGET_LNG ] = $target_lng;
+					}
+
+					$driver_lat = self::normalise_coordinate( $extra['location_driver_lat'] ?? null, -90, 90 );
+					$driver_lng = self::normalise_coordinate( $extra['location_driver_lng'] ?? null, -180, 180 );
+					if ( null !== $driver_lat && null !== $driver_lng ) {
+						$meta_updates[ Localpilot_Order_Delivery_Meta::DELIVERY_LOCATION_LAT ] = $driver_lat;
+						$meta_updates[ Localpilot_Order_Delivery_Meta::DELIVERY_LOCATION_LNG ] = $driver_lng;
 					}
 				}
 				break;
@@ -230,14 +240,7 @@ class Localpilot_Delivery_Transition_Service {
 
 		// 4. Create event.
 		$event_type = self::get_event_type_for_transition( $target_status );
-		$event_data = array_merge(
-			array(
-				'from_status' => $current_status,
-				'to_status'   => $target_status,
-				'actor_id'    => $actor_id,
-			),
-			$extra
-		);
+		$event_data = self::build_event_data( $current_status, $target_status, $actor_id, $extra );
 
 		$event_id = Localpilot_Event_Repository::insert( array(
 			'order_id'      => $order_id,
@@ -258,6 +261,57 @@ class Localpilot_Delivery_Transition_Service {
 		self::fire_hook( $target_status, $order_id, $driver_id, $assignment_id, $event_id );
 
 		return true;
+	}
+
+	/**
+	 * Build an auditable event payload without raw GPS coordinates.
+	 *
+	 * @param string $current_status Current delivery status.
+	 * @param string $target_status  Target delivery status.
+	 * @param int    $actor_id       Actor user ID.
+	 * @param array  $extra          Transition data.
+	 * @return array
+	 */
+	private static function build_event_data( $current_status, $target_status, $actor_id, array $extra ) {
+		unset( $extra['location_driver_lat'], $extra['location_driver_lng'] );
+
+		if ( isset( $extra['location_validation'] ) && is_array( $extra['location_validation'] ) ) {
+			$location = $extra['location_validation'];
+			$extra['location_validation'] = array(
+				'status'          => sanitize_key( $location['status'] ?? 'not_validated' ),
+				'allowed'         => ! empty( $location['allowed'] ),
+				'distance_meters' => null === ( $location['distance_meters'] ?? null ) ? null : (float) $location['distance_meters'],
+				'radius_meters'   => absint( $location['radius_meters'] ?? 0 ),
+				'accuracy_meters' => null === ( $location['accuracy_meters'] ?? null ) ? null : (float) $location['accuracy_meters'],
+				'validated_at'    => sanitize_text_field( $location['validated_at'] ?? '' ),
+			);
+		}
+
+		return array_merge(
+			array(
+				'from_status' => $current_status,
+				'to_status'   => $target_status,
+				'actor_id'    => $actor_id,
+			),
+			$extra
+		);
+	}
+
+	/**
+	 * Normalise and range-check a geographic coordinate.
+	 *
+	 * @param mixed $value Coordinate value.
+	 * @param float $min   Minimum allowed value.
+	 * @param float $max   Maximum allowed value.
+	 * @return float|null
+	 */
+	private static function normalise_coordinate( $value, $min, $max ) {
+		if ( ! is_numeric( $value ) || ! is_finite( (float) $value ) ) {
+			return null;
+		}
+
+		$value = (float) $value;
+		return ( $value >= $min && $value <= $max ) ? $value : null;
 	}
 
 	/**

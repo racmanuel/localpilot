@@ -35,12 +35,18 @@
 - [ ] Validación puntual de ubicación se ejecuta solo al completar y usa el destino geocodificado.
 - [ ] El radio y la política `warning`/`blocking` se leen de ajustes del servidor.
 - [ ] La validación no guarda tracking continuo ni recorridos.
-- [ ] El mapa admin muestra dos marcadores (destino 🔴 + GPS entrega 🟢) y un círculo del radio configurado.
+- [ ] El mapa admin muestra destino, GPS de entrega, línea de distancia y círculo del radio histórico.
+- [ ] Cambiar el radio global no modifica la auditoría de pedidos ya completados.
+- [ ] El círculo y los campos se actualizan al arrastrar el destino de una entrega activa.
+- [ ] `fitBounds` incluye ambos marcadores y el perímetro del radio.
 
 ## Experiencia nativa
 
 - [ ] No existe dashboard/listado administrativo duplicado.
 - [ ] Pedidos usa columnas/panel nativos.
+- [ ] El panel separa resumen, progreso, prueba, gestión, mapa y actividad.
+- [ ] Entregas terminales muestran asignación y destino en modo de solo lectura.
+- [ ] El timeline traduce eventos y muestra fecha/actor sin JSON técnico.
 - [ ] Repartidores se gestionan en Usuarios.
 - [ ] Ajustes están en WooCommerce.
 - [ ] Emails están en WooCommerce → Correos.
@@ -61,6 +67,8 @@
 - [ ] Pruebas IDOR y CSRF aprobadas.
 - [ ] Coordenadas, precisión y timestamp se validan en servidor.
 - [ ] El resultado de ubicación no se acepta desde el frontend ni se expone a usuarios no autorizados.
+- [ ] Coordenadas crudas ausentes de notas, emails y `event_data`.
+- [ ] POST manipulado de reasignación/retiro/corrección terminal es rechazado.
 - [ ] HTTPS, permiso denegado, GPS no disponible y reintento están probados.
 
 ## QA

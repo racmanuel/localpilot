@@ -14,9 +14,10 @@ Esta funcionalidad no implementa GPS en vivo. Obtiene una única ubicación del 
 6. El servidor obtiene las coordenadas del destino desde `Localpilot_Order_Delivery_Meta`.
 7. El servidor calcula la distancia Haversine y compara contra el radio configurado.
 8. El completado continúa, genera advertencia o se bloquea según la política configurada.
-9. Se conserva únicamente un resumen de la validación en el pedido y el evento de completado.
+9. Se conserva el resumen de la validación en el pedido y en el evento de completado, sin coordenadas crudas en `event_data`.
 10. Las coordenadas GPS del repartidor se guardan como `_lclplt_delivery_location_lat/lng`.
-11. En el panel administrativo, el mapa muestra dos marcadores (🔴 destino + 🟢 entrega) y un círculo 🟢 que representa el radio configurado.
+11. El destino usado se guarda una vez en `_lclplt_location_validation_target_lat/lng`.
+12. En el panel administrativo, el mapa muestra destino, GPS de entrega, línea de distancia y círculo del radio histórico.
 
 ## Ajustes
 
@@ -49,7 +50,7 @@ disabled
 - Se mantienen nonce, validación de estado e idempotencia del flujo existente.
 - No se guarda un historial de coordenadas ni se implementa seguimiento continuo.
 - No se incluyen coordenadas crudas en notas de pedido, emails ni eventos.
-- Se guarda el estado, distancia, radio, precisión, fecha de validación y coordenadas GPS del repartidor.
+- Se guarda el estado, distancia, radio, precisión, fecha, snapshot del destino y coordenadas GPS puntuales del repartidor.
 
 ## Limitaciones del navegador
 
@@ -59,11 +60,14 @@ La captura requiere HTTPS y permiso del usuario. Una página web no puede garant
 
 Cuando el pedido tiene validación registrada, el mapa en el panel de administración muestra:
 
-- 🔴 **Marcador rojo** (arrastrable): destino geocodificado.
-- 🟢 **Marcador verde** (fijo): ubicación GPS del repartidor al completar.
-- 🟢 **Círculo verde** semi-transparente con borde punteado: radio de validación configurado.
+- **Marcador rojo**: destino geocodificado; arrastrable solo durante una entrega activa.
+- **Marcador verde** fijo: ubicación GPS del repartidor al completar.
+- **Círculo verde** semi-transparente con borde punteado: radio utilizado al validar.
+- **Línea punteada**: separación visual entre destino y GPS.
 
-El círculo se dibuja con 64 puntos geodésicos corregidos por latitud y no requiere librerías externas. Si se modifica el radio en los ajustes, el cambio se refleja al recargar la página.
+El círculo se dibuja con 64 puntos calculados geodésicamente y no requiere una librería geométrica externa. Al completar se conservan radio y destino como snapshot: modificar después el ajuste global no cambia la representación histórica. Los pedidos `delivered`, `failed` y `cancelled` son de solo lectura.
+
+En entregas activas, arrastrar el destino actualiza inmediatamente círculo, línea y campos. Los controles permiten encuadrar toda la zona, centrar los marcadores, copiar el GPS y abrirlo en Google Maps. Si Mapbox falla, dirección y coordenadas continúan visibles como fallback textual.
 
 ## Archivos principales
 

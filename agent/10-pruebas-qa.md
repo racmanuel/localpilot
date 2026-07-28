@@ -8,7 +8,7 @@ Validar funcionalidad, seguridad, HPOS, experiencia nativa y regresiones antes d
 
 La matriz parte de los metadatos confirmados del plugin:
 
-- WordPress `6.0`;
+- WordPress `6.9`, versión mínima declarada actualmente;
 - WordPress `7.0.2`, declarado como Tested up to;
 - última versión estable de WooCommerce compatible con esos entornos;
 - versión mínima de WooCommerce pendiente de fijar;
@@ -43,6 +43,8 @@ La matriz parte de los metadatos confirmados del plugin:
 | MAP-01 | Dirección válida | coordenadas persistidas |
 | MAP-02 | API caída | pedido sigue operativo |
 | MAP-03 | Corrección manual | no se sobrescribe |
+| MAP-04 | Arrastrar destino activo | marcador, círculo, línea y campos se sincronizan |
+| MAP-05 | Pedido terminal | mapa usa snapshot y no permite arrastrar/guardar |
 | PRF-01 | JPG válido | attachment relacionado |
 | PRF-02 | PHP renombrado JPG | rechazado |
 | MAIL-01 | Asignación | un email |
@@ -53,7 +55,11 @@ La matriz parte de los metadatos confirmados del plugin:
 | LOC-04 | Permiso denegado/GPS no disponible | mensaje de reintento y política aplicada |
 | LOC-05 | Coordenadas manipuladas o timestamp inválido | resultado calculado/rechazado por servidor |
 | LOC-06 | Pedido sin coordenadas de destino | `no_destination`, no fatal y política documentada |
+| LOC-07 | Cambiar radio global tras completar | pedido conserva radio y destino históricos |
+| LOC-08 | Revisar eventos | no contienen coordenadas GPS crudas |
 | UI-01 | 320 px | acciones utilizables |
+| UI-02 | Entrega terminal | acciones ocultas y POST manipulado rechazado |
+| UI-03 | Timeline admin | etiquetas humanas, fecha y actor sin JSON técnico |
 | UN-01 | Desinstalar sin opt-in | datos conservados |
 
 ## Casos por flujo
@@ -96,6 +102,9 @@ Asignar a A → A ve entrega → gestor reasigna a B → A pierde acceso → B r
 10. Ejecutar smoke test de activación, upgrade, desactivación y uninstall.
 11. Probar la validación puntual con radio configurable, precisión insuficiente, permiso denegado, ubicación fuera del radio y destino sin geocodificar.
 12. Confirmar que la validación no bloquea asignación, inicio, fallo de entrega ni el flujo cuando Mapbox está desactivado.
+13. Confirmar `fitBounds` con puntos cercanos, alejados y radio máximo.
+14. Probar el panel con teclado, foco visible, lector de pantalla y color desactivado.
+15. Verificar que el mapa conserva fallback textual si el SDK o los tiles fallan.
 
 ## Criterios de aceptación
 

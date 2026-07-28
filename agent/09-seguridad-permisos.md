@@ -24,7 +24,7 @@ Definir controles obligatorios para Admin, Mi cuenta, REST, archivos y servicios
 | Subir evidencia | Con capacidad y ownership | Sí | No |
 | Validar ubicación al completar | Sí, con posición puntual y entrega propia | Puede revisar el resultado | No |
 | Asignar/reasignar | No | `lclplt_manage_deliveries` | No |
-| Editar ubicación | No | `lclplt_manage_deliveries` | No |
+| Editar ubicación | No | `lclplt_manage_deliveries`, solo entrega activa | No |
 | Ver evidencia | Propia si se decide mostrar | Sí | No |
 
 ## Controles por superficie
@@ -79,7 +79,8 @@ Definir controles obligatorios para Admin, Mi cuenta, REST, archivos y servicios
 - el radio solo procede de los ajustes del gestor y tiene límites configurados;
 - no se guardan recorridos ni tracking continuo;
 - las coordenadas GPS del repartidor se persisten como metadatos del pedido y solo se muestran en el mapa administrativo (requiere `lclplt_manage_deliveries`);
-- no se incluyen coordenadas crudas en notas, emails o mensajes visibles;
+- el destino usado por la validación se conserva como snapshot privado para que una configuración posterior no altere la auditoría;
+- no se incluyen coordenadas crudas en notas, emails, mensajes visibles ni `event_data`;
 - la captura requiere HTTPS y permiso explícito del navegador;
 - los estados pueden ser `passed`, `outside_radius`, `permission_denied`, `unavailable`, `timeout`, `stale`, `low_accuracy`, `no_destination` o `disabled`.
 
@@ -106,6 +107,8 @@ Este frente idealmente no implementa una segunda lógica. Revisa y añade utilid
 10. Validar desinstalación opt-in.
 11. Probar manipulación de coordenadas, resultado enviado, timestamp futuro/antiguo y precisión falsa.
 12. Verificar que la política `warning` no se convierta en autorización para cambiar el radio desde el frontend.
+13. Manipular el POST administrativo para intentar reasignar, retirar o corregir una entrega terminal; todas deben rechazarse en servidor.
+14. Verificar que eventos de geocodificación, corrección y completado no contengan coordenadas crudas.
 
 ## Criterios de aceptación
 
@@ -118,6 +121,8 @@ Este frente idealmente no implementa una segunda lógica. Revisa y añade utilid
 - No aparecen tokens, rutas o stack traces en UI/log normal.
 - La ubicación puntual no revela coordenadas a usuarios no autorizados.
 - Una posición fuera del radio se bloquea o advierte según la configuración persistida.
+- Cambiar el radio global después de completar no altera el radio ni el destino auditados en el pedido.
+- Una entrega terminal no puede mutarse aunque se omitan las restricciones de la interfaz.
 - Los uploads maliciosos se rechazan.
 - Todas las mutaciones son POST/REST mutativo.
 

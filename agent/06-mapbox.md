@@ -88,6 +88,10 @@ Salida fallida: código interno estable, mensaje seguro y contexto técnico sani
 9. Cargar SDK/estilos únicamente cuando se renderiza mapa.
 10. Documentar atribución requerida por Mapbox.
 11. Dibujar círculo geodésico del radio de validación si la función está activa.
+12. En pedidos validados, usar el destino y radio guardados en el snapshot histórico, no la configuración global vigente.
+13. Recalcular el círculo y la línea de distancia al arrastrar el destino de una entrega activa.
+14. Ajustar el viewport para incluir destino, GPS y perímetro mediante `LngLatBounds`.
+15. Bloquear el marcador y la corrección manual en estados terminales.
 
 ## Criterios de aceptación
 
@@ -99,8 +103,12 @@ Salida fallida: código interno estable, mensaje seguro y contexto técnico sani
 - El token no aparece en logs ni páginas ajenas.
 - Mapa y atribución cumplen requisitos de Mapbox.
 - La UI ofrece dirección textual si JS o Mapbox fallan.
-- El mapa admin puede mostrar un segundo marcador 🟢 con la ubicación GPS registrada en la entrega.
-- El mapa admin dibuja un círculo 🟢 alrededor del destino con el radio configurado en la validación puntual.
+- El mapa admin muestra un marcador de destino y, cuando existe, un segundo marcador con la ubicación GPS registrada al completar.
+- El mapa admin dibuja el radio histórico alrededor del destino usado por la validación.
+- Una línea visual une destino y GPS sin sustituir la distancia calculada por el servidor.
+- El círculo, campos y marcador permanecen sincronizados durante una corrección activa.
+- Los controles permiten encuadrar toda la zona y centrar cada punto.
+- La leyenda y las coordenadas ofrecen una alternativa textual al mapa.
 
 ## Riesgos
 
@@ -122,4 +130,4 @@ Salida fallida: código interno estable, mensaje seguro y contexto técnico sani
 
 ## Definición de terminado
 
-Mapbox está encapsulado, configurable y tolerante a fallos; las coordenadas se persisten en el pedido, pueden corregirse y el mapa solo se carga en contextos autorizados y necesarios.
+Mapbox está encapsulado, configurable y tolerante a fallos; las coordenadas se persisten en el pedido, solo pueden corregirse durante una entrega activa y el mapa utiliza snapshots históricos en estados terminales. El SDK solo se carga en contextos autorizados y necesarios.

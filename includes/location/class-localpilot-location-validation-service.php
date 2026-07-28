@@ -101,6 +101,8 @@ class Localpilot_Location_Validation_Service {
 			'radius_meters'   => $radius,
 			'accuracy_meters' => null,
 			'validated_at'    => current_time( 'mysql', true ),
+			'target_latitude' => null,
+			'target_longitude'=> null,
 		);
 
 		if ( ! self::is_enabled() ) {
@@ -122,6 +124,9 @@ class Localpilot_Location_Validation_Service {
 			$result['status'] = 'no_destination';
 			return $result;
 		}
+
+		$result['target_latitude']  = $target_lat;
+		$result['target_longitude'] = $target_lng;
 
 		$client_status = sanitize_key( (string) $client_status );
 		if ( in_array( $client_status, array( 'permission_denied', 'unavailable', 'timeout' ), true ) ) {

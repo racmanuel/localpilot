@@ -125,6 +125,28 @@ class Localpilot_Event_Repository {
 	}
 
 	/**
+	 * Get the most recent assignment events in chronological display order.
+	 *
+	 * @param int $assignment_id Assignment ID.
+	 * @param int $limit         Max results.
+	 * @return array
+	 */
+	public static function get_recent_by_assignment( $assignment_id, $limit = 5 ) {
+		global $wpdb;
+
+		$events = $wpdb->get_results(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT * FROM ' . self::table() . ' WHERE assignment_id = %d ORDER BY created_at DESC, id DESC LIMIT %d',
+				$assignment_id,
+				$limit
+			)
+		);
+
+		return array_reverse( $events );
+	}
+
+	/**
 	 * Get events by type for a given order.
 	 *
 	 * @param int    $order_id  Order ID.

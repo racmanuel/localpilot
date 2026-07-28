@@ -137,6 +137,8 @@ function lclplt_uninstall() {
 		'_lclplt_location_validation_radius',
 		'_lclplt_location_validation_accuracy',
 		'_lclplt_location_validation_at',
+		'_lclplt_location_validation_target_lat',
+		'_lclplt_location_validation_target_lng',
 		'_lclplt_delivery_location_lat',
 		'_lclplt_delivery_location_lng',
 	);

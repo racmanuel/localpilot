@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-28T18:09:43+00:00\n"
+"POT-Creation-Date: 2026-07-28T19:17:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: localpilot\n"
@@ -41,207 +41,353 @@ msgstr ""
 msgid "https://racmanuel.dev/"
 msgstr ""
 
+#: admin/partials/localpilot-order-delivery-panel.php:19
+msgid "Validada"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:20
+msgid "Fuera del radio"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:21
+msgid "Permiso denegado"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:22
+msgid "No disponible"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:23
+msgid "Tiempo agotado"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:24
+msgid "Desactualizada"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:25
+msgid "Precisión insuficiente"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:26
+msgid "Sin destino geocodificado"
+msgstr ""
+
 #: admin/partials/localpilot-order-delivery-panel.php:27
-#: includes/deliveries/class-localpilot-delivery-status.php:114
-msgid "Sin asignar"
+msgid "Desactivada"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:32
-#: includes/integrations/class-localpilot-user-profile.php:264
-#: templates/my-account/deliveries/detail.php:49
-#: templates/my-account/deliveries/list.php:58
-#: templates/my-account/deliveries/list.php:87
-msgid "Estado"
+#: admin/partials/localpilot-order-delivery-panel.php:30
+msgid "Sin validar"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:42
-#: admin/partials/localpilot-order-delivery-panel.php:180
+#: admin/partials/localpilot-order-delivery-panel.php:48
+#: includes/deliveries/class-localpilot-delivery-status.php:115
+msgid "Asignado"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:53
+#: includes/deliveries/class-localpilot-delivery-status.php:116
+msgid "Aceptado"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:58
+#: includes/deliveries/class-localpilot-delivery-status.php:117
+#: templates/my-account/deliveries/list.php:24
+msgid "En reparto"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:66
+#: includes/deliveries/class-localpilot-delivery-status.php:119
+msgid "Fallido"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:72
+#: includes/deliveries/class-localpilot-delivery-status.php:120
+msgid "Cancelado"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:78
+#: includes/deliveries/class-localpilot-delivery-status.php:118
+msgid "Entregado"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:115
+msgid "Resumen de entrega"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:116
+msgid "Información operativa y estado actual del pedido."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:127
+#: admin/partials/localpilot-order-delivery-panel.php:299
 #: includes/integrations/class-localpilot-orders-list.php:56
 #: templates/emails/lclplt-email-completed.php:26
 #: templates/emails/lclplt-email-failed.php:33
 msgid "Repartidor"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:49
-#: includes/integrations/class-localpilot-orders-list.php:128
-msgid "Usuario eliminado"
+#: admin/partials/localpilot-order-delivery-panel.php:128
+#: includes/deliveries/class-localpilot-delivery-status.php:114
+msgid "Sin asignar"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:58
-#: includes/deliveries/class-localpilot-delivery-status.php:115
-msgid "Asignado"
+#: admin/partials/localpilot-order-delivery-panel.php:130
+msgid "El usuario ya no existe."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:59
-#: includes/deliveries/class-localpilot-delivery-status.php:116
-msgid "Aceptado"
+#: admin/partials/localpilot-order-delivery-panel.php:137
+msgid "Validación"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:60
-#: includes/deliveries/class-localpilot-delivery-status.php:117
-#: templates/my-account/deliveries/list.php:24
-msgid "En reparto"
+#. translators: 1: measured distance, 2: allowed radius, both in metres
+#: admin/partials/localpilot-order-delivery-panel.php:145
+#, php-format
+msgid "%1$s m de %2$s m"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:61
-#: includes/deliveries/class-localpilot-delivery-status.php:118
-msgid "Entregado"
+#: admin/partials/localpilot-order-delivery-panel.php:158
+msgid "Última actualización"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:62
-#: includes/deliveries/class-localpilot-delivery-status.php:119
-msgid "Fallido"
+#: admin/partials/localpilot-order-delivery-panel.php:162
+msgid "Sin actividad"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:81
-msgid "Geocod."
+#: admin/partials/localpilot-order-delivery-panel.php:174
+msgid "Progreso de la entrega"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:85
-msgid "Completada"
+#: admin/partials/localpilot-order-delivery-panel.php:175
+msgid "Secuencia registrada para esta asignación."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:87
-msgid "Fallida"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:89
-msgid "Manual"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:91
+#: admin/partials/localpilot-order-delivery-panel.php:200
 #: includes/integrations/class-localpilot-orders-list.php:166
 msgid "Pendiente"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:103
+#: admin/partials/localpilot-order-delivery-panel.php:212
+msgid "Prueba de entrega"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:213
+msgid "Receptor, evidencia y resultado de la validación puntual."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:221
+msgid "Ubicación al completar"
+msgstr ""
+
+#. translators: 1: measured distance, 2: allowed radius, both in metres
+#: admin/partials/localpilot-order-delivery-panel.php:229
+#, php-format
+msgid "%1$s m de %2$s m permitidos"
+msgstr ""
+
+#. translators: %s: GPS accuracy in metres
+#: admin/partials/localpilot-order-delivery-panel.php:239
+#, php-format
+msgid "Precisión: %s m"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:250
 #: templates/emails/lclplt-email-completed.php:31
 #: templates/my-account/deliveries/detail.php:147
 #: templates/my-account/deliveries/detail.php:198
 msgid "Recibido por"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:113
+#: admin/partials/localpilot-order-delivery-panel.php:253
+#: templates/my-account/deliveries/detail.php:286
+msgid "Motivo del fallo"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:256
+#: templates/my-account/deliveries/detail.php:153
+msgid "Notas"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:262
 msgid "Evidencia"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:120
+#: admin/partials/localpilot-order-delivery-panel.php:269
 #: includes/deliveries/class-localpilot-proof-service.php:224
 msgid "Evidencia de entrega"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:123
-msgid "Ver archivo"
+#: admin/partials/localpilot-order-delivery-panel.php:270
+msgid "Abrir evidencia"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:136
-msgid "Validada"
+#: admin/partials/localpilot-order-delivery-panel.php:270
+#: admin/partials/localpilot-order-delivery-panel.php:352
+msgid "(abre en una pestaña nueva)"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:137
-msgid "Fuera del radio"
+#: admin/partials/localpilot-order-delivery-panel.php:273
+msgid "Ver archivo de evidencia"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:138
-msgid "Permiso denegado"
+#: admin/partials/localpilot-order-delivery-panel.php:287
+msgid "Gestión de asignación"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:139
-msgid "No disponible"
+#: admin/partials/localpilot-order-delivery-panel.php:288
+msgid "Controla quién tiene acceso operativo a esta entrega."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:140
-msgid "Tiempo agotado"
+#: admin/partials/localpilot-order-delivery-panel.php:295
+msgid "Entrega cerrada"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:141
-msgid "Desactualizada"
+#: admin/partials/localpilot-order-delivery-panel.php:295
+msgid "La asignación y el destino se muestran en modo de solo lectura."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:142
-msgid "Precisión insuficiente"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:143
-msgid "Sin destino geocodificado"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:144
-msgid "Desactivada"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:146
-msgid "No validada"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:153
-msgid "Ubicación al entregar"
-msgstr ""
-
-#. translators: %s: measured distance in metres
-#: admin/partials/localpilot-order-delivery-panel.php:157
-#, php-format
-msgid "Distancia: %s m"
-msgstr ""
-
-#. translators: %s: configured radius in metres
-#: admin/partials/localpilot-order-delivery-panel.php:160
-#, php-format
-msgid "Radio: %s m"
-msgstr ""
-
-#. translators: %s: reported GPS accuracy in metres
-#: admin/partials/localpilot-order-delivery-panel.php:163
-#, php-format
-msgid "Precisión: %s m"
-msgstr ""
-
-#: admin/partials/localpilot-order-delivery-panel.php:183
+#: admin/partials/localpilot-order-delivery-panel.php:301
 msgid "Seleccionar repartidor"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:196
+#: admin/partials/localpilot-order-delivery-panel.php:308
 msgid "Asignar repartidor"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:202
+#: admin/partials/localpilot-order-delivery-panel.php:310
 msgid "¿Reasignar a otro repartidor? El repartidor actual perderá acceso."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:203
+#: admin/partials/localpilot-order-delivery-panel.php:310
 msgid "Reasignar"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:208
+#: admin/partials/localpilot-order-delivery-panel.php:311
 msgid "¿Retirar la asignación actual? El repartidor perderá acceso al pedido."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:209
+#: admin/partials/localpilot-order-delivery-panel.php:311
 msgid "Retirar"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:225
-msgid "Ubicación — corrección manual"
+#: admin/partials/localpilot-order-delivery-panel.php:321
+msgid "Ubicación de la entrega"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:227
-msgid "Arrastra el marcador para corregir la ubicación."
+#: admin/partials/localpilot-order-delivery-panel.php:325
+msgid "Destino geocodificado automáticamente."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:238
-msgid "Latitud:"
+#: admin/partials/localpilot-order-delivery-panel.php:327
+msgid "Destino corregido manualmente."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:244
-msgid "Longitud:"
+#: admin/partials/localpilot-order-delivery-panel.php:329
+msgid "La geocodificación automática falló."
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:252
+#: admin/partials/localpilot-order-delivery-panel.php:331
+msgid "Destino pendiente de geocodificación."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:336
+msgid "Solo lectura"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:339
+msgid "Leyenda del mapa"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:340
+msgid "Destino"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:341
+msgid "GPS de entrega"
+msgstr ""
+
+#. translators: %s: validation radius in metres
+#: admin/partials/localpilot-order-delivery-panel.php:342
+#, php-format
+msgid "Radio de %s m"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:346
+msgid "Controles del mapa"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:347
+msgid "Ver zona completa"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:348
+msgid "Centrar destino"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:350
+msgid "Centrar GPS"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:351
+msgid "Coordenadas copiadas."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:351
+msgid "No se pudieron copiar las coordenadas."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:351
+msgid "Copiar GPS"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:352
+#: templates/my-account/deliveries/detail.php:111
+msgid "Abrir en Google Maps"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:366
+msgid "Destino de entrega"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:367
+msgid "Entrega registrada aquí"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:368
+msgid "No se pudo cargar el mapa. Las coordenadas continúan disponibles debajo."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:373
+msgid "Mapa no disponible"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:373
+msgid "Configura Mapbox y geocodifica el destino para mostrar la zona de validación."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:378
+msgid "Latitud del destino"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:379
+msgid "Longitud del destino"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:381
 msgid "Guardar ubicación"
 msgstr ""
 
-#: admin/partials/localpilot-order-delivery-panel.php:264
-msgid "Eventos recientes"
+#: admin/partials/localpilot-order-delivery-panel.php:385
+msgid "Arrastra el marcador del destino y guarda la ubicación para corregir sus coordenadas."
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:392
+msgid "Actividad reciente"
+msgstr ""
+
+#: admin/partials/localpilot-order-delivery-panel.php:392
+msgid "Últimos eventos registrados para la asignación."
 msgstr ""
 
 #. translators: %s: current order status
@@ -320,10 +466,6 @@ msgstr ""
 msgid "LocalPilot: Asignación retirada a %s."
 msgstr ""
 
-#: includes/deliveries/class-localpilot-delivery-status.php:120
-msgid "Cancelado"
-msgstr ""
-
 #: includes/deliveries/class-localpilot-delivery-transition-service.php:46
 msgid "Debes iniciar sesión para realizar esta acción."
 msgstr ""
@@ -341,7 +483,7 @@ msgstr ""
 #: includes/deliveries/class-localpilot-delivery-transition-service.php:100
 #: includes/deliveries/class-localpilot-delivery-transition-service.php:119
 #: includes/integrations/class-localpilot-my-account.php:217
-#: includes/integrations/class-localpilot-order-editor.php:154
+#: includes/integrations/class-localpilot-order-editor.php:205
 msgid "No tienes permiso para realizar esta acción."
 msgstr ""
 
@@ -365,44 +507,44 @@ msgstr ""
 msgid "Debes indicar el motivo del fallo."
 msgstr ""
 
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:274
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:332
 msgid "LocalPilot: "
 msgstr ""
 
 #. translators: %s: actor name
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:335
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:393
 #, php-format
 msgid "LocalPilot: Entrega aceptada por %s."
 msgstr ""
 
 #. translators: %s: actor name
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:342
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:400
 #, php-format
 msgid "LocalPilot: Reparto iniciado por %s."
 msgstr ""
 
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:347
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:405
 msgid "No especificado"
 msgstr ""
 
 #. translators: 1: actor name, 2: receiver name
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:350
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:408
 #, php-format
 msgid "LocalPilot: Entregado por %1$s. Recibido por: %2$s."
 msgstr ""
 
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:356
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:414
 msgid "Sin motivo"
 msgstr ""
 
 #. translators: 1: actor name, 2: failure reason
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:359
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:417
 #, php-format
 msgid "LocalPilot: Entrega fallida por %1$s. Motivo: %2$s."
 msgstr ""
 
 #. translators: %s: actor name
-#: includes/deliveries/class-localpilot-delivery-transition-service.php:367
+#: includes/deliveries/class-localpilot-delivery-transition-service.php:425
 #, php-format
 msgid "LocalPilot: Entrega cancelada por %s."
 msgstr ""
@@ -494,6 +636,7 @@ msgid "[{site_title}] Entrega #{order_number} completada"
 msgstr ""
 
 #: includes/emails/class-localpilot-email-completed.php:21
+#: includes/integrations/class-localpilot-order-editor.php:147
 msgid "Entrega completada"
 msgstr ""
 
@@ -510,6 +653,7 @@ msgid "[{site_title}] Entrega #{order_number} fallida"
 msgstr ""
 
 #: includes/emails/class-localpilot-email-failed.php:21
+#: includes/integrations/class-localpilot-order-editor.php:148
 msgid "Entrega fallida"
 msgstr ""
 
@@ -542,6 +686,7 @@ msgid "[{site_title}] Pedido #{order_number} — asignación retirada"
 msgstr ""
 
 #: includes/emails/class-localpilot-email-unassigned.php:21
+#: includes/integrations/class-localpilot-order-editor.php:144
 msgid "Asignación retirada"
 msgstr ""
 
@@ -591,38 +736,74 @@ msgstr ""
 
 #: includes/integrations/class-localpilot-my-account.php:161
 #: includes/integrations/class-localpilot-order-editor.php:116
-#: includes/integrations/class-localpilot-order-editor.php:169
+#: includes/integrations/class-localpilot-order-editor.php:219
 msgid "Pedido no encontrado."
 msgstr ""
 
 #: includes/integrations/class-localpilot-my-account.php:212
-#: includes/integrations/class-localpilot-order-editor.php:149
+#: includes/integrations/class-localpilot-order-editor.php:200
 msgid "Error de seguridad. Intenta de nuevo."
 msgstr ""
 
 #: includes/integrations/class-localpilot-my-account.php:224
-#: includes/integrations/class-localpilot-order-editor.php:162
+#: includes/integrations/class-localpilot-order-editor.php:212
 msgid "Acción no válida."
 msgstr ""
 
-#: includes/integrations/class-localpilot-my-account.php:292
+#: includes/integrations/class-localpilot-my-account.php:294
 msgid "La evidencia (foto) es obligatoria para completar la entrega."
 msgstr ""
 
-#: includes/integrations/class-localpilot-my-account.php:306
+#: includes/integrations/class-localpilot-my-account.php:308
 msgid "Entrega actualizada correctamente."
 msgstr ""
 
-#: includes/integrations/class-localpilot-order-editor.php:177
-#: includes/integrations/class-localpilot-order-editor.php:186
+#: includes/integrations/class-localpilot-order-editor.php:142
+msgid "Repartidor asignado"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:143
+msgid "Repartidor reasignado"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:145
+msgid "Entrega aceptada"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:146
+msgid "Reparto iniciado"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:149
+msgid "Entrega cancelada"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:150
+msgid "Destino geocodificado"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:151
+msgid "Destino corregido"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:154
+msgid "Actividad de entrega"
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:225
+msgid "La entrega está cerrada y no se puede modificar."
+msgstr ""
+
+#: includes/integrations/class-localpilot-order-editor.php:233
+#: includes/integrations/class-localpilot-order-editor.php:242
 msgid "Selecciona un repartidor."
 msgstr ""
 
-#: includes/integrations/class-localpilot-order-editor.php:201
+#: includes/integrations/class-localpilot-order-editor.php:260
 msgid "Coordenadas no válidas."
 msgstr ""
 
-#: includes/integrations/class-localpilot-order-editor.php:240
+#: includes/integrations/class-localpilot-order-editor.php:297
 msgid "Operación de entrega exitosa."
 msgstr ""
 
@@ -633,6 +814,10 @@ msgstr ""
 #: includes/integrations/class-localpilot-orders-list.php:58
 #: templates/my-account/deliveries/detail.php:98
 msgid "Ubicación"
+msgstr ""
+
+#: includes/integrations/class-localpilot-orders-list.php:128
+msgid "Usuario eliminado"
 msgstr ""
 
 #: includes/integrations/class-localpilot-orders-list.php:168
@@ -986,6 +1171,13 @@ msgstr[1] ""
 msgid "Notas internas"
 msgstr ""
 
+#: includes/integrations/class-localpilot-user-profile.php:264
+#: templates/my-account/deliveries/detail.php:49
+#: templates/my-account/deliveries/list.php:58
+#: templates/my-account/deliveries/list.php:87
+msgid "Estado"
+msgstr ""
+
 #: includes/integrations/class-localpilot-user-profile.php:265
 msgid "Vehículo"
 msgstr ""
@@ -1024,7 +1216,15 @@ msgstr ""
 msgid "Estás fuera del radio permitido para este destino."
 msgstr ""
 
-#: includes/location/class-localpilot-location-validation-service.php:73
+#: includes/location/class-localpilot-location-validation-service.php:71
+msgid "El pedido no tiene coordenadas de destino. La validación no se realizó."
+msgstr ""
+
+#: includes/location/class-localpilot-location-validation-service.php:72
+msgid "La validación de ubicación está desactivada."
+msgstr ""
+
+#: includes/location/class-localpilot-location-validation-service.php:75
 msgid "No se pudo validar la ubicación de la entrega."
 msgstr ""
 
@@ -1222,10 +1422,6 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: templates/my-account/deliveries/detail.php:111
-msgid "Abrir en Google Maps"
-msgstr ""
-
 #: templates/my-account/deliveries/detail.php:117
 msgid "Productos"
 msgstr ""
@@ -1240,10 +1436,6 @@ msgstr ""
 
 #: templates/my-account/deliveries/detail.php:142
 msgid "Datos de la entrega"
-msgstr ""
-
-#: templates/my-account/deliveries/detail.php:153
-msgid "Notas"
 msgstr ""
 
 #: templates/my-account/deliveries/detail.php:173
@@ -1317,10 +1509,6 @@ msgstr ""
 #: templates/my-account/deliveries/detail.php:282
 #: templates/my-account/deliveries/detail.php:322
 msgid "Reportar fallo"
-msgstr ""
-
-#: templates/my-account/deliveries/detail.php:286
-msgid "Motivo del fallo"
 msgstr ""
 
 #: templates/my-account/deliveries/detail.php:290

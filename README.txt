@@ -33,6 +33,8 @@ LocalPilot extiende WooCommerce para operar entregas locales con repartidores. E
 = En desarrollo (1.1.0-dev) =
 
 * **Validación puntual de ubicación**: al completar una entrega, solicita una ubicación del navegador y compara la distancia con el destino geocodificado. El radio y la política de advertencia/bloqueo son configurables. No es GPS en vivo ni guarda recorridos.
+* **Panel operativo rediseñado**: resumen, progreso, prueba de entrega, mapa de auditoría y timeline de actividad en el editor nativo del pedido.
+* **Auditoría geográfica histórica**: conserva el radio y destino usados al validar, muestra destino y GPS de entrega y bloquea cambios en entregas cerradas.
 
 == Installation ==
 
@@ -57,7 +59,7 @@ No. Los repartidores pueden operar sus entregas desde Mi cuenta en el frontend (
 
 = ¿Qué datos almacena LocalPilot? =
 
-Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas, receptor, evidencia y resumen de validación de ubicación) y metadatos de perfil de repartidores. La validación puntual no guarda un historial de recorridos. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
+Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas puntuales, snapshot del destino, receptor, evidencia y resumen de validación de ubicación) y metadatos de perfil de repartidores. La validación puntual no guarda un historial de recorridos y las coordenadas crudas no se incluyen en eventos, notas ni emails. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
 
 = ¿Soporta multisite? =
 
@@ -76,6 +78,13 @@ El repartidor deja de aparecer en el selector de asignaciones, pero sus entregas
 5. Email de pedido asignado en WooCommerce → Correos electrónicos.
 
 == Changelog ==
+
+= 1.1.0-dev =
+* Validación puntual de ubicación al completar una entrega.
+* Snapshot privado del destino y radio usados en la validación.
+* Panel LocalPilot rediseñado con resumen, progreso, prueba, mapa y timeline.
+* Mapa administrativo con marcador dual, círculo histórico, línea de distancia y encuadre automático.
+* Entregas terminales en modo de solo lectura.
 
 = 1.0.0 =
 * Versión inicial del MVP.
