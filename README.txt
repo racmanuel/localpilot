@@ -31,12 +31,15 @@ LocalPilot extiende WooCommerce para operar entregas locales con repartidores. E
 * **Evidencia fotográfica**: sube una foto (JPG/PNG/WebP) al completar o fallar una entrega. Vista previa en el panel del pedido.
 * **Correos nativos de WooCommerce**: 5 notificaciones configurables desde WooCommerce → Ajustes → Correos electrónicos (asignado, retirado, en reparto, completado, fallido).
 
-= En desarrollo (1.1.5-dev) =
+= En desarrollo (1.1.6-dev) =
 
 * **Validación puntual de ubicación**: al completar una entrega, solicita una ubicación del navegador y compara la distancia con el destino geocodificado. El radio y la política de advertencia/bloqueo son configurables. No es GPS en vivo ni guarda recorridos.
 * **Panel operativo rediseñado**: resumen, progreso, prueba de entrega, mapa de auditoría y timeline de actividad en el editor nativo del pedido.
 * **Auditoría geográfica histórica**: conserva el radio y destino usados al validar, muestra destino y GPS de entrega y bloquea cambios en entregas cerradas.
-* **Detalle de entrega rediseñado**: prioriza cliente y destino, ofrece acciones rápidas, productos compactos, prueba de entrega, formularios contextuales y timeline traducido con diseño responsive.
+* **Detalle de entrega rediseñado**: prioriza el mapa y la ruta cuando están disponibles, continúa con cliente y destino, y ofrece acciones rápidas, productos compactos, prueba de entrega, formularios contextuales y timeline traducido con diseño responsive.
+* **Rutas Mapbox bajo demanda**: en entregas activas, el repartidor puede calcular desde su ubicación una ruta con marcador de origen, línea, distancia y duración estimadas.
+* **Perfiles configurables**: auto con tráfico, auto, bicicleta y caminando, con perfil global y selector temporal opcional.
+* **Privacidad de rutas**: el origen, la geometría, la distancia y la duración solo existen mientras la página está abierta; LocalPilot no los guarda ni implementa tracking continuo.
 
 == Installation ==
 
@@ -63,6 +66,18 @@ No. Los repartidores pueden operar sus entregas desde Mi cuenta en el frontend (
 
 Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas puntuales, snapshot del destino, receptor, evidencia y resumen de validación de ubicación) y metadatos de perfil de repartidores. La validación puntual no guarda un historial de recorridos y las coordenadas crudas no se incluyen en eventos, notas ni emails. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
 
+= ¿Cuándo puede un repartidor calcular una ruta? =
+
+Únicamente al abrir el detalle de una entrega propia en estado Asignado, Aceptado o En reparto, siempre que Mapbox y Rutas para repartidores estén activados y el destino tenga coordenadas. La ruta requiere pulsar un botón: nunca se calcula automáticamente al abrir la página o cambiar de perfil.
+
+= ¿LocalPilot guarda la ruta o sigue al repartidor? =
+
+No. La ubicación se solicita una sola vez por cada cálculo y se usa directamente con Mapbox Directions API. LocalPilot no guarda el origen, la línea, la distancia ni la duración, no usa GPS en segundo plano y no implementa seguimiento continuo. La captura usada para calcular una ruta es independiente de la validación puntual realizada al completar.
+
+= ¿Las rutas de Mapbox pueden generar costos? =
+
+Sí. Cada cálculo manual es una solicitud a Mapbox Directions API y está sujeto a sus precios y términos vigentes. Usa un token público dedicado con scopes mínimos, restricciones por URL y monitoreo de consumo antes de habilitar rutas en producción.
+
 = ¿Soporta multisite? =
 
 Sí, el plugin funciona en redes multisite de WordPress. La detección de WooCommerce incluye plugins activados en toda la red.
@@ -80,6 +95,13 @@ El repartidor deja de aparecer en el selector de asignaciones, pero sus entregas
 5. Email de pedido asignado en WooCommerce → Correos electrónicos.
 
 == Changelog ==
+
+= 1.1.6-dev =
+* Rutas Mapbox bajo demanda para entregas activas desde Mi cuenta.
+* Selector configurable entre auto con tráfico, auto, bicicleta y caminando.
+* Marcador temporal de origen, línea GeoJSON, distancia y duración estimadas.
+* Manejo accesible de permisos GPS y errores de Directions API con fallback externo.
+* Ubicación y resultados de ruta efímeros, sin persistencia ni tracking continuo.
 
 = 1.1.5-dev =
 * Detalle de Mis entregas rediseñado para entregas activas y cerradas.

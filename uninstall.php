@@ -96,6 +96,9 @@ function lclplt_uninstall() {
 		'lclplt_mapbox_country',
 		'lclplt_mapbox_language',
 		'lclplt_auto_geocode',
+		'lclplt_enable_routes',
+		'lclplt_route_default_profile',
+		'lclplt_route_profile_selector',
 		'lclplt_email_started_enabled',
 		'lclplt_delete_data_on_uninstall',
 	);

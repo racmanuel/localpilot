@@ -23,6 +23,7 @@ Definir controles obligatorios para Admin, Mi cuenta, REST, archivos y servicios
 | Completar/fallar | Con capacidad y transición válida | Según política | No |
 | Subir evidencia | Con capacidad y ownership | Sí | No |
 | Validar ubicación al completar | Sí, con posición puntual y entrega propia | Puede revisar el resultado | No |
+| Calcular ruta efímera | Sí, entrega propia y activa | No desde la vista del driver | No |
 | Asignar/reasignar | No | `lclplt_manage_deliveries` | No |
 | Editar ubicación | No | `lclplt_manage_deliveries`, solo entrega activa | No |
 | Ver evidencia | Propia si se decide mostrar | Sí | No |
@@ -61,6 +62,24 @@ Definir controles obligatorios para Admin, Mi cuenta, REST, archivos y servicios
 - timeout;
 - respuesta no confiable validada;
 - no SSRF mediante URL arbitraria.
+- token público dedicado con scopes mínimos y restricciones por URL;
+- perfiles Directions limitados a una allowlist cerrada;
+- una solicitud de ruta solo después de una acción explícita;
+- `AbortController` y protección contra respuestas fuera de orden;
+- monitoreo de consumo y rotación del token ante abuso.
+
+### Ruta efímera del repartidor
+
+- solo se renderiza después de validar sesión, capacidad, ownership y estado activo;
+- usa las coordenadas persistidas del destino, nunca un destino suministrado por el navegador;
+- la posición actual se obtiene una vez con permiso explícito y se envía directamente a Mapbox Directions;
+- WordPress no recibe ni persiste origen, geometría, distancia o duración;
+- no se incluyen datos de ruta en eventos, notas, emails, analytics, cookies, `localStorage` o logs;
+- no existe endpoint REST para rutas en la primera versión;
+- no usa `watchPosition()`, GPS en segundo plano ni recálculo automático;
+- cambiar de perfil no ejecuta una petición; el usuario debe confirmar otro cálculo;
+- `NoRoute`, `NoSegment`, 401/403, 429, timeout y red fallan de forma segura y conservan la navegación externa;
+- una Content Security Policy debe permitir únicamente los orígenes Mapbox requeridos.
 
 ### Evidencias
 
@@ -109,6 +128,10 @@ Este frente idealmente no implementa una segunda lógica. Revisa y añade utilid
 12. Verificar que la política `warning` no se convierta en autorización para cambiar el radio desde el frontend.
 13. Manipular el POST administrativo para intentar reasignar, retirar o corregir una entrega terminal; todas deben rechazarse en servidor.
 14. Verificar que eventos de geocodificación, corrección y completado no contengan coordenadas crudas.
+15. Manipular el DOM para habilitar rutas en una entrega terminal y confirmar que el servidor nunca expone un endpoint de mutación o persistencia asociado.
+16. Probar perfiles alterados, respuestas Directions inválidas y coordenadas fuera de rango.
+17. Verificar que abrir la página y cambiar de perfil produzcan cero solicitudes Directions.
+18. Confirmar que origen, geometría, distancia y duración desaparecen al recargar y no existen en base de datos, eventos ni logs.
 
 ## Criterios de aceptación
 
@@ -119,6 +142,9 @@ Este frente idealmente no implementa una segunda lógica. Revisa y añade utilid
 - Los errores ajenos son indistinguibles.
 - No hay SQL concatenado con input.
 - No aparecen tokens, rutas o stack traces en UI/log normal.
+- El token público visible en el navegador está limitado por scopes y orígenes autorizados.
+- El cálculo de ruta no amplía permisos ni crea un endpoint accesible por clientes u otros repartidores.
+- La ruta del repartidor no persiste ubicación ni recorrido y nunca sustituye la validación de ubicación al completar.
 - La ubicación puntual no revela coordenadas a usuarios no autorizados.
 - Una posición fuera del radio se bloquea o advierte según la configuración persistida.
 - Cambiar el radio global después de completar no altera el radio ni el destino auditados en el pedido.

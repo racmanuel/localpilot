@@ -69,6 +69,18 @@ La matriz parte de los metadatos confirmados del plugin:
 | UI-10 | Timeline frontend | etiquetas humanas y actor genérico, sin JSON ni coordenadas |
 | UI-11 | Detalle a 320 px | mapa, uploads, botones y timeline sin overflow |
 | MAP-06 | Mapbox frontend falla | dirección y navegación continúan disponibles |
+| ROUTE-01 | Abrir entrega activa | controles visibles, cero solicitudes Directions |
+| ROUTE-02 | GPS permitido + respuesta `Ok` | origen, línea, distancia, duración y perfil visibles |
+| ROUTE-03 | Cambiar perfil | ruta anterior se limpia y no recalcula automáticamente |
+| ROUTE-04 | Permiso denegado/timeout | mensaje recuperable y navegación externa disponible |
+| ROUTE-05 | `NoRoute` / `NoSegment` | error específico, mapa del destino permanece operativo |
+| ROUTE-06 | 401/403/429/red/payload inválido | degradación segura sin mutar la entrega |
+| ROUTE-07 | Respuestas fuera de orden | solo la solicitud más reciente puede dibujar datos |
+| ROUTE-08 | Entrega terminal | no hay controles ni solicitud de ubicación |
+| ROUTE-09 | Recargar después de calcular | origen, línea y resumen desaparecen; nada persiste |
+| ROUTE-10 | Perfil manipulado | fallback a `driving-traffic`, nunca perfil arbitrario |
+| ROUTE-11 | Dos drivers | A no obtiene el detalle ni controles de la asignación de B |
+| ROUTE-12 | 320/375 px y teclado | controles, resumen, foco y `aria-live` son utilizables |
 | ASG-03 | Historial repetido del mismo pedido | una sola fila en listado del driver |
 | UN-01 | Desinstalar sin opt-in | datos conservados |
 
@@ -124,6 +136,14 @@ Asignar a A → A ve entrega → gestor reasigna a B → A pierde acceso → B r
 22. Probar el detalle con Mapbox cargado, token ausente, coordenadas ausentes y error del SDK; la información textual no desaparece.
 23. Confirmar que copiar dirección informa el resultado sin cambiar de contexto y que llamar/navegar usan enlaces válidos.
 24. Conservar el pedido de inspección `#1674`; no borrar datos manuales de QA salvo solicitud explícita.
+25. Interceptar Directions API para aprobar `Ok`, `NoRoute`, `NoSegment`, 401/403, 429, respuesta inválida y red caída sin consumir cuota real.
+26. Simular geolocalización para éxito, permiso denegado, timeout, ausencia de API y coordenadas fuera de rango.
+27. Confirmar que abrir el detalle, mover el mapa y cambiar perfil no generan solicitudes Directions.
+28. Hacer doble clic y recalcular rápidamente; debe existir como máximo una petición activa y ninguna respuesta obsoleta debe reemplazar la nueva.
+29. Revisar que el HTML inicial, base de datos, eventos, notas, emails, cookies, almacenamiento web y logs no contengan origen ni GeoJSON.
+30. Probar los perfiles `driving-traffic`, `driving`, `cycling` y `walking`, además de un valor manipulado.
+31. Validar marcador de origen y destino sin depender únicamente del color, resumen a 320/375 px y botón de reencuadre.
+32. Ejecutar un único smoke contra Directions API real con coordenadas ficticias aprobadas y revisar el contador de solicitudes en Mapbox.
 
 ## Criterios de aceptación
 

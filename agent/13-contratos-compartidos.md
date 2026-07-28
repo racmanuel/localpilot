@@ -143,7 +143,7 @@ lclplt_require_proof
 lclplt_max_proof_size
 lclplt_completed_order_status
 lclplt_failed_order_status
-lclplt_mapbox_enabled
+lclplt_enable_mapbox
 lclplt_mapbox_token
 lclplt_mapbox_style
 lclplt_mapbox_zoom
@@ -151,6 +151,9 @@ lclplt_mapbox_country
 lclplt_mapbox_language
 lclplt_auto_geocode
 lclplt_allow_manual_location
+lclplt_enable_routes
+lclplt_route_default_profile
+lclplt_route_profile_selector
 lclplt_location_validation_enabled
 lclplt_location_validation_radius
 lclplt_location_validation_mode
@@ -177,6 +180,10 @@ _lclplt_location_validation_target_lng — snapshot del destino validado
 
 No es GPS en vivo. Al completar una entrega, el navegador puede enviar una sola
 posición y el servidor calcula la distancia hasta las coordenadas del destino.
+
+## Ruta efímera de Mapbox
+
+`lclplt_route_default_profile` solo admite `driving-traffic`, `driving`, `cycling` o `walking`; cualquier otro valor usa `driving-traffic`. La ruta se calcula en el navegador para una entrega propia activa y no tiene contrato persistente: origen, GeoJSON, distancia y duración nunca forman parte de metadatos, eventos, notas o solicitudes a WordPress.
 
 ```text
 lclplt_location_validation_enabled: yes|no

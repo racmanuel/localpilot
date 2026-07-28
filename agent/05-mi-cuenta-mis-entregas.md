@@ -51,9 +51,10 @@ La vista individual comparte tokens, badges e iconos Dashicons con el listado. S
 Jerarquía de contenido:
 
 - encabezado con regreso al listado, número, fecha y estado;
-- cliente y destino como bloque principal, con teléfono y total cuando la configuración lo permite;
-- acciones rápidas para llamar, copiar la dirección y abrir navegación;
-- mapa de referencia cuando existen token y coordenadas, con fallback textual y de navegación;
+- mapa y ubicación como primer bloque operativo cuando existen token y coordenadas, con **Abrir navegación** dentro de la misma tarjeta;
+- cliente y destino a continuación, con teléfono y total cuando la configuración lo permite;
+- acciones rápidas del cliente para llamar y copiar la dirección; si el mapa no puede renderizarse, **Abrir navegación** permanece aquí como fallback;
+- planificador de ruta bajo demanda en entregas activas, con selector de perfil, distancia y duración estimadas;
 - productos como lista compacta con cantidad;
 - prueba de entrega con receptor, notas, motivo, evidencia y resumen de validación puntual;
 - acción siguiente para aceptar o iniciar;
@@ -61,6 +62,18 @@ Jerarquía de contenido:
 - timeline traducido con fecha y actor genérico, sin nombres técnicos ni JSON.
 
 En estados terminales no se renderizan formularios de mutación. Se muestra un resumen de cierre y permanecen disponibles la prueba y la actividad registradas.
+
+### Ruta al destino
+
+El planificador se renderiza únicamente si la asignación pertenece al usuario autenticado, el estado es `assigned`, `accepted` u `out_for_delivery`, Mapbox y rutas están activos y el destino tiene coordenadas válidas. Las entregas `delivered`, `failed` y `cancelled` conservan el mapa de referencia, pero nunca muestran controles ni solicitan GPS.
+
+La ruta no se calcula al abrir la página. El repartidor debe pulsar **Calcular ruta desde mi ubicación**. Puede elegir temporalmente auto con tráfico, auto, bicicleta o caminando cuando el selector está habilitado. Cambiar el perfil limpia la representación anterior y requiere una nueva acción explícita.
+
+La interfaz comunica mediante `aria-live` los estados preparando, solicitando GPS, calculando, éxito y error. En éxito presenta distancia, duración estimada y perfil, además de **Ver ruta completa** y **Actualizar ruta**. El origen tiene un marcador distinto del destino. **Abrir navegación** continúa siempre como alternativa externa.
+
+Cuando el mapa está disponible, la tarjeta **Ubicación de la entrega** aparece antes de **Cliente y destino**. El enlace **Abrir navegación** pertenece visual y semánticamente a esa tarjeta. Si Mapbox está desactivado, falta el token o el mapa no se renderiza, el enlace se conserva junto a los datos del destino para no perder la degradación funcional.
+
+La posición de origen y la ruta existen solo en memoria: no se envían a WordPress, no se guardan y no modifican la entrega. Este GPS es completamente independiente de la ubicación capturada al completar.
 
 El formulario de completar conserva `multipart/form-data`, nonce y los campos `lclplt_assignment_id`, `lclplt_delivery_action`, `lclplt_received_by`, `lclplt_delivery_notes`, `lclplt_proof` y los campos privados de captura GPS. El panel de fallo conserva el selector `lclplt_failed_reason` y evidencia opcional.
 
@@ -104,6 +117,10 @@ Usar el localizador de templates existente o uno pequeño compatible con overrid
 11. Capturar una sola posición al completar cuando la validación esté activa; mostrar reintento si el navegador deniega el permiso.
 12. Mostrar contadores agrupados por estado sin contar dos veces asignaciones históricas del mismo pedido para el repartidor.
 13. Hacer fallback de dirección con partes no vacías y texto explícito cuando falte.
+14. Mostrar rutas bajo demanda solo en entregas activas propias.
+15. Solicitar una posición puntual por cálculo, sin `watchPosition()`.
+16. Dibujar origen, destino y línea; mostrar distancia, duración estimada y perfil.
+17. Manejar permisos, timeout y errores Directions sin ocultar el fallback externo.
 
 ## Criterios de aceptación
 
@@ -126,6 +143,11 @@ Usar el localizador de templates existente o uno pequeño compatible con overrid
 - Mapbox solo se carga en el detalle que tiene coordenadas/token.
 - La ubicación se obtiene únicamente al completar; no se ejecuta `watchPosition()` ni tracking en segundo plano.
 - El formulario funciona bajo HTTPS y muestra una alternativa explícita según la política `warning`/`blocking`.
+- Abrir el detalle y cambiar de perfil no solicitan ubicación ni consumen Directions API.
+- La ruta requiere clic explícito, no se persiste y desaparece al cerrar o recargar la página.
+- El selector admite únicamente `driving-traffic`, `driving`, `cycling` y `walking`.
+- Los controles de ruta no aparecen en estados terminales.
+- Una ruta fallida no bloquea aceptar, iniciar, completar o fallar la entrega.
 
 ## Riesgos
 

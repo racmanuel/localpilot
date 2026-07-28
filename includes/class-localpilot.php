@@ -84,7 +84,7 @@ class Localpilot
 
         } else {
 
-            $this->version = '1.1.5-dev';
+            $this->version = '1.1.6-dev';
 
         }
 

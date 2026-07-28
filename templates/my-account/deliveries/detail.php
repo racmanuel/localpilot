@@ -62,6 +62,23 @@ $has_coords  = is_numeric( $map_lat ) && is_numeric( $map_lng );
 $maps_url    = $has_coords ? 'https://www.google.com/maps/dir/?api=1&destination=' . rawurlencode( $map_lat . ',' . $map_lng ) : '';
 $show_map    = $map_enabled && $has_coords && $map_token;
 
+$route_profiles = array(
+	'driving-traffic' => __( 'Auto con tráfico', 'localpilot' ),
+	'driving'         => __( 'Auto', 'localpilot' ),
+	'cycling'         => __( 'Bicicleta', 'localpilot' ),
+	'walking'         => __( 'Caminando', 'localpilot' ),
+);
+$route_profile = sanitize_key( get_option( 'lclplt_route_default_profile', 'driving-traffic' ) );
+if ( ! isset( $route_profiles[ $route_profile ] ) ) {
+	$route_profile = 'driving-traffic';
+}
+$route_language = preg_replace( '/[^A-Za-z0-9-]/', '', (string) get_option( 'lclplt_mapbox_language', 'es' ) );
+if ( '' === $route_language ) {
+	$route_language = 'es';
+}
+$show_route_planner    = $show_map && Localpilot_Delivery_Status::is_active( $status ) && 'yes' === get_option( 'lclplt_enable_routes', 'no' );
+$show_profile_selector = 'yes' === get_option( 'lclplt_route_profile_selector', 'yes' );
+
 $received_by    = $meta->get_received_by();
 $delivery_notes = $meta->get_delivery_notes();
 $failed_reason  = $meta->get_failed_reason();
@@ -125,6 +142,77 @@ $has_proof_data = $received_by || $delivery_notes || $failed_reason || $proof_id
 		<mark class="lclplt-badge lclplt-badge--<?php echo esc_attr( $status_class ); ?>"><span class="dashicons <?php echo esc_attr( $status_icon ); ?> lclplt-badge-icon" aria-hidden="true"></span><?php echo esc_html( $status_label ); ?></mark>
 	</header>
 
+	<?php if ( $show_map ) : ?>
+		<section class="lclplt-detail-card lclplt-detail-card--map" aria-labelledby="lclplt-public-map-title">
+			<div class="lclplt-detail-card__heading">
+				<span class="lclplt-detail-card__icon dashicons dashicons-location" aria-hidden="true"></span>
+				<div><h3 id="lclplt-public-map-title"><?php esc_html_e( 'Ubicación de la entrega', 'localpilot' ); ?></h3><p><?php echo $show_route_planner ? esc_html__( 'Calcula una ruta desde tu ubicación actual o abre la navegación en otra aplicación.', 'localpilot' ) : esc_html__( 'Usa el mapa como referencia y abre la navegación para iniciar la ruta.', 'localpilot' ); ?></p></div>
+			</div>
+			<div id="lclplt-map" class="lclplt-public-map" data-lat="<?php echo esc_attr( $map_lat ); ?>" data-lng="<?php echo esc_attr( $map_lng ); ?>" data-token="<?php echo esc_attr( $map_token ); ?>" data-style="<?php echo esc_attr( $map_style ); ?>" data-zoom="<?php echo esc_attr( $map_zoom ); ?>" data-destination-label="<?php esc_attr_e( 'Destino de entrega', 'localpilot' ); ?>" data-loading-label="<?php esc_attr_e( 'Cargando mapa…', 'localpilot' ); ?>" data-error-label="<?php esc_attr_e( 'No se pudo cargar el mapa. Puedes abrir la navegación con el botón disponible.', 'localpilot' ); ?>"></div>
+			<p class="lclplt-public-map__status" data-lclplt-map-status role="status" aria-live="polite"><?php esc_html_e( 'Cargando mapa…', 'localpilot' ); ?></p>
+			<?php if ( $maps_url ) : ?>
+				<div class="lclplt-map-actions" aria-label="<?php esc_attr_e( 'Acciones de ubicación', 'localpilot' ); ?>">
+					<a href="<?php echo esc_url( $maps_url ); ?>" target="_blank" rel="noopener noreferrer" class="woocommerce-button button lclplt-map-navigation"><span class="dashicons dashicons-location" aria-hidden="true"></span><?php esc_html_e( 'Abrir navegación', 'localpilot' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(abre en una pestaña nueva)', 'localpilot' ); ?></span></a>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( $show_route_planner ) : ?>
+				<div class="lclplt-route-planner is-idle"
+					data-lclplt-route-planner="1"
+					data-default-profile="<?php echo esc_attr( $route_profile ); ?>"
+					data-language="<?php echo esc_attr( $route_language ); ?>"
+					data-origin-label="<?php esc_attr_e( 'Tu ubicación al calcular', 'localpilot' ); ?>"
+					data-button-calculate="<?php esc_attr_e( 'Calcular ruta desde mi ubicación', 'localpilot' ); ?>"
+					data-button-update="<?php esc_attr_e( 'Actualizar ruta', 'localpilot' ); ?>"
+					data-message-ready="<?php esc_attr_e( 'El mapa está listo. La ruta solo se calculará cuando pulses el botón.', 'localpilot' ); ?>"
+					data-message-gps="<?php esc_attr_e( 'Solicitando tu ubicación actual…', 'localpilot' ); ?>"
+					data-message-calculating="<?php esc_attr_e( 'Calculando la mejor ruta disponible…', 'localpilot' ); ?>"
+					data-message-success="<?php esc_attr_e( 'Ruta calculada. La distancia y el tiempo son estimados.', 'localpilot' ); ?>"
+					data-message-profile="<?php esc_attr_e( 'Perfil actualizado. Pulsa calcular para solicitar una nueva ruta.', 'localpilot' ); ?>"
+					data-message-permission="<?php esc_attr_e( 'Permiso de ubicación denegado. Actívalo en el navegador o usa Abrir navegación.', 'localpilot' ); ?>"
+					data-message-unavailable="<?php esc_attr_e( 'No se pudo obtener tu ubicación. Comprueba el GPS e inténtalo nuevamente.', 'localpilot' ); ?>"
+					data-message-timeout="<?php esc_attr_e( 'La ubicación tardó demasiado. Inténtalo nuevamente en un lugar con mejor señal.', 'localpilot' ); ?>"
+					data-message-no-route="<?php esc_attr_e( 'Mapbox no encontró una ruta entre tu ubicación y el destino con este perfil.', 'localpilot' ); ?>"
+					data-message-no-segment="<?php esc_attr_e( 'Una de las ubicaciones está demasiado lejos de una vía disponible para este perfil.', 'localpilot' ); ?>"
+					data-message-auth="<?php esc_attr_e( 'El token de Mapbox no está autorizado para calcular rutas.', 'localpilot' ); ?>"
+					data-message-rate="<?php esc_attr_e( 'Se alcanzó temporalmente el límite de solicitudes de Mapbox. Inténtalo más tarde.', 'localpilot' ); ?>"
+					data-message-network="<?php esc_attr_e( 'No se pudo conectar con Mapbox. Revisa tu conexión o usa Abrir navegación.', 'localpilot' ); ?>"
+					data-message-invalid="<?php esc_attr_e( 'Mapbox devolvió una ruta que no se pudo representar de forma segura.', 'localpilot' ); ?>"
+					data-message-map="<?php esc_attr_e( 'El mapa no está disponible para dibujar la ruta. Usa Abrir navegación.', 'localpilot' ); ?>"
+					data-profile-driving-traffic="<?php echo esc_attr( $route_profiles['driving-traffic'] ); ?>"
+					data-profile-driving="<?php echo esc_attr( $route_profiles['driving'] ); ?>"
+					data-profile-cycling="<?php echo esc_attr( $route_profiles['cycling'] ); ?>"
+					data-profile-walking="<?php echo esc_attr( $route_profiles['walking'] ); ?>">
+					<div class="lclplt-route-planner__heading">
+						<span class="dashicons dashicons-location-alt" aria-hidden="true"></span>
+						<div><h4><?php esc_html_e( 'Ruta al destino', 'localpilot' ); ?></h4><p><?php esc_html_e( 'Obtén distancia y duración estimadas sin iniciar seguimiento continuo.', 'localpilot' ); ?></p></div>
+					</div>
+					<div class="lclplt-route-controls">
+						<?php if ( $show_profile_selector ) : ?>
+							<label for="lclplt-route-profile"><?php esc_html_e( 'Medio de transporte', 'localpilot' ); ?></label>
+							<select id="lclplt-route-profile" class="lclplt-route-profile" data-lclplt-route-profile>
+								<?php foreach ( $route_profiles as $profile_value => $profile_label ) : ?>
+									<option value="<?php echo esc_attr( $profile_value ); ?>" <?php selected( $route_profile, $profile_value ); ?>><?php echo esc_html( $profile_label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						<?php endif; ?>
+						<div class="lclplt-route-controls__actions">
+							<button type="button" class="woocommerce-button button alt lclplt-route-calculate" data-lclplt-route-calculate disabled><span class="dashicons dashicons-location" aria-hidden="true"></span><span data-lclplt-route-button-text><?php esc_html_e( 'Calcular ruta desde mi ubicación', 'localpilot' ); ?></span></button>
+							<button type="button" class="woocommerce-button button lclplt-route-fit" data-lclplt-route-fit hidden><span class="dashicons dashicons-fullscreen-alt" aria-hidden="true"></span><?php esc_html_e( 'Ver ruta completa', 'localpilot' ); ?></button>
+						</div>
+					</div>
+					<p class="lclplt-route-status" data-lclplt-route-status role="status" aria-live="polite"><?php esc_html_e( 'Preparando el mapa para calcular rutas…', 'localpilot' ); ?></p>
+					<dl class="lclplt-route-summary" data-lclplt-route-summary hidden>
+						<div><dt><?php esc_html_e( 'Distancia', 'localpilot' ); ?></dt><dd data-lclplt-route-distance>—</dd></div>
+						<div><dt><?php esc_html_e( 'Duración estimada', 'localpilot' ); ?></dt><dd data-lclplt-route-duration>—</dd></div>
+						<div><dt><?php esc_html_e( 'Perfil', 'localpilot' ); ?></dt><dd data-lclplt-route-profile-label>—</dd></div>
+					</dl>
+					<p class="lclplt-route-privacy"><span class="dashicons dashicons-privacy" aria-hidden="true"></span><?php esc_html_e( 'Tu ubicación se usa una sola vez para calcular esta ruta y no se guarda en LocalPilot.', 'localpilot' ); ?></p>
+				</div>
+			<?php endif; ?>
+		</section>
+	<?php endif; ?>
+
 	<section class="lclplt-detail-card lclplt-detail-card--destination" aria-labelledby="lclplt-destination-title">
 		<div class="lclplt-detail-card__heading">
 			<span class="lclplt-detail-card__icon dashicons dashicons-location-alt" aria-hidden="true"></span>
@@ -141,24 +229,15 @@ $has_proof_data = $received_by || $delivery_notes || $failed_reason || $proof_id
 				<?php if ( $show_total ) : ?><div><dt><?php esc_html_e( 'Total del pedido', 'localpilot' ); ?></dt><dd><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></dd></div><?php endif; ?>
 			</dl>
 		</div>
-		<div class="lclplt-detail-actions" aria-label="<?php esc_attr_e( 'Acciones rápidas', 'localpilot' ); ?>">
-			<?php if ( $shipping_phone ) : ?><a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $shipping_phone ) ); ?>" class="woocommerce-button button"><span class="dashicons dashicons-phone" aria-hidden="true"></span><?php esc_html_e( 'Llamar al cliente', 'localpilot' ); ?></a><?php endif; ?>
-			<?php if ( $maps_url ) : ?><a href="<?php echo esc_url( $maps_url ); ?>" target="_blank" rel="noopener noreferrer" class="woocommerce-button button"><span class="dashicons dashicons-location" aria-hidden="true"></span><?php esc_html_e( 'Abrir navegación', 'localpilot' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(abre en una pestaña nueva)', 'localpilot' ); ?></span></a><?php endif; ?>
-			<?php if ( $shipping_address ) : ?><button type="button" class="woocommerce-button button" data-lclplt-copy-address="<?php echo esc_attr( $shipping_address ); ?>" data-copy-label="<?php esc_attr_e( 'Copiar dirección', 'localpilot' ); ?>" data-copied-label="<?php esc_attr_e( 'Dirección copiada', 'localpilot' ); ?>"><span class="dashicons dashicons-admin-page" aria-hidden="true"></span><span data-lclplt-copy-text><?php esc_html_e( 'Copiar dirección', 'localpilot' ); ?></span></button><?php endif; ?>
-		</div>
+		<?php if ( $shipping_phone || $shipping_address || ( $maps_url && ! $show_map ) ) : ?>
+			<div class="lclplt-detail-actions" aria-label="<?php esc_attr_e( 'Acciones rápidas', 'localpilot' ); ?>">
+				<?php if ( $shipping_phone ) : ?><a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $shipping_phone ) ); ?>" class="woocommerce-button button"><span class="dashicons dashicons-phone" aria-hidden="true"></span><?php esc_html_e( 'Llamar al cliente', 'localpilot' ); ?></a><?php endif; ?>
+				<?php if ( $maps_url && ! $show_map ) : ?><a href="<?php echo esc_url( $maps_url ); ?>" target="_blank" rel="noopener noreferrer" class="woocommerce-button button"><span class="dashicons dashicons-location" aria-hidden="true"></span><?php esc_html_e( 'Abrir navegación', 'localpilot' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(abre en una pestaña nueva)', 'localpilot' ); ?></span></a><?php endif; ?>
+				<?php if ( $shipping_address ) : ?><button type="button" class="woocommerce-button button" data-lclplt-copy-address="<?php echo esc_attr( $shipping_address ); ?>" data-copy-label="<?php esc_attr_e( 'Copiar dirección', 'localpilot' ); ?>" data-copied-label="<?php esc_attr_e( 'Dirección copiada', 'localpilot' ); ?>"><span class="dashicons dashicons-admin-page" aria-hidden="true"></span><span data-lclplt-copy-text><?php esc_html_e( 'Copiar dirección', 'localpilot' ); ?></span></button><?php endif; ?>
+			</div>
+		<?php endif; ?>
 		<p class="lclplt-copy-status screen-reader-text" data-lclplt-copy-status role="status" aria-live="polite"></p>
 	</section>
-
-	<?php if ( $show_map ) : ?>
-		<section class="lclplt-detail-card lclplt-detail-card--map" aria-labelledby="lclplt-public-map-title">
-			<div class="lclplt-detail-card__heading">
-				<span class="lclplt-detail-card__icon dashicons dashicons-location" aria-hidden="true"></span>
-				<div><h3 id="lclplt-public-map-title"><?php esc_html_e( 'Ubicación de la entrega', 'localpilot' ); ?></h3><p><?php esc_html_e( 'Usa el mapa como referencia y abre la navegación para iniciar la ruta.', 'localpilot' ); ?></p></div>
-			</div>
-			<div id="lclplt-map" class="lclplt-public-map" data-lat="<?php echo esc_attr( $map_lat ); ?>" data-lng="<?php echo esc_attr( $map_lng ); ?>" data-token="<?php echo esc_attr( $map_token ); ?>" data-style="<?php echo esc_attr( $map_style ); ?>" data-zoom="<?php echo esc_attr( $map_zoom ); ?>" data-destination-label="<?php esc_attr_e( 'Destino de entrega', 'localpilot' ); ?>" data-loading-label="<?php esc_attr_e( 'Cargando mapa…', 'localpilot' ); ?>" data-error-label="<?php esc_attr_e( 'No se pudo cargar el mapa. Puedes abrir la navegación con el botón disponible.', 'localpilot' ); ?>"></div>
-			<p class="lclplt-public-map__status" data-lclplt-map-status role="status" aria-live="polite"><?php esc_html_e( 'Cargando mapa…', 'localpilot' ); ?></p>
-		</section>
-	<?php endif; ?>
 
 	<?php if ( $order->get_items() ) : ?>
 		<section class="lclplt-detail-card" aria-labelledby="lclplt-products-title">
@@ -230,4 +309,4 @@ $has_proof_data = $received_by || $delivery_notes || $failed_reason || $proof_id
 			</ol>
 		</section>
 	<?php endif; ?>
-+</div>
+</div>

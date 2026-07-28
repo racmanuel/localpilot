@@ -4,6 +4,8 @@
 
 Esta funcionalidad no implementa GPS en vivo. Obtiene una única ubicación del navegador cuando el repartidor intenta completar una entrega y compara la posición con las coordenadas del destino ya geocodificado.
 
+Esta captura no debe confundirse con **Ruta al destino**. El planificador de rutas puede solicitar otra posición puntual mientras la entrega está activa, pero esa posición se envía directamente a Mapbox, solo dibuja una ruta temporal y no participa en la auditoría, el formulario ni la decisión de completar.
+
 ## Flujo
 
 1. El gestor activa la validación y configura el radio en **WooCommerce → Ajustes → LocalPilot → Flujo de entrega**.
@@ -49,6 +51,8 @@ disabled
 - El pedido, repartidor y asignación se obtienen del contexto autenticado y se comprueban con ownership/capacidad.
 - Se mantienen nonce, validación de estado e idempotencia del flujo existente.
 - No se guarda un historial de coordenadas ni se implementa seguimiento continuo.
+- La posición del planificador de ruta no se reutiliza como evidencia ni rellena los campos POST de esta validación.
+- La geometría, distancia y duración mostradas por Directions API no se consideran prueba de llegada.
 - No se incluyen coordenadas crudas en notas de pedido, emails ni eventos.
 - Se guarda el estado, distancia, radio, precisión, fecha, snapshot del destino y coordenadas GPS puntuales del repartidor.
 
@@ -86,5 +90,6 @@ En entregas activas, arrastrar el destino actualiza inmediatamente círculo, lí
 - GPS en vivo.
 - Ubicación en segundo plano.
 - Historial de recorridos.
-- ETA, rutas y geocercas dinámicas.
+- ETA compartido, navegación en vivo y geocercas dinámicas dentro del flujo de validación.
+- Uso de la ruta visible como validación de llegada o evidencia de entrega.
 - WebSockets o aplicación nativa.
