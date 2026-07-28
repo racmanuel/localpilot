@@ -9,11 +9,11 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Asigna pedidos de WooCommerce a repartidores locales, gestiona entregas desde Mi cuenta y registra evidencia con Mapbox.
+Asigna pedidos a repartidores locales, gestiona entregas desde Mi cuenta, registra evidencia con Mapbox y calcula rutas bajo demanda.
 
 == Description ==
 
-LocalPilot extiende WooCommerce para operar entregas locales con repartidores. Está construido sobre las pantallas nativas de WooCommerce — sin tableros duplicados.
+LocalPilot extiende WooCommerce para operar entregas locales con repartidores. Está construido sobre las pantallas nativas de WooCommerce, sin tableros duplicados. Los repartidores aceptan, completan y calculan rutas desde Mi cuenta en su celular.
 
 = Funcionalidades actuales (v1.0.0) =
 
