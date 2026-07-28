@@ -68,6 +68,36 @@ class Localpilot_Admin
     }
 
     /**
+     * Check if assets should be loaded on the current admin page.
+     *
+     * @param string $hook_suffix The current admin page hook.
+     * @return bool
+     */
+    private function should_load_assets($hook_suffix)
+    {
+        // Order list screens.
+        if (function_exists('wc_get_page_screen_id')) {
+            $order_screen = wc_get_page_screen_id('shop-order');
+            if ($hook_suffix === $order_screen) {
+                return true;
+            }
+        }
+        // Legacy order list.
+        if ('edit.php' === $hook_suffix && isset($_GET['post_type']) && 'shop_order' === $_GET['post_type']) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            return true;
+        }
+        // WooCommerce settings.
+        if ('woocommerce_page_wc-settings' === $hook_suffix && isset($_GET['tab']) && 'localpilot' === $_GET['tab']) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            return true;
+        }
+        // User profile.
+        if (in_array($hook_suffix, array('profile.php', 'user-edit.php'), true)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Register the stylesheets for the admin area.
      *
      * @since    1.0.0
@@ -75,18 +105,11 @@ class Localpilot_Admin
      */
     public function enqueue_styles($hook_suffix)
     {
+        if (!$this->should_load_assets($hook_suffix)) {
+            return;
+        }
 
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/localpilot-admin.css', [], $this->version, 'all');
-
-        if (LOCALPILOT_CSS_FRAMEWORK !== 'vanilla' && in_array(LOCALPILOT_CSS_ENQUEUE_LOCATION, ['admin', 'both'], true)) {
-            wp_enqueue_style(
-                $this->plugin_name . '-framework',
-            plugin_dir_url(__FILE__) . 'css/' . $this->plugin_name . '-' . LOCALPILOT_CSS_FRAMEWORK . '-admin.css',
-                [$this->plugin_name],
-                $this->version,
-                'all'
-            );
-        }
 
     }
 
@@ -98,9 +121,55 @@ class Localpilot_Admin
      */
     public function enqueue_scripts($hook_suffix)
     {
+        if (!$this->should_load_assets($hook_suffix)) {
+            return;
+        }
 
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/localpilot-admin.js', ['jquery'], $this->version, false);
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/localpilot-admin.js', ['jquery'], $this->version, true);
 
+        // Mapbox — only on order edit screen (HPOS and legacy).
+        $is_order_edit = false;
+        if (function_exists('wc_get_page_screen_id')) {
+            $order_screen = wc_get_page_screen_id('shop-order');
+            if ($hook_suffix === $order_screen && isset($_GET['action']) && 'edit' === $_GET['action']) {
+                $is_order_edit = true;
+            }
+        }
+        if ('post.php' === $hook_suffix && 'shop_order' === get_post_type()) {
+            $is_order_edit = true;
+        }
+        if ($is_order_edit) {
+            $this->enqueue_mapbox_admin();
+        }
+    }
+
+    /**
+     * Enqueue Mapbox GL JS and admin map script.
+     *
+     * Only loads when Mapbox is enabled and we're on the order edit page.
+     *
+     * @since    1.0.0
+     */
+    private function enqueue_mapbox_admin() {
+        if ( 'yes' !== get_option( 'lclplt_enable_mapbox', 'no' ) ) {
+            return;
+        }
+
+        $token = get_option( 'lclplt_mapbox_token', '' );
+        if ( empty( $token ) ) {
+            return;
+        }
+
+        wp_enqueue_style( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css', array(), '3.9.4' );
+        wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.js', array(), '3.9.4', true );
+
+        wp_enqueue_script(
+            $this->plugin_name . '-mapbox',
+            plugin_dir_url( __FILE__ ) . 'js/localpilot-mapbox.js',
+            array( 'jquery', 'mapbox-gl' ),
+            $this->version,
+            true
+        );
     }
 
     

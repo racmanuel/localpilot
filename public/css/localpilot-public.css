@@ -1,4 +1,105 @@
 /**
- * All of the CSS for your public-facing functionality should be
- * included in this file.
+ * LocalPilot public styles.
+ * Loaded only on the Mis Entregas My Account endpoint.
  */
+
+/* ---- Status badges ---- */
+.lclplt-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.6;
+	white-space: nowrap;
+}
+.lclplt-badge--assigned {
+	background: #cce5ff;
+	color: #004085;
+}
+.lclplt-badge--accepted {
+	background: #d4edda;
+	color: #155724;
+}
+.lclplt-badge--out-for-delivery {
+	background: #fff3cd;
+	color: #856404;
+}
+.lclplt-badge--delivered {
+	background: #d4edda;
+	color: #155724;
+}
+.lclplt-badge--failed {
+	background: #f8d7da;
+	color: #721c24;
+}
+.lclplt-badge--cancelled {
+	background: #e2e3e5;
+	color: #383d41;
+}
+
+/* ---- Filter nav ---- */
+.lclplt-filter-nav ul {
+	margin: 0 0 1em;
+	padding: 0;
+	list-style: none;
+}
+.lclplt-filter-nav li {
+	display: inline-block;
+	margin: 0 0.5em 0.5em 0;
+}
+.lclplt-filter-nav li.is-active a {
+	font-weight: 700;
+}
+
+/* ---- Detail table ---- */
+.lclplt-delivery-detail table th {
+	width: 30%;
+	font-weight: 600;
+}
+
+/* ---- Action forms ---- */
+.lclplt-action-form {
+	margin: 1.5em 0;
+	padding: 1em;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background: #fafafa;
+}
+.lclplt-action-form h3 {
+	margin-top: 0;
+}
+.lclplt-action-form .form-row {
+	margin-bottom: 1em;
+}
+.lclplt-action-form label {
+	display: block;
+	margin-bottom: 4px;
+	font-weight: 600;
+}
+.lclplt-action-form input,
+.lclplt-action-form textarea,
+.lclplt-action-form select {
+	width: 100%;
+	max-width: 100%;
+}
+.lclplt-action-form--fail {
+	border-color: #f8d7da;
+	background: #fff5f5;
+}
+.lclplt-action-form--complete {
+	border-color: #d4edda;
+	background: #f5fff5;
+}
+
+/* ---- Mobile responsive ---- */
+@media screen and (max-width: 768px) {
+	.lclplt-delivery-detail table th {
+		width: auto;
+		display: block;
+	}
+	.lclplt-delivery-detail table td {
+		display: block;
+		padding-left: 0;
+	}
+}

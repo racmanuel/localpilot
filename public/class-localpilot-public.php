@@ -66,23 +66,26 @@ class Localpilot_Public {
 	}
 
 	/**
+	 * Check if we are on the LocalPilot My Account endpoint.
+	 *
+	 * @return bool
+	 */
+	private function is_my_account_endpoint() {
+		global $wp_query;
+		return isset( $wp_query->query_vars['mis-entregas'] ) || isset( $wp_query->query_vars['lclplt_deliveries'] );
+	}
+
+	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
+		if ( ! $this->is_my_account_endpoint() ) {
+			return;
+		}
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/localpilot-public.css', array(), $this->version, 'all' );
-
-		if ( 'vanilla' !== LOCALPILOT_CSS_FRAMEWORK && in_array( LOCALPILOT_CSS_ENQUEUE_LOCATION, array( 'frontend', 'both' ), true ) ) {
-			wp_enqueue_style(
-				$this->plugin_name . '-framework',
-				plugin_dir_url( __FILE__ ) . 'css/' . $this->plugin_name . '-' . LOCALPILOT_CSS_FRAMEWORK . '-public.css',
-				array( $this->plugin_name ),
-				$this->version,
-				'all'
-			);
-		}
 
 	}
 
@@ -92,9 +95,70 @@ class Localpilot_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+		if ( ! $this->is_my_account_endpoint() ) {
+			return;
+		}
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/localpilot-public.js', array( 'jquery' ), $this->version, true );
 
+	}
+
+	/**
+	 * Enqueue Mapbox GL JS and custom map script on the delivery detail page.
+	 *
+	 * Only loads when viewing a single delivery with valid coordinates.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_mapbox_scripts() {
+		if ( 'yes' !== get_option( 'lclplt_enable_mapbox', 'no' ) ) {
+			return;
+		}
+
+		if ( ! $this->is_my_account_endpoint() ) {
+			return;
+		}
+
+		$assignment_id = (int) get_query_var( 'mis-entregas', 0 );
+		if ( $assignment_id <= 0 ) {
+			return;
+		}
+
+		$assignment = Localpilot_Assignment_Repository::get( $assignment_id );
+		if ( ! $assignment ) {
+			return;
+		}
+
+		$order = wc_get_order( $assignment->order_id );
+		if ( ! $order ) {
+			return;
+		}
+
+		$meta  = new Localpilot_Order_Delivery_Meta( $order );
+		$lat   = $meta->get_latitude();
+		$lng   = $meta->get_longitude();
+
+		if ( empty( $lat ) || empty( $lng ) ) {
+			return;
+		}
+
+		$token = get_option( 'lclplt_mapbox_token', '' );
+		if ( empty( $token ) ) {
+			return;
+		}
+
+		// Mapbox GL JS — from CDN.
+		wp_enqueue_style( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css', array(), '3.9.4' );
+		wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.js', array(), '3.9.4', true );
+
+		// Our custom map init script.
+		wp_enqueue_script(
+			$this->plugin_name . '-mapbox',
+			plugin_dir_url( __FILE__ ) . 'js/localpilot-mapbox.js',
+			array( 'jquery', 'mapbox-gl' ),
+			$this->version,
+			true
+		);
 	}
 
 	/**

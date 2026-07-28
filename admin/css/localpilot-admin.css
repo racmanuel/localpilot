@@ -1,4 +1,73 @@
 /**
- * All of the CSS for your admin-specific functionality should be
- * included in this file.
+ * LocalPilot admin styles.
+ * Loaded only on order list, order editor, settings, and user profile screens.
  */
+
+/* ---- Status badges ---- */
+.lclplt-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.6;
+	white-space: nowrap;
+}
+.lclplt-badge--assigned {
+	background: #cce5ff;
+	color: #004085;
+}
+.lclplt-badge--accepted {
+	background: #d4edda;
+	color: #155724;
+}
+.lclplt-badge--out-for-delivery {
+	background: #fff3cd;
+	color: #856404;
+}
+.lclplt-badge--delivered {
+	background: #d4edda;
+	color: #155724;
+}
+.lclplt-badge--failed {
+	background: #f8d7da;
+	color: #721c24;
+}
+.lclplt-badge--cancelled {
+	background: #e2e3e5;
+	color: #383d41;
+}
+.lclplt-badge--unassigned,
+.lclplt-badge--unknown {
+	background: #f1f1f1;
+	color: #666;
+}
+
+/* ---- Meta box panel ---- */
+.lclplt-panel table th {
+	font-size: 12px;
+}
+.lclplt-panel table td {
+	font-size: 12px;
+}
+
+/* ---- Order list columns ---- */
+.wp-list-table .column-lclplt_driver,
+.wp-list-table .column-lclplt_status,
+.wp-list-table .column-lclplt_location {
+	width: auto;
+	white-space: nowrap;
+}
+@media screen and (max-width: 782px) {
+	.wp-list-table .column-lclplt_driver,
+	.wp-list-table .column-lclplt_status,
+	.wp-list-table .column-lclplt_location {
+		white-space: normal;
+	}
+}
+
+/* ---- Filter dropdowns ---- */
+#lclplt-filter-by-driver,
+#lclplt-filter-by-delivery-status {
+	margin: 0 4px 0 0;
+}

@@ -53,8 +53,95 @@ function lclplt_uninstall() {
 	/**
 	 * It is now safe to perform your uninstall actions here.
 	 *
+	 * By default, LocalPilot preserves data. Only delete if the
+	 * lclplt_delete_data_on_uninstall option is explicitly set to 'yes'.
+	 *
 	 * @see https://developer.wordpress.org/plugins/plugin-basics/uninstall-methods/#method-2-uninstall-php
 	 */
+
+	$delete_data = get_option( 'lclplt_delete_data_on_uninstall', 'no' );
+
+	if ( 'yes' !== $delete_data ) {
+		return;
+	}
+
+	// Remove driver capabilities from role (preserves the role itself).
+	if ( class_exists( 'Localpilot_Driver_Role' ) ) {
+		Localpilot_Driver_Role::unregister();
+	}
+
+	// Drop custom tables.
+	if ( class_exists( 'Localpilot_DB_Schema' ) ) {
+		Localpilot_DB_Schema::drop_tables();
+	}
+
+	// Remove plugin options.
+	$options = array(
+		'lclplt_db_version',
+		'lclplt_eligible_order_statuses',
+		'lclplt_require_acceptance',
+		'lclplt_show_order_total',
+		'lclplt_require_received_by',
+		'lclplt_require_proof',
+		'lclplt_max_proof_size',
+		'lclplt_completed_order_status',
+		'lclplt_failed_order_status',
+		'lclplt_enable_mapbox',
+		'lclplt_mapbox_token',
+		'lclplt_mapbox_style',
+		'lclplt_mapbox_zoom',
+		'lclplt_mapbox_country',
+		'lclplt_mapbox_language',
+		'lclplt_auto_geocode',
+		'lclplt_email_started_enabled',
+		'lclplt_delete_data_on_uninstall',
+	);
+
+	foreach ( $options as $option ) {
+		delete_option( $option );
+	}
+
+	// Clean user meta for drivers.
+	delete_metadata( 'user', 0, '_lclplt_driver_phone', '', true );
+	delete_metadata( 'user', 0, '_lclplt_driver_active', '', true );
+	delete_metadata( 'user', 0, '_lclplt_driver_vehicle_type', '', true );
+	delete_metadata( 'user', 0, '_lclplt_driver_vehicle_plate', '', true );
+	delete_metadata( 'user', 0, '_lclplt_driver_capacity', '', true );
+	delete_metadata( 'user', 0, '_lclplt_driver_notes', '', true );
+
+	// Clean order meta (HPOS compatible).
+	$lclplt_meta_keys = array(
+		'_lclplt_driver_id',
+		'_lclplt_delivery_status',
+		'_lclplt_assignment_id',
+		'_lclplt_assigned_at',
+		'_lclplt_accepted_at',
+		'_lclplt_out_for_delivery_at',
+		'_lclplt_delivered_at',
+		'_lclplt_failed_at',
+		'_lclplt_failed_reason',
+		'_lclplt_received_by',
+		'_lclplt_proof_attachment_id',
+		'_lclplt_delivery_notes',
+		'_lclplt_delivery_latitude',
+		'_lclplt_delivery_longitude',
+		'_lclplt_mapbox_place_id',
+		'_lclplt_geocoded_address',
+		'_lclplt_geocoded_at',
+		'_lclplt_geocoding_status',
+	);
+
+	if ( function_exists( 'wc_get_container' ) ) {
+		// HPOS: use the orders table meta.
+		foreach ( $lclplt_meta_keys as $meta_key ) {
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE meta_key = %s", $meta_key ) );
+		}
+	} else {
+		// Legacy: use post meta.
+		foreach ( $lclplt_meta_keys as $meta_key ) {
+			delete_metadata( 'post', 0, $meta_key, '', true );
+		}
+	}
 
 }
 

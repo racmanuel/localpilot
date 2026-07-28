@@ -13,14 +13,16 @@
  *
  * @wordpress-plugin
  * Plugin Name:       LocalPilot
- * Plugin URI:        https://plugin.com/localpilot-uri/
- * Description:       LocalPilot – Local Delivery Drivers for WooCommerce is a WordPress plugin.
+ * Plugin URI:       https://racmanuel.dev/localpilot/
+ * Description:       LocalPilot – Local Delivery Drivers for WooCommerce. Asigna pedidos a repartidores locales, gestiona entregas desde Mi cuenta, y registra evidencia con Mapbox.
  * Version:           1.0.0
  * Author:            racmanuel
- * Requires at least: 6.0
+ * Requires at least: 6.9
  * Requires PHP:      7.4
  * Tested up to:      7.0.2
- * Author URI:        https://racmanuel.dev//
+ * Author URI:        https://racmanuel.dev/
+ * WC requires at least: 10.9
+ * WC tested up to: 10.9.4
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       localpilot
@@ -86,14 +88,71 @@ register_deactivation_hook( __FILE__, 'lclplt_deactivate' );
 require plugin_dir_path( __FILE__ ) . 'includes/class-localpilot.php';
 
 /**
+ * Declare compatibility with WooCommerce High-Performance Order Storage (HPOS).
+ *
+ * Must run before 'before_woocommerce_init' completes.
+ */
+add_action( 'before_woocommerce_init', function () {
+	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+			'custom_order_tables',
+			__FILE__,
+			true
+		);
+	}
+} );
+
+/**
+ * Check if WooCommerce is active and show an admin notice if not.
+ *
+ * Supports single-site and multisite (network-activated) installations.
+ *
+ * @return bool
+ */
+function lclplt_is_woocommerce_active() {
+	if ( class_exists( 'WooCommerce' ) ) {
+		return true;
+	}
+
+	if ( in_array(
+		'woocommerce/woocommerce.php',
+		(array) get_option( 'active_plugins', array() ),
+		true
+	) ) {
+		return true;
+	}
+
+	if ( is_multisite() ) {
+		$plugins = get_site_option( 'active_sitewide_plugins', array() );
+		if ( isset( $plugins['woocommerce/woocommerce.php'] ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+if ( ! lclplt_is_woocommerce_active() ) {
+	add_action( 'admin_notices', function () {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+		$message = sprintf(
+			/* translators: %s: plugin name */
+			esc_html__( '%1$s requiere WooCommerce activo para funcionar. Instala y activa WooCommerce primero.', 'localpilot' ),
+			'<strong>LocalPilot – Local Delivery Drivers for WooCommerce</strong>'
+		);
+		printf( '<div class="notice notice-warning is-dismissible"><p>%s</p></div>', $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	} );
+	return;
+}
+
+/**
  * Begins execution of the plugin.
  *
  * Since everything within the plugin is registered via hooks,
  * kicking off the plugin from this point in the file does
  * not affect the page life cycle.
- *
- * Generally you will want to hook this function, instead of callign it globally.
- * However since the purpose of your plugin is not known until you write it, we include the function globally.
  *
  * @since    1.0.0
  */
@@ -104,3 +163,23 @@ function lclplt_run() {
 
 }
 lclplt_run();
+
+/**
+ * Add a Settings link to the plugin action row.
+ *
+ * @param array  $links Plugin action links.
+ * @param string $file  Plugin basename.
+ * @return array
+ */
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
+	if ( ! lclplt_is_woocommerce_active() ) {
+		return $links;
+	}
+	$settings_link = sprintf(
+		'<a href="%s">%s</a>',
+		esc_url( admin_url( 'admin.php?page=wc-settings&tab=localpilot' ) ),
+		esc_html__( 'Ajustes', 'localpilot' )
+	);
+	array_unshift( $links, $settings_link );
+	return $links;
+} );

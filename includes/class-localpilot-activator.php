@@ -70,6 +70,25 @@ class Localpilot_Activator {
 		 * Perform your activation actions here.
 		 */
 
+		// Load dependencies needed for activation.
+		if ( function_exists( 'lclplt_is_woocommerce_active' ) && lclplt_is_woocommerce_active() ) {
+			$plugin_root = dirname( dirname( __FILE__ ) );
+
+			require_once $plugin_root . '/includes/deliveries/class-localpilot-delivery-status.php';
+			require_once $plugin_root . '/includes/helpers/class-localpilot-capabilities.php';
+			require_once $plugin_root . '/includes/database/class-localpilot-db-schema.php';
+			require_once $plugin_root . '/includes/database/class-localpilot-assignment-repository.php';
+			require_once $plugin_root . '/includes/database/class-localpilot-event-repository.php';
+			require_once $plugin_root . '/includes/deliveries/class-localpilot-driver-role.php';
+
+			Localpilot_DB_Schema::maybe_upgrade();
+			Localpilot_Driver_Role::register();
+
+			// Flush rewrite rules so the mis-entregas endpoint works immediately.
+			add_rewrite_endpoint( 'mis-entregas', EP_ROOT | EP_PAGES );
+			flush_rewrite_rules();
+		}
+
 	}
 
 	/**

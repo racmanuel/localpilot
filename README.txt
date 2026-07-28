@@ -1,121 +1,95 @@
 === LocalPilot – Local Delivery Drivers for WooCommerce ===
 Contributors: racmanuel
 Donate link: https://racmanuel.dev/
-Tags: localpilot, local, delivery, drivers, for, woocommerce
-Requires at least: 6.0
+Tags: localpilot, local, delivery, drivers, woocommerce
+Requires at least: 6.9
 Tested up to: 7.0.2
+Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+Asigna pedidos de WooCommerce a repartidores locales, gestiona entregas desde Mi cuenta y registra evidencia con Mapbox.
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
+LocalPilot extiende WooCommerce para operar entregas locales con repartidores. Está construido sobre las pantallas nativas de WooCommerce — sin tableros duplicados.
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+= Funcionalidades actuales (v1.0.0) =
 
-A few notes about the sections above:
-
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
-
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
-
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
+* **Repartidores nativos**: crea usuarios con el rol `localpilot_driver` desde Usuarios. Campos de perfil: teléfono, vehículo, patente, capacidad y notas.
+* **Asignación desde el pedido**: asigna, reasigna o retira repartidores directamente desde el editor del pedido de WooCommerce.
+* **Columnas en lista de pedidos**: columnas Repartidor, Estado de entrega, Fecha y Ubicación en la lista de pedidos (HPOS y almacenamiento heredado).
+* **Filtros**: filtra pedidos por repartidor y estado de entrega.
+* **Estados de entrega**: `unassigned` → `assigned` → `accepted` → `out_for_delivery` → `delivered` / `failed` / `cancelled`.
+* **Ajustes en WooCommerce**: configura estados elegibles, aceptación obligatoria, evidencia, Mapbox y más desde WooCommerce → Ajustes → LocalPilot.
+* **Eventos y notas**: cada acción genera un evento estructurado y una nota privada en el pedido.
+* **HPOS**: compatible con High-Performance Order Storage y almacenamiento heredado.
+* **Mi cuenta — Mis entregas**: los repartidores aceptan, inician, completan o fallan entregas desde el frontend.
+* **Mapbox**: geocodificación automática de direcciones al asignar, mapa interactivo en Mi cuenta y mapa admin con corrección manual de coordenadas.
+* **Evidencia fotográfica**: sube una foto (JPG/PNG/WebP) al completar o fallar una entrega. Vista previa en el panel del pedido.
+* **Correos nativos de WooCommerce**: 5 notificaciones configurables desde WooCommerce → Ajustes → Correos electrónicos (asignado, retirado, en reparto, completado, fallido).
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `localpilot.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('lclplt_hook'); ?>` in your templates
+1. Asegúrate de tener WooCommerce 10.9+ activo.
+2. Ve a Plugins → Añadir nuevo → Subir plugin y selecciona el archivo ZIP.
+3. Activa el plugin.
+4. Ve a WooCommerce → Ajustes → LocalPilot para configurar las opciones generales y de Mapbox.
+5. Crea uno o más usuarios con el rol `localpilot_driver` desde Usuarios.
+6. Activa a los repartidores desde su perfil (checkbox "Activo").
+7. Ve a WooCommerce → Pedidos, abre un pedido en estado Processing u On-hold y asígnale un repartidor desde el panel LocalPilot.
+8. El repartidor puede ver sus entregas desde Mi cuenta → Mis entregas en el frontend.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= ¿Qué versión de WooCommerce necesito? =
 
-An answer to that question.
+WooCommerce 10.9 o superior. El plugin declara compatibilidad con HPOS (Custom Order Tables) y funciona también con el almacenamiento heredado.
 
-= What about foo bar? =
+= ¿Los repartidores necesitan acceder a wp-admin? =
 
-Answer to foo bar dilemma.
+No. Los repartidores pueden operar sus entregas desde Mi cuenta en el frontend (disponible en M3). En M2 solo los administradores y gestores de tienda gestionan asignaciones desde wp-admin.
+
+= ¿Qué datos almacena LocalPilot? =
+
+Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas, receptor, evidencia) y metadatos de perfil de repartidores. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
+
+= ¿Soporta multisite? =
+
+Sí, el plugin funciona en redes multisite de WordPress. La detección de WooCommerce incluye plugins activados en toda la red.
+
+= ¿Qué pasa si desactivo un repartidor con entregas activas? =
+
+El repartidor deja de aparecer en el selector de asignaciones, pero sus entregas activas no se cancelan automáticamente. Debes reasignarlas explícitamente.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. Panel LocalPilot en el editor de pedido (asignación, mapa, evidencia).
+2. Columnas en la lista de pedidos (Repartidor, Estado, Fecha, Ubicación).
+3. Ajustes de LocalPilot en WooCommerce (General, Flujo, Mapbox, Datos).
+4. Mis entregas — lista y detalle para el repartidor.
+5. Email de pedido asignado en WooCommerce → Correos electrónicos.
 
 == Changelog ==
 
-= 1.0 =
-* A change since the previous version.
-* Another change.
-
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
-
-== Upgrade Notice ==
-
-= 1.0 =
-Upgrade notices describe the reason a user should upgrade.  No more than 300 characters.
-
-= 0.5 =
-This version fixes a security related bug.  Upgrade immediately.
-
-== Arbitrary section ==
-
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
-
-== A brief Markdown Example ==
-
-Ordered list:
-
-1. Some feature
-1. Another feature
-1. Something else about the plugin
-
-Unordered list:
-
-* something
-* something else
-* third thing
-
-Here's a link to [WordPress](https://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
-Titles are optional, naturally.
-
-[markdown syntax]: https://daringfireball.net/projects/markdown/syntax
-            "Markdown is what the parser uses to process much of the readme file"
-
-Markdown uses email style notation for blockquotes and I've been told:
-> Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`
-
-<pre><code>
-<?php 
-code(); // multiple line code goes into pre/code tags
-code(); // multiple line code goes into pre/code tags
-code(); // multiple line code goes into pre/code tags
-</code></pre>
+= 1.0.0 =
+* Versión inicial del MVP.
+* Administración nativa de entregas con asignación, reasignación y retiro.
+* Columnas y filtros en la lista de pedidos (HPOS + legacy).
+* Panel de asignación en el editor del pedido.
+* Mi cuenta → Mis entregas: aceptar, iniciar, completar y fallar.
+* Mapbox: geocodificación automática, mapa en Mi cuenta, mapa admin con corrección manual.
+* Evidencia fotográfica (JPG/PNG/WebP) con validación MIME real.
+* 5 correos nativos de WooCommerce configurables.
+* Ajustes en WooCommerce con 4 secciones.
+* Compatibilidad HPOS y almacenamiento heredado.
+* Soporte multisite.
+* Traducciones: español (México) incluido.
+* Rol `localpilot_driver` con capacidades propias.
+* Perfil de repartidor con campos personalizados.
+* Ajustes en WooCommerce → Ajustes → LocalPilot.
+* Declaración de compatibilidad HPOS.
+* Roles administrador y shop_manager autorizados para gestionar entregas.
+* Soporte multisite.
+* Textos en español traducibles mediante el text domain `localpilot`.
