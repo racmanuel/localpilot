@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="screenshots/admin-panel.jpg" alt="LocalPilot" width="120">
+  <img src="screenshots/logo.png" alt="LocalPilot" width="120">
   <h1 align="center">LocalPilot</h1>
   <p align="center">
     <strong>Local Delivery Drivers for WooCommerce</strong>
