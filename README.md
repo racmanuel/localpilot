@@ -4,7 +4,7 @@
   <p align="center">
     <strong>Local Delivery Drivers for WooCommerce</strong>
     <br>
-    Asigna pedidos a repartidores locales, gestiona entregas desde Mi cuenta y registra evidencia con Mapbox.
+    Conecta tu tienda WooCommerce con repartidores locales.
   </p>
   <p>
     <img src="https://img.shields.io/badge/WordPress-6.9%2B-blue" alt="WordPress">
@@ -12,17 +12,40 @@
     <img src="https://img.shields.io/badge/PHP-7.4%2B-777BB4" alt="PHP">
     <img src="https://img.shields.io/badge/licencia-GPLv2-green" alt="License">
   </p>
+  <p>
+    <a href="README.md">🇪🇸 Español</a> · <a href="README.en.md">🇺🇸 English</a>
+  </p>
 </div>
 
 ---
 
 ## 📋 Descripción
 
-**LocalPilot** extiende WooCommerce para operar entregas locales con repartidores. Está construido sobre las pantallas nativas de WooCommerce — sin tableros duplicados, sin reinventar la rueda.
-
-Los repartidores operan desde **Mi cuenta** en el frontend, sin necesidad de acceder al panel de administración. Los gestores de tienda mantienen el control total desde el editor nativo del pedido.
+**LocalPilot** agrega repartidores a WooCommerce. Los pedidos se asignan desde el panel y los repartidores los operan desde **Mi cuenta** en su celular, sin entrar al admin.
 
 > 🇪🇸 Hecho en México — textos en español incluidos.
+
+---
+
+## 🎯 En palabras simples
+
+### ¿Qué hace?
+
+1. El dueño de la tienda **asigna un pedido** a un repartidor.
+2. El repartidor lo ve en **Mi cuenta → Mis entregas**, acepta y sale a repartirlo.
+3. Al llegar, **marca como completada**, sube una foto y opcionalmente el navegador valida que esté cerca del destino.
+4. Todo queda registrado: quién, cuándo, foto y ubicación.
+
+### ¿Qué necesitas?
+
+| Requisito | Por qué |
+|---|---|
+| 🛒 **WooCommerce** | Ahí están tus pedidos. |
+| 👤 **Repartidores** | Usuarios con el rol `localpilot_driver`. Usan su propio celular. |
+| 🗺️ **Mapbox** | Token gratuito para mapas y direcciones. |
+| 🔒 **HTTPS** | Necesario para obtener ubicación en el navegador. |
+
+> ⚡ **No necesitas** app nativa, servidores extra ni conocimientos avanzados. Todo funciona dentro de WooCommerce.
 
 ---
 
@@ -150,6 +173,22 @@ Las rutas están disponibles solo para entregas activas (`Asignado`, `Aceptado`,
 - Evidencia validada por MIME real, no por extensión.
 - Token Mapbox restringido por URL y scopes mínimos.
 - Sin exposición de coordenadas, tokens o rutas en logs o eventos.
+
+---
+
+## 🗺️ Próximamente
+
+Ideas para las siguientes versiones:
+
+| Función | Estado |
+|---|---|
+| 🟢 Dashboard operativo para el gestor | Planificado |
+| 🟢 Seguimiento en vivo del repartidor | Planificado |
+| 🟢 Portal público para que el cliente rastree su pedido | Planificado |
+| 🟡 Asignación automática por zona | En investigación |
+| 🟡 Notificaciones push / WhatsApp | En investigación |
+
+> ¿Se te ocurre algo más? [Abre un issue](https://github.com/racmanuel/localpilot/issues).
 
 ---
 
