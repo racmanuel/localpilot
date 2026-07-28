@@ -4,197 +4,195 @@
   <p align="center">
     <strong>Local Delivery Drivers for WooCommerce</strong>
     <br>
-    Conecta tu tienda WooCommerce con repartidores locales.
+    Connect your WooCommerce store with local drivers.
   </p>
   <p>
     <img src="https://img.shields.io/badge/WordPress-6.9%2B-blue" alt="WordPress">
     <img src="https://img.shields.io/badge/WooCommerce-10.9%2B-96588A" alt="WooCommerce">
     <img src="https://img.shields.io/badge/PHP-7.4%2B-777BB4" alt="PHP">
-    <img src="https://img.shields.io/badge/licencia-GPLv2-green" alt="License">
+    <img src="https://img.shields.io/badge/license-GPLv2-green" alt="License">
   </p>
   <p>
-    <a href="README.md">🇪🇸 Español</a> · <a href="README.en.md">🇺🇸 English</a>
+    <a href="README.md">�🇸 English</a> · <a href="README.en.md">🇪🇸 Español</a>
   </p>
 </div>
 
 ---
 
-## 📋 Descripción
+## 📋 Description
 
-**LocalPilot** agrega repartidores a WooCommerce. Los pedidos se asignan desde el panel y los repartidores los operan desde **Mi cuenta** en su celular, sin entrar al admin.
-
-> 🇪🇸 Hecho en México — textos en español incluidos.
+**LocalPilot** adds drivers to WooCommerce. Orders are assigned from the admin panel, and drivers operate them from **My Account** on their phone — no admin access needed.
 
 ---
 
-## 🎯 En palabras simples
+## 🎯 In a nutshell
 
-### ¿Qué hace?
+### What it does
 
-1. El dueño de la tienda **asigna un pedido** a un repartidor.
-2. El repartidor lo ve en **Mi cuenta → Mis entregas**, acepta y sale a repartirlo.
-3. Al llegar, **marca como completada**, sube una foto y opcionalmente el navegador valida que esté cerca del destino.
-4. Todo queda registrado: quién, cuándo, foto y ubicación.
+1. The store owner **assigns an order** to a driver.
+2. The driver sees it in **My Account → My Deliveries**, accepts, and heads out.
+3. Upon arrival, they **mark as delivered**, upload a photo, and optionally the browser validates they're near the destination.
+4. Everything is logged: who, when, photo, and location.
 
-### ¿Qué necesitas?
+### What you need
 
-| Requisito | Por qué |
+| Requirement | Why |
 |---|---|
-| 🛒 **WooCommerce** | Ahí están tus pedidos. |
-| 👤 **Repartidores** | Usuarios con el rol `localpilot_driver`. Usan su propio celular. |
-| 🗺️ **Mapbox** | Token gratuito para mapas y direcciones. |
-| 🔒 **HTTPS** | Necesario para obtener ubicación en el navegador. |
+| 🛒 **WooCommerce** | That's where your orders are. |
+| 👤 **Drivers** | Users with the `localpilot_driver` role. They use their own phone. |
+| 🗺️ **Mapbox** | Free token for maps and geocoding. |
+| 🔒 **HTTPS** | Required for browser geolocation. |
 
-> ⚡ **No necesitas** app nativa, servidores extra ni conocimientos avanzados. Todo funciona dentro de WooCommerce.
+> ⚡ **No need** for a native app, extra servers, or advanced technical skills. Everything runs inside WooCommerce.
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Features
 
-### 🚚 Gestión de repartidores
+### 🚚 Driver management
 
-- Rol nativo `localpilot_driver` con capacidades propias.
-- Perfil con teléfono, vehículo, patente y notas.
-- Activación/desactivación individual.
+- Native `localpilot_driver` role with its own capabilities.
+- Profile with phone, vehicle, license plate, and notes.
+- Individual activate/deactivate.
 
-### 📦 Asignación desde WooCommerce
+### 📦 WooCommerce assignment
 
-- Asignar, reasignar o retirar repartidores desde el editor del pedido.
-- Columnas informativas en la lista de pedidos (HPOS y almacenamiento heredado).
-- Filtros por repartidor y estado de entrega.
+- Assign, reassign, or remove drivers from the order editor.
+- Informational columns in the orders list (HPOS and legacy storage).
+- Filter by driver and delivery status.
 
-### 📱 Mi cuenta — Mis entregas
+### 📱 My Account — My Deliveries
 
-- Listado con resumen, contadores por estado y filtros.
-- Vista responsive: tabla en escritorio, tarjetas en móvil.
-- Acciones contextuales: aceptar, iniciar reparto, completar, reportar fallo.
-- Subida de evidencia fotográfica (JPG, PNG, WebP).
-- Validación puntual de ubicación al completar (opcional).
+- List with summary, status counters, and filters.
+- Responsive: table on desktop, cards on mobile.
+- Contextual actions: accept, start delivery, complete, report failure.
+- Photo evidence upload (JPG, PNG, WebP).
+- On-demand location validation upon completion (optional).
 
 ### 🗺️ Mapbox
 
-- Geocodificación automática de direcciones al asignar.
-- Mapa interactivo en el detalle de la entrega.
-- Mapa administrativo con corrección manual de coordenadas.
-- Círculo de radio de validación y marcador dual (destino + GPS).
-- **Rutas bajo demanda** desde la ubicación del repartidor hasta el destino.
-- Perfiles: auto con tráfico, auto, bicicleta y caminando.
-- Privacidad: la ruta solo existe en memoria, no se guarda.
+- Automatic address geocoding on assignment.
+- Interactive map on the delivery detail page.
+- Admin map with manual coordinate correction.
+- Validation radius circle and dual markers (destination + GPS).
+- **On-demand routes** from the driver's location to the destination.
+- Profiles: driving with traffic, driving, cycling, and walking.
+- Privacy: the route exists only in memory, never saved.
 
-### 📧 Correos electrónicos
+### 📧 WooCommerce emails
 
-5 notificaciones nativas de WooCommerce configurables:
-- Pedido asignado.
-- Repartidor retirado.
-- Reparto iniciado.
-- Entrega completada.
-- Entrega fallida.
+5 configurable native WooCommerce notifications:
+- Order assigned.
+- Driver removed.
+- Delivery started.
+- Delivery completed.
+- Delivery failed.
 
-### 🔒 Privacidad
+### 🔒 Privacy
 
-- La ubicación usada para rutas no se almacena ni persiste.
-- La validación puntual solo guarda el resumen, no recorridos.
-- Sin tracking en vivo, GPS en segundo plano ni `watchPosition()`.
-- Datos conservados al desinstalar por defecto (configurable).
-
----
-
-## 📸 Capturas de pantalla
-
-### Panel de administración
-
-| Editor de pedido | Ajustes generales | Ajustes Mapbox |
-|---|---|---|
-| ![Panel admin](screenshots/admin-panel.jpg) | ![Ajustes generales](screenshots/settings-general.jpg) | ![Ajustes Mapbox](screenshots/settings-mapbox.jpg) |
-
-### Frontend — Mis entregas
-
-| Listado | Detalle | Ruta calculada |
-|---|---|---|
-| ![Listado](screenshots/deliveries-list.jpg) | ![Detalle](screenshots/delivery-detail.jpg) | ![Ruta](screenshots/delivery-detail-route.jpg) |
+- Route location is never stored or persisted.
+- Point-of-delivery validation saves only the summary, not the route.
+- No live tracking, background GPS, or `watchPosition()`.
+- Data preserved on uninstall by default (configurable).
 
 ---
 
-## 🚀 Instalación
+## 📸 Screenshots
 
-### Requisitos
+### Admin panel
+
+| Order editor | General settings | Mapbox settings |
+|---|---|---|
+| ![Admin panel](screenshots/admin-panel.jpg) | ![General settings](screenshots/settings-general.jpg) | ![Mapbox settings](screenshots/settings-mapbox.jpg) |
+
+### Frontend — My Deliveries
+
+| List | Detail | Route calculated |
+|---|---|---|
+| ![List](screenshots/deliveries-list.jpg) | ![Detail](screenshots/delivery-detail.jpg) | ![Route](screenshots/delivery-detail-route.jpg) |
+
+---
+
+## 🚀 Installation
+
+### Requirements
 
 - WordPress 6.9+
 - WooCommerce 10.9+
 - PHP 7.4+
-- HTTPS (necesario para geolocalización del navegador)
+- HTTPS (required for browser geolocation)
 
-### Instalación rápida
+### Quick install
 
-1. Descarga el plugin desde [GitHub Releases](https://github.com/racmanuel/localpilot/releases).
-2. Ve a **Plugins → Añadir nuevo → Subir plugin** y selecciona el archivo ZIP.
-3. Activa el plugin.
-4. Ve a **WooCommerce → Ajustes → LocalPilot** para configurar.
+1. Download the plugin from [GitHub Releases](https://github.com/racmanuel/localpilot/releases).
+2. Go to **Plugins → Add New → Upload Plugin** and select the ZIP file.
+3. Activate the plugin.
+4. Go to **WooCommerce → Settings → LocalPilot** to configure.
 
-### Configuración inicial
+### Initial setup
 
-1. Crea uno o más usuarios con el rol `localpilot_driver`.
-2. Actívalos desde su perfil de usuario (checkbox "Activo").
-3. Configura Mapbox en **WooCommerce → Ajustes → LocalPilot → Mapbox**.
-4. Ve a WooCommerce → Pedidos, abre un pedido y asígnalo a un repartidor.
+1. Create one or more users with the `localpilot_driver` role.
+2. Activate them from their user profile ("Active" checkbox).
+3. Configure Mapbox under **WooCommerce → Settings → LocalPilot → Mapbox**.
+4. Go to WooCommerce → Orders, open an order, and assign it to a driver.
 
 ---
 
-## ⚙️ Estados de entrega
+## ⚙️ Delivery statuses
 
 ```
-Sin asignar → Asignado → Aceptado* → En reparto → Entregado
-                    ↘                        ↘→ Fallido
-                    ↘→ Cancelado
+Unassigned → Assigned → Accepted* → Out for delivery → Delivered
+                    ↘                          ↘→ Failed
+                    ↘→ Canceled
 ```
 
-*Aceptación obligatoria configurable.
+*Acceptance required is configurable.
 
 ---
 
-## 🗺️ Rutas en el mapa
+## 🗺️ Map routes
 
-Las rutas están disponibles solo para entregas activas (`Asignado`, `Aceptado`, `En reparto`) y deben activarse explícitamente en los ajustes.
+Routes are available only for active deliveries (`Assigned`, `Accepted`, `Out for delivery`) and must be explicitly enabled in settings.
 
-**Detalles técnicos:**
-- La ruta se calcula mediante **Mapbox Directions API v5**.
-- Cada clic en **Calcular ruta** genera una solicitud facturable.
-- La ubicación, geometría, distancia y duración **no se guardan en WordPress**.
-- No se utiliza `watchPosition()`, GPS en segundo plano ni recálculo automático.
-- Google Maps permanece como opción de navegación externa.
-
----
-
-## 🔐 Seguridad
-
-- Control de acceso por repartidor (ownership verificado en servidor).
-- Nonces y capacidades en cada acción.
-- Validación de transiciones por estado persistido.
-- Evidencia validada por MIME real, no por extensión.
-- Token Mapbox restringido por URL y scopes mínimos.
-- Sin exposición de coordenadas, tokens o rutas en logs o eventos.
+**Technical details:**
+- Routes are calculated via **Mapbox Directions API v5**.
+- Each click on **Calculate route** generates a billable request.
+- Location, geometry, distance, and duration **are not stored in WordPress**.
+- No `watchPosition()`, background GPS, or automatic recalculation.
+- Google Maps remains available as an external navigation option.
 
 ---
 
-## 🗺️ Próximamente
+## 🔐 Security
 
-Ideas para las siguientes versiones:
+- Per-driver access control (ownership verified server-side).
+- Nonces and capabilities on every action.
+- State-machine transition validation.
+- Evidence validated by real MIME type, not file extension.
+- Mapbox token restricted by URL and minimum scopes.
+- No coordinates, tokens, or routes exposed in logs or events.
 
-| Función | Estado |
+---
+
+## 🗺️ Coming soon
+
+Ideas for upcoming versions:
+
+| Feature | Status |
 |---|---|
-| 🟢 Dashboard operativo para el gestor | Planificado |
-| 🟢 Seguimiento en vivo del repartidor | Planificado |
-| 🟢 Portal público para que el cliente rastree su pedido | Planificado |
-| 🟡 Asignación automática por zona | En investigación |
-| 🟡 Notificaciones push / WhatsApp | En investigación |
+| 🟢 Operational dashboard for managers | Planned |
+| 🟢 Live driver tracking | Planned |
+| 🟢 Public customer tracking portal | Planned |
+| 🟡 Zone-based auto-assignment | Under research |
+| 🟡 Push / WhatsApp notifications | Under research |
 
-> ¿Se te ocurre algo más? [Abre un issue](https://github.com/racmanuel/localpilot/issues).
+> Have another idea? [Open an issue](https://github.com/racmanuel/localpilot/issues).
 
 ---
 
-## 🧪 Pruebas
+## 🧪 Testing
 
-El plugin incluye un runner de QA básico en `tests/qa-runner.php`. Para ejecutarlo:
+The plugin includes a basic QA runner at `tests/qa-runner.php`. To run it:
 
 ```bash
 wp eval-file tests/qa-runner.php
@@ -202,32 +200,33 @@ wp eval-file tests/qa-runner.php
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
-GPLv2 o posterior. Ver [LICENSE.txt](LICENSE.txt).
-
----
-
-## 👨‍💻 Contribuciones
-
-Las contribuciones son bienvenidas. Por favor:
-
-1. Haz fork del repositorio.
-2. Crea una rama (`git checkout -b feat/mi-mejora`).
-3. Haz commit de tus cambios (`git commit -m 'feat: añade mi mejora'`).
-4. Haz push a la rama (`git push origin feat/mi-mejora`).
-5. Abre un Pull Request.
+GPLv2 or later. See [LICENSE.txt](LICENSE.txt).
 
 ---
 
-## 🧑‍💻 Autor
+## 👨‍💻 Contributing
+
+Contributions are welcome. Please:
+
+1. Fork the repository.
+2. Create a branch (`git checkout -b feat/my-improvement`).
+3. Commit your changes (`git commit -m 'feat: add my improvement'`).
+4. Push to the branch (`git push origin feat/my-improvement`).
+5. Open a Pull Request.
+
+---
+
+## 🧑‍💻 Author
 
 **racmanuel** — [racmanuel.dev](https://racmanuel.dev/)
 
 ---
 
-## 🙏 Reconocimientos
+## 🙏 Acknowledgments
 
-- [Mapbox](https://www.mapbox.com/) — mapas, geocodificación y direcciones.
-- [WooCommerce](https://woocommerce.com/) — la plataforma de comercio electrónico.
-- [WordPress](https://wordpress.org/) — el CMS que lo hace posible.
+- [Mapbox](https://www.mapbox.com/) — maps, geocoding, and directions.
+- [WooCommerce](https://woocommerce.com/) — the e-commerce platform.
+- [WordPress](https://wordpress.org/) — the CMS that makes it all possible.
+
