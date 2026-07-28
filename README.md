@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/badge/license-GPLv2-green" alt="License">
   </p>
   <p>
-    <a href="README.md">�🇸 English</a> · <a href="README.en.md">🇪🇸 Español</a>
+    <a href="README.md">�🇸 English</a> · <a href="README.es.md">🇪🇸 Español</a>
   </p>
 </div>
 
