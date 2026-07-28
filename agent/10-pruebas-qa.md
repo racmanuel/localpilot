@@ -60,6 +60,16 @@ La matriz parte de los metadatos confirmados del plugin:
 | UI-01 | 320 px | acciones utilizables |
 | UI-02 | Entrega terminal | acciones ocultas y POST manipulado rechazado |
 | UI-03 | Timeline admin | etiquetas humanas, fecha y actor sin JSON técnico |
+| UI-04 | Mis entregas | resumen, contadores y filtros coinciden |
+| UI-05 | Mis entregas móvil | filas se leen como tarjetas sin overflow |
+| UI-06 | Dirección incompleta | texto explícito, nunca separadores vacíos |
+| UI-07 | Detalle activo | cliente/destino primero y solo la acción siguiente válida |
+| UI-08 | Detalle en reparto | completar visible y reportar fallo plegado/operable con teclado |
+| UI-09 | Detalle terminal | prueba y timeline visibles, sin formularios de mutación |
+| UI-10 | Timeline frontend | etiquetas humanas y actor genérico, sin JSON ni coordenadas |
+| UI-11 | Detalle a 320 px | mapa, uploads, botones y timeline sin overflow |
+| MAP-06 | Mapbox frontend falla | dirección y navegación continúan disponibles |
+| ASG-03 | Historial repetido del mismo pedido | una sola fila en listado del driver |
 | UN-01 | Desinstalar sin opt-in | datos conservados |
 
 ## Casos por flujo
@@ -105,6 +115,15 @@ Asignar a A → A ve entrega → gestor reasigna a B → A pierde acceso → B r
 13. Confirmar `fitBounds` con puntos cercanos, alejados y radio máximo.
 14. Probar el panel con teclado, foco visible, lector de pantalla y color desactivado.
 15. Verificar que el mapa conserva fallback textual si el SDK o los tiles fallan.
+16. Abrir `Mis entregas` con los pedidos históricos repetidos y confirmar que solo aparece la asignación más reciente por pedido.
+17. Comparar contadores de tarjetas, filtros y filas visibles.
+18. Probar una dirección vacía, parcial y completa.
+19. Revisar el detalle en `assigned`, `accepted`, `out_for_delivery`, `delivered`, `failed` y `cancelled`.
+20. Abrir y cerrar el panel de fallo con teclado; confirmar que el motivo continúa siendo obligatorio.
+21. Simular GPS concedido, denegado, timeout y no disponible; comprobar clases semánticas, `aria-live`, reintento y política warning/blocking.
+22. Probar el detalle con Mapbox cargado, token ausente, coordenadas ausentes y error del SDK; la información textual no desaparece.
+23. Confirmar que copiar dirección informa el resultado sin cambiar de contexto y que llamar/navegar usan enlaces válidos.
+24. Conservar el pedido de inspección `#1674`; no borrar datos manuales de QA salvo solicitud explícita.
 
 ## Criterios de aceptación
 

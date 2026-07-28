@@ -32,22 +32,39 @@ Filtros internos:
 - En reparto: `out_for_delivery`.
 - Entregadas: `delivered`.
 - Fallidas: `failed`.
+- Todas: incluye también `cancelled`.
 
-Usar tabla responsive y paginación de WooCommerce. En móvil se permite CSS mínimo para lectura tipo card.
+El listado muestra un resumen con contadores por estado y filtros tipo pill con cantidades. La consulta conserva únicamente la asignación más reciente de cada pedido para el repartidor actual, evitando duplicados históricos de la misma asignación.
+
+En escritorio se usa una tabla operativa con pedido, receptor, destino, fecha, estado y acción contextual. En móvil cada fila se convierte visualmente en una tarjeta apilada con botón de ancho completo.
+
+Las direcciones se construyen solo con componentes no vacíos. Cuando no existe información se muestra `Dirección no disponible`, nunca una cadena formada únicamente por separadores.
+
+Las acciones de la lista son contextuales: `Aceptar`, `Iniciar reparto`, `Completar` o `Ver entrega`; enlazan al detalle donde se ejecuta la transición protegida por nonce y permisos.
+
+Los estados vacíos incluyen una explicación y una orientación para probar otro filtro.
 
 ### Detalle
 
-Mostrar solo lo necesario:
+La vista individual comparte tokens, badges e iconos Dashicons con el listado. Se aplica a entregas activas y cerradas, pero adapta las acciones al estado actual.
 
-- pedido y productos;
-- nombre, teléfono y dirección de envío;
-- notas útiles para entrega;
-- pago y monto a cobrar si configuración lo permite;
-- estado y fechas;
-- mapa;
-- acciones válidas;
-- evidencia/historial resumido cuando corresponda.
-- control de ubicación y reintento de permisos al completar, si está configurado.
+Jerarquía de contenido:
+
+- encabezado con regreso al listado, número, fecha y estado;
+- cliente y destino como bloque principal, con teléfono y total cuando la configuración lo permite;
+- acciones rápidas para llamar, copiar la dirección y abrir navegación;
+- mapa de referencia cuando existen token y coordenadas, con fallback textual y de navegación;
+- productos como lista compacta con cantidad;
+- prueba de entrega con receptor, notas, motivo, evidencia y resumen de validación puntual;
+- acción siguiente para aceptar o iniciar;
+- formulario principal para completar y panel secundario plegable para reportar fallo;
+- timeline traducido con fecha y actor genérico, sin nombres técnicos ni JSON.
+
+En estados terminales no se renderizan formularios de mutación. Se muestra un resumen de cierre y permanecen disponibles la prueba y la actividad registradas.
+
+El formulario de completar conserva `multipart/form-data`, nonce y los campos `lclplt_assignment_id`, `lclplt_delivery_action`, `lclplt_received_by`, `lclplt_delivery_notes`, `lclplt_proof` y los campos privados de captura GPS. El panel de fallo conserva el selector `lclplt_failed_reason` y evidencia opcional.
+
+La validación puntual utiliza clases semánticas `is-idle`, `is-requesting`, `is-success` e `is-error`; `aria-live` comunica el resultado. JavaScript mejora captura, reintento, copia y doble envío, pero no cambia autorizaciones ni transiciones.
 
 Nunca mostrar datos financieros sensibles, notas internas ajenas a LocalPilot o pedidos de otro repartidor.
 
@@ -85,17 +102,27 @@ Usar el localizador de templates existente o uno pequeño compatible con overrid
 9. Implementar estados vacíos y errores accesibles.
 10. Probar con temas clásicos y de bloques dentro del alcance.
 11. Capturar una sola posición al completar cuando la validación esté activa; mostrar reintento si el navegador deniega el permiso.
+12. Mostrar contadores agrupados por estado sin contar dos veces asignaciones históricas del mismo pedido para el repartidor.
+13. Hacer fallback de dirección con partes no vacías y texto explícito cuando falte.
 
 ## Criterios de aceptación
 
 - La pestaña no aparece para clientes normales.
 - Acceder a un `order_id` ajeno devuelve respuesta segura sin filtrar existencia.
 - La lista pagina y conserva el filtro.
+- La lista no duplica un pedido por asignaciones históricas repetidas del mismo repartidor.
+- Los contadores coinciden con los registros visibles de cada filtro.
+- Una dirección incompleta no produce `,` como único contenido.
 - Cada estado ofrece solo acciones válidas.
 - Dos pestañas no pueden completar dos veces la misma entrega.
 - Formularios funcionan sin JavaScript; JS solo mejora experiencia.
 - Los notices siguen el estilo de WooCommerce.
 - La vista es usable a 320 px y con teclado.
+- El detalle no desborda a 320 px; mapa, uploads, formularios, acciones y timeline permanecen legibles.
+- `Completar entrega` es la acción principal en reparto y `Reportar fallo` permanece plegado hasta que el usuario lo abre.
+- El historial usa etiquetas humanas compartidas con administración y nunca imprime `event_type`, `event_data` o coordenadas.
+- Las entregas terminales no muestran formularios y conservan acceso a prueba e historial.
+- El resumen y filtros son navegables por teclado y exponen el filtro actual con `aria-current`.
 - Mapbox solo se carga en el detalle que tiene coordenadas/token.
 - La ubicación se obtiene únicamente al completar; no se ejecuta `watchPosition()` ni tracking en segundo plano.
 - El formulario funciona bajo HTTPS y muestra una alternativa explícita según la política `warning`/`blocking`.

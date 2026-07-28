@@ -26,15 +26,17 @@ LocalPilot extiende WooCommerce para operar entregas locales con repartidores. E
 * **Eventos y notas**: cada acción genera un evento estructurado y una nota privada en el pedido.
 * **HPOS**: compatible con High-Performance Order Storage y almacenamiento heredado.
 * **Mi cuenta — Mis entregas**: los repartidores aceptan, inician, completan o fallan entregas desde el frontend.
+* **Resumen operativo para repartidores**: contadores por estado, filtros visibles y listado responsive con acciones contextuales.
 * **Mapbox**: geocodificación automática de direcciones al asignar, mapa interactivo en Mi cuenta y mapa admin con corrección manual de coordenadas.
 * **Evidencia fotográfica**: sube una foto (JPG/PNG/WebP) al completar o fallar una entrega. Vista previa en el panel del pedido.
 * **Correos nativos de WooCommerce**: 5 notificaciones configurables desde WooCommerce → Ajustes → Correos electrónicos (asignado, retirado, en reparto, completado, fallido).
 
-= En desarrollo (1.1.0-dev) =
+= En desarrollo (1.1.5-dev) =
 
 * **Validación puntual de ubicación**: al completar una entrega, solicita una ubicación del navegador y compara la distancia con el destino geocodificado. El radio y la política de advertencia/bloqueo son configurables. No es GPS en vivo ni guarda recorridos.
 * **Panel operativo rediseñado**: resumen, progreso, prueba de entrega, mapa de auditoría y timeline de actividad en el editor nativo del pedido.
 * **Auditoría geográfica histórica**: conserva el radio y destino usados al validar, muestra destino y GPS de entrega y bloquea cambios en entregas cerradas.
+* **Detalle de entrega rediseñado**: prioriza cliente y destino, ofrece acciones rápidas, productos compactos, prueba de entrega, formularios contextuales y timeline traducido con diseño responsive.
 
 == Installation ==
 
@@ -79,7 +81,13 @@ El repartidor deja de aparecer en el selector de asignaciones, pero sus entregas
 
 == Changelog ==
 
-= 1.1.0-dev =
+= 1.1.5-dev =
+* Detalle de Mis entregas rediseñado para entregas activas y cerradas.
+* Cliente, destino, navegación, productos y prueba de entrega organizados en tarjetas responsive.
+* Completar se presenta como acción principal y reportar fallo como panel secundario plegable.
+* Estados accesibles para GPS, carga de Mapbox y timeline de actividad traducido.
+
+= 1.1.4-dev =
 * Validación puntual de ubicación al completar una entrega.
 * Snapshot privado del destino y radio usados en la validación.
 * Panel LocalPilot rediseñado con resumen, progreso, prueba, mapa y timeline.

@@ -138,20 +138,7 @@ class Localpilot_Order_Editor {
 	 * @return string
 	 */
 	public static function event_label( $event_type ) {
-		$labels = array(
-			'delivery_assigned'         => __( 'Repartidor asignado', 'localpilot' ),
-			'delivery_reassigned'       => __( 'Repartidor reasignado', 'localpilot' ),
-			'delivery_unassigned'       => __( 'Asignación retirada', 'localpilot' ),
-			'delivery_accepted'         => __( 'Entrega aceptada', 'localpilot' ),
-			'delivery_started'          => __( 'Reparto iniciado', 'localpilot' ),
-			'delivery_completed'        => __( 'Entrega completada', 'localpilot' ),
-			'delivery_failed'           => __( 'Entrega fallida', 'localpilot' ),
-			'delivery_cancelled'        => __( 'Entrega cancelada', 'localpilot' ),
-			'delivery_geocoded'         => __( 'Destino geocodificado', 'localpilot' ),
-			'delivery_location_updated' => __( 'Destino corregido', 'localpilot' ),
-		);
-
-		return isset( $labels[ $event_type ] ) ? $labels[ $event_type ] : __( 'Actividad de entrega', 'localpilot' );
+		return Localpilot_Event_Presenter::label( $event_type );
 	}
 
 	/**
@@ -161,20 +148,7 @@ class Localpilot_Order_Editor {
 	 * @return string
 	 */
 	public static function event_icon( $event_type ) {
-		$icons = array(
-			'delivery_assigned'         => 'dashicons-admin-users',
-			'delivery_reassigned'       => 'dashicons-update',
-			'delivery_unassigned'       => 'dashicons-dismiss',
-			'delivery_accepted'         => 'dashicons-yes-alt',
-			'delivery_started'          => 'dashicons-location-alt',
-			'delivery_completed'        => 'dashicons-saved',
-			'delivery_failed'           => 'dashicons-warning',
-			'delivery_cancelled'        => 'dashicons-no-alt',
-			'delivery_geocoded'         => 'dashicons-location',
-			'delivery_location_updated' => 'dashicons-edit-location',
-		);
-
-		return isset( $icons[ $event_type ] ) ? $icons[ $event_type ] : 'dashicons-info-outline';
+		return Localpilot_Event_Presenter::icon( $event_type );
 	}
 
 	/**

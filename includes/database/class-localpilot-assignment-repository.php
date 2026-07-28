@@ -138,16 +138,14 @@ class Localpilot_Assignment_Repository {
 			return array();
 		}
 
-		$placeholders = array_fill( 0, count( $statuses ), '%s' );
-		$placeholders_str = implode( ',', $placeholders );
-		$params = array_merge( array( $driver_id ), $statuses );
+		$placeholders      = array_fill( 0, count( $statuses ), '%s' );
+		$placeholders_str  = implode( ',', $placeholders );
+		$params            = array_merge( array( $driver_id ), $statuses, array( $limit, $offset ) );
 
 		$sql = 'SELECT * FROM ' . self::table()
-			. ' WHERE driver_id = %d AND status IN (' . $placeholders_str . ')'
-			. ' ORDER BY id DESC LIMIT %d OFFSET %d';
-
-		$params[] = $limit;
-		$params[] = $offset;
+			. ' WHERE id IN (SELECT MAX(latest.id) FROM ' . self::table() . ' latest'
+			. ' WHERE latest.driver_id = %d GROUP BY latest.order_id)'
+			. ' AND status IN (' . $placeholders_str . ') ORDER BY id DESC LIMIT %d OFFSET %d';
 
 		return $wpdb->get_results(
 			$wpdb->prepare(

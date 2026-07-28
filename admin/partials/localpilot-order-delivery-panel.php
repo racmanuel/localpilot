@@ -395,9 +395,9 @@ $events            = $assignment_id ? Localpilot_Event_Repository::get_recent_by
 					<?php foreach ( $events as $event ) : ?>
 						<?php $event_actor = ! empty( $event->user_id ) ? get_userdata( (int) $event->user_id ) : false; ?>
 						<li>
-							<span class="lclplt-event-timeline__icon dashicons <?php echo esc_attr( Localpilot_Order_Editor::event_icon( $event->event_type ) ); ?>" aria-hidden="true"></span>
+							<span class="lclplt-event-timeline__icon dashicons <?php echo esc_attr( Localpilot_Event_Presenter::icon( $event->event_type ) ); ?>" aria-hidden="true"></span>
 							<div>
-								<strong><?php echo esc_html( Localpilot_Order_Editor::event_label( $event->event_type ) ); ?></strong>
+								<strong><?php echo esc_html( Localpilot_Event_Presenter::label( $event->event_type ) ); ?></strong>
 								<p>
 									<time datetime="<?php echo esc_attr( gmdate( 'c', strtotime( $event->created_at ) ) ); ?>"><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' H:i', strtotime( $event->created_at ) ) ); ?></time>
 									<?php if ( $event_actor ) : ?><span aria-hidden="true"> · </span><?php echo esc_html( $event_actor->display_name ); ?><?php endif; ?>

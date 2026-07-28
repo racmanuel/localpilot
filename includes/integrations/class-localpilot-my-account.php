@@ -108,10 +108,15 @@ class Localpilot_My_Account {
 	 */
 	private static function render_list( $driver_id, $nonce_field ) {
 		$filter  = isset( $_GET['filter'] ) ? sanitize_key( $_GET['filter'] ) : 'pendientes'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$valid_filters = array( 'pendientes', 'en_reparto', 'entregadas', 'fallidas', 'todas' );
+		if ( ! in_array( $filter, $valid_filters, true ) ) {
+			$filter = 'pendientes';
+		}
 		$paged   = isset( $_GET['pag'] ) ? max( 1, (int) $_GET['pag'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$per_page = apply_filters( 'lclplt_deliveries_per_page', 20 );
 
 		$statuses = self::get_statuses_for_filter( $filter );
+		$filter_counts = self::get_filter_counts( $driver_id );
 		$result   = Localpilot_Delivery_Query::get_for_driver( $driver_id, array(
 			'statuses' => $statuses,
 			'page'     => $paged,
@@ -129,6 +134,7 @@ class Localpilot_My_Account {
 				'filter'      => $filter,
 				'nonce_field' => $nonce_field,
 				'driver_id'   => $driver_id,
+				'filter_counts' => $filter_counts,
 			),
 			'',
 			plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
@@ -149,7 +155,7 @@ class Localpilot_My_Account {
 			wc_add_notice( __( 'No tienes acceso a esta entrega.', 'localpilot' ), 'error' );
 			wc_get_template(
 				'my-account/deliveries/list.php',
-				array( 'deliveries' => array(), 'total' => 0, 'total_pages' => 0, 'current_page' => 1, 'per_page' => 20, 'filter' => 'pendientes', 'nonce_field' => $nonce_field, 'driver_id' => $driver_id ),
+				array( 'deliveries' => array(), 'total' => 0, 'total_pages' => 0, 'current_page' => 1, 'per_page' => 20, 'filter' => 'pendientes', 'filter_counts' => self::get_filter_counts( $driver_id ), 'nonce_field' => $nonce_field, 'driver_id' => $driver_id ),
 				'',
 				plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
 			);
@@ -328,5 +334,23 @@ class Localpilot_My_Account {
 			'todas'       => array( 'assigned', 'accepted', 'out_for_delivery', 'delivered', 'failed', 'cancelled' ),
 		);
 		return isset( $map[ $filter ] ) ? $map[ $filter ] : $map['pendientes'];
+	}
+
+	/**
+	 * Get counts used by the driver filter tabs and summary cards.
+	 *
+	 * @param int $driver_id Driver user ID.
+	 * @return array<string, int>
+	 */
+	private static function get_filter_counts( $driver_id ) {
+		$counts = Localpilot_Delivery_Query::count_by_driver_status( $driver_id );
+
+		return array(
+			'pendientes' => (int) ( $counts['assigned'] + $counts['accepted'] ),
+			'en_reparto' => (int) $counts['out_for_delivery'],
+			'entregadas' => (int) $counts['delivered'],
+			'fallidas'   => (int) $counts['failed'],
+			'todas'      => (int) array_sum( $counts ),
+		);
 	}
 }

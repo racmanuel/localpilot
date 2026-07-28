@@ -22,6 +22,10 @@
 				return $location.attr( 'data-message-' + key ) || fallback;
 			}
 
+			function setState( state ) {
+				$location.removeClass( 'is-idle is-requesting is-success is-error' ).addClass( 'is-' + state );
+			}
+
 			function submitWithLocation() {
 				$form.data( 'lclplt-location-ready', true );
 				$form.find( '.lclplt-complete-submit' ).prop( 'disabled', true );
@@ -36,15 +40,17 @@
 				} else if ( 3 === code ) {
 					message = text( 'timeout', 'La solicitud de ubicación tardó demasiado.' );
 				}
-				$message.text( message ).css( 'color', '#a00' );
-				$retry.show();
-				$continue.show();
+				setState( 'error' );
+				$message.text( message );
+				$retry.prop( 'hidden', false );
+				$continue.prop( 'hidden', false );
 			}
 
 			function captureLocation() {
-				$retry.hide();
-				$continue.hide();
-				$message.text( text( 'request', 'Obteniendo tu ubicación actual…' ) ).css( 'color', '#666' );
+				$retry.prop( 'hidden', true );
+				$continue.prop( 'hidden', true );
+				setState( 'requesting' );
+				$message.text( text( 'request', 'Obteniendo tu ubicación actual…' ) );
 
 				if ( ! navigator.geolocation ) {
 					showError( 2 );
@@ -58,7 +64,8 @@
 					$location.find( '[name="lclplt_location_accuracy"]' ).val( coords.accuracy || '' );
 					$location.find( '[name="lclplt_location_timestamp"]' ).val( position.timestamp || Date.now() );
 					$location.find( '[name="lclplt_location_status"]' ).val( 'success' );
-					$message.text( text( 'success', 'Ubicación obtenida.' ) ).css( 'color', '#2271b1' );
+					setState( 'success' );
+					$message.text( text( 'success', 'Ubicación obtenida.' ) );
 					submitWithLocation();
 				}, function( error ) {
 					$location.find( '[name="lclplt_location_status"]' ).val( 1 === error.code ? 'permission_denied' : ( 3 === error.code ? 'timeout' : 'unavailable' ) );
@@ -91,6 +98,38 @@
 				$location.find( '[name="lclplt_location_status"]' ).val( 'unavailable' );
 				submitWithLocation();
 			} );
+		} );
+
+		$( '[data-lclplt-copy-address]' ).on( 'click', function() {
+			var $button = $( this );
+			var address = $button.attr( 'data-lclplt-copy-address' ) || '';
+			var copiedLabel = $button.attr( 'data-copied-label' ) || 'Dirección copiada';
+			var originalLabel = $button.attr( 'data-copy-label' ) || 'Copiar dirección';
+			var $label = $button.find( '[data-lclplt-copy-text]' );
+			var $status = $( '[data-lclplt-copy-status]' ).first();
+
+			function copied() {
+				$label.text( copiedLabel );
+				$status.text( copiedLabel );
+				window.setTimeout( function() {
+					$label.text( originalLabel );
+				}, 2000 );
+			}
+
+			if ( navigator.clipboard && window.isSecureContext ) {
+				navigator.clipboard.writeText( address ).then( copied );
+				return;
+			}
+
+			var $temporary = $( '<textarea>' ).val( address ).attr( 'readonly', true ).css( {
+				position: 'fixed',
+				opacity: 0
+			} ).appendTo( 'body' );
+			$temporary.get( 0 ).select();
+			if ( document.execCommand( 'copy' ) ) {
+				copied();
+			}
+			$temporary.remove();
 		} );
 
 		$( '.lclplt-action-form' ).on( 'submit', function() {

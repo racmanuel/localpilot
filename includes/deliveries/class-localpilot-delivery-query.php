@@ -141,10 +141,7 @@ class Localpilot_Delivery_Query {
 				( max( 1, (int) $args['page'] ) - 1 ) * $args['per_page']
 			);
 
-			$total = 0;
-			foreach ( $args['statuses'] as $s ) {
-				$total += Localpilot_Assignment_Repository::count_by_driver( $driver_id, $s );
-			}
+			$total = self::count_driver_latest_by_statuses( $driver_id, $args['statuses'] );
 
 			$per_page     = max( 1, (int) $args['per_page'] );
 			$total_pages  = (int) ceil( $total / $per_page );
@@ -173,6 +170,63 @@ class Localpilot_Delivery_Query {
 			'total'       => $total,
 			'total_pages' => $total_pages,
 			'page'        => max( 1, (int) $args['page'] ),
+		);
+	}
+
+	/**
+	 * Count assignments for a driver grouped by delivery status.
+	 *
+	 * @param int $driver_id Driver user ID.
+	 * @return array<string, int>
+	 */
+	public static function count_by_driver_status( $driver_id ) {
+		global $wpdb;
+
+		$statuses = Localpilot_Delivery_Status::all();
+		$counts  = array_fill_keys( $statuses, 0 );
+		$table   = Localpilot_DB_Schema::assignments_table();
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT latest.status, COUNT(*) AS total FROM ' . $table . ' latest INNER JOIN (SELECT order_id, MAX(id) AS latest_id FROM ' . $table . ' WHERE driver_id = %d GROUP BY order_id) newest ON newest.latest_id = latest.id GROUP BY latest.status',
+				$driver_id
+			)
+		);
+
+		foreach ( $rows as $row ) {
+			if ( isset( $counts[ $row->status ] ) ) {
+				$counts[ $row->status ] = (int) $row->total;
+			}
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * Count the latest assignment per order for one driver and statuses.
+	 *
+	 * @param int   $driver_id Driver user ID.
+	 * @param array $statuses  Statuses to include.
+	 * @return int
+	 */
+	private static function count_driver_latest_by_statuses( $driver_id, array $statuses ) {
+		global $wpdb;
+
+		if ( empty( $statuses ) ) {
+			return 0;
+		}
+
+		$table        = Localpilot_DB_Schema::assignments_table();
+		$placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+		$params       = array_merge( array( $driver_id ), $statuses );
+
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT COUNT(*) FROM ' . $table . ' latest INNER JOIN (SELECT order_id, MAX(id) AS latest_id FROM ' . $table . ' WHERE driver_id = %d GROUP BY order_id) newest ON newest.latest_id = latest.id WHERE latest.status IN (' . $placeholders . ')',
+				$params
+			)
 		);
 	}
 
