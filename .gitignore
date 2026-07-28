@@ -1,0 +1,29 @@
+# Generated plugin dependencies
+/vendor/
+/node_modules/
+
+# Generated archives and local build output
+/builds/
+*.zip
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Editor and IDE files
+.vscode/
+.idea/
+
+# OS metadata
+Desktop.ini
+
+# Keep source control configuration files intentionally tracked.
+!.gitignore

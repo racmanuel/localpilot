@@ -1,0 +1,31 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Localpilot Playground",
+		"author": "racmanuel",
+		"description": "Test Localpilot in WordPress Playground."
+	},
+	"landingPage": "/wp-admin/plugins.php",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"steps": [
+		{
+			"step": "installPlugin",
+			"pluginZipFile": {
+				"resource": "url",
+				"url": ""
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "login"
+		}
+	]
+}
