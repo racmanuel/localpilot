@@ -100,7 +100,8 @@ La versión 1.0 demuestra el flujo operativo completo con la menor superficie pr
 - dashboard operativo si la evidencia de usuarios lo justifica;
 - acciones masivas mejoradas;
 - reintentos asíncronos;
-- reportes básicos.
+- reportes básicos;
+- validación puntual de ubicación al completar una entrega, sin tracking continuo.
 
 ### 1.2 — Rutas
 

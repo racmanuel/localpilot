@@ -30,6 +30,10 @@ LocalPilot extiende WooCommerce para operar entregas locales con repartidores. E
 * **Evidencia fotográfica**: sube una foto (JPG/PNG/WebP) al completar o fallar una entrega. Vista previa en el panel del pedido.
 * **Correos nativos de WooCommerce**: 5 notificaciones configurables desde WooCommerce → Ajustes → Correos electrónicos (asignado, retirado, en reparto, completado, fallido).
 
+= En desarrollo (1.1.0-dev) =
+
+* **Validación puntual de ubicación**: al completar una entrega, solicita una ubicación del navegador y compara la distancia con el destino geocodificado. El radio y la política de advertencia/bloqueo son configurables. No es GPS en vivo ni guarda recorridos.
+
 == Installation ==
 
 1. Asegúrate de tener WooCommerce 10.9+ activo.
@@ -53,7 +57,7 @@ No. Los repartidores pueden operar sus entregas desde Mi cuenta en el frontend (
 
 = ¿Qué datos almacena LocalPilot? =
 
-Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas, receptor, evidencia) y metadatos de perfil de repartidores. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
+Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas, receptor, evidencia y resumen de validación de ubicación) y metadatos de perfil de repartidores. La validación puntual no guarda un historial de recorridos. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
 
 = ¿Soporta multisite? =
 

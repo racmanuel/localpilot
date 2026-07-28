@@ -128,6 +128,46 @@ defined( 'ABSPATH' ) || exit;
 					</td>
 				</tr>
 				<?php endif; ?>
+
+				<?php
+				$location_status = $meta->get_location_validation_status();
+				if ( $location_status ) :
+					$location_labels = array(
+						'passed'           => __( 'Validada', 'localpilot' ),
+						'outside_radius'   => __( 'Fuera del radio', 'localpilot' ),
+						'permission_denied'=> __( 'Permiso denegado', 'localpilot' ),
+						'unavailable'      => __( 'No disponible', 'localpilot' ),
+						'timeout'          => __( 'Tiempo agotado', 'localpilot' ),
+						'stale'            => __( 'Desactualizada', 'localpilot' ),
+						'low_accuracy'     => __( 'Precisión insuficiente', 'localpilot' ),
+						'no_destination'   => __( 'Sin destino geocodificado', 'localpilot' ),
+						'disabled'         => __( 'Desactivada', 'localpilot' ),
+					);
+					$location_label = isset( $location_labels[ $location_status ] ) ? $location_labels[ $location_status ] : __( 'No validada', 'localpilot' );
+					$location_distance = $meta->get_location_validation_distance();
+					$location_radius   = $meta->get_location_validation_radius();
+					$location_accuracy = $meta->get_location_validation_accuracy();
+					$location_at       = $meta->get_location_validation_at();
+				?>
+				<tr>
+					<th style="text-align:left; padding:2px 4px 2px 0; font-weight:600;"><?php esc_html_e( 'Ubicación al entregar', 'localpilot' ); ?></th>
+					<td style="padding:2px 0;">
+						<strong><?php echo esc_html( $location_label ); ?></strong>
+						<?php if ( '' !== (string) $location_distance && null !== $location_distance ) : ?>
+							<br /><?php /* translators: %s: measured distance in metres */ ?><?php echo esc_html( sprintf( __( 'Distancia: %s m', 'localpilot' ), number_format_i18n( (float) $location_distance, 2 ) ) ); ?>
+						<?php endif; ?>
+						<?php if ( $location_radius ) : ?>
+							<br /><?php /* translators: %s: configured radius in metres */ ?><?php echo esc_html( sprintf( __( 'Radio: %s m', 'localpilot' ), number_format_i18n( (int) $location_radius ) ) ); ?>
+						<?php endif; ?>
+						<?php if ( '' !== (string) $location_accuracy && null !== $location_accuracy ) : ?>
+							<br /><?php /* translators: %s: reported GPS accuracy in metres */ ?><?php echo esc_html( sprintf( __( 'Precisión: %s m', 'localpilot' ), number_format_i18n( (float) $location_accuracy, 2 ) ) ); ?>
+						<?php endif; ?>
+						<?php if ( $location_at ) : ?>
+							<br /><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' H:i', strtotime( $location_at ) ) ); ?>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<?php endif; ?>
 			</tbody>
 		</table>
 	<?php endif; ?>
@@ -182,17 +222,25 @@ defined( 'ABSPATH' ) || exit;
 		?>
 		<?php if ( $map_enabled && $map_token ) : ?>
 			<hr style="margin:12px 0;" />
-			<p style="font-weight:600; margin:0 0 4px;"><?php esc_html_e( 'Ubicación — corrección manual', 'localpilot' ); ?></p>
+			<p style="font-weight:600; margin:0 0 4px;"><?php esc_html_e( 'Ubicación — mapa de entrega', 'localpilot' ); ?></p>
 			<p style="font-size:11px; color:#666; margin:0 0 8px;">
-				<?php esc_html_e( 'Arrastra el marcador para corregir la ubicación.', 'localpilot' ); ?>
+				<?php esc_html_e( '🔴 Destino | 🟢 GPS de entrega | El círculo verde muestra el radio de validación configurado. Arrastra el marcador rojo para corregir el destino.', 'localpilot' ); ?>
 			</p>
-			<div id="lclplt-admin-map"
-				style="width:100%;height:350px;border-radius:4px;margin-bottom:8px;"
-				data-lat="<?php echo esc_attr( $map_lat ?: '' ); ?>"
-				data-lng="<?php echo esc_attr( $map_lng ?: '' ); ?>"
-				data-token="<?php echo esc_attr( $map_token ); ?>"
-				data-style="<?php echo esc_attr( $map_style ); ?>"
-				data-zoom="<?php echo esc_attr( $map_zoom ); ?>"></div>
+		<?php
+		$driver_lat = $meta->get_delivery_location_lat();
+		$driver_lng = $meta->get_delivery_location_lng();
+		$validation_radius = Localpilot_Location_Validation_Service::get_radius();
+		?>
+		<div id="lclplt-admin-map"
+			style="width:100%;height:350px;border-radius:4px;margin-bottom:8px;"
+			data-lat="<?php echo esc_attr( $map_lat ?: '' ); ?>"
+			data-lng="<?php echo esc_attr( $map_lng ?: '' ); ?>"
+			data-delivery-lat="<?php echo esc_attr( $driver_lat ?: '' ); ?>"
+			data-delivery-lng="<?php echo esc_attr( $driver_lng ?: '' ); ?>"
+			data-validation-radius="<?php echo esc_attr( $validation_radius ); ?>"
+			data-token="<?php echo esc_attr( $map_token ); ?>"
+			data-style="<?php echo esc_attr( $map_style ); ?>"
+			data-zoom="<?php echo esc_attr( $map_zoom ); ?>"></div>
 			<p style="margin:0 0 4px;">
 				<label style="font-size:11px;">
 					<?php esc_html_e( 'Latitud:', 'localpilot' ); ?>

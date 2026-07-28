@@ -126,6 +126,42 @@ class Localpilot_Settings extends WC_Settings_Page {
 			),
 
 			array(
+				'title'    => __( 'Validar ubicación al completar', 'localpilot' ),
+				'desc'     => __( 'Obtener una ubicación puntual del repartidor al completar y compararla con el destino geocodificado.', 'localpilot' ),
+				'desc_tip' => __( 'No es seguimiento en vivo. Requiere HTTPS y permiso de ubicación en el navegador.', 'localpilot' ),
+				'id'       => 'lclplt_location_validation_enabled',
+				'type'     => 'checkbox',
+				'default'  => 'no',
+			),
+
+			array(
+				'title'    => __( 'Radio de validación', 'localpilot' ),
+				'desc'     => __( 'Distancia máxima permitida entre el repartidor y el destino, en metros.', 'localpilot' ),
+				'desc_tip' => __( 'Recomendado: 100 metros. La validación se calcula nuevamente en el servidor.', 'localpilot' ),
+				'id'       => 'lclplt_location_validation_radius',
+				'type'     => 'number',
+				'default'  => 100,
+				'custom_attributes' => array(
+					'min'  => 10,
+					'max'  => 5000,
+					'step' => 10,
+				),
+			),
+
+			array(
+				'title'    => __( 'Política si no se valida', 'localpilot' ),
+				'desc'     => __( 'Determina si una ubicación ausente o fuera del radio bloquea el completado.', 'localpilot' ),
+				'desc_tip' => __( 'Advertencia permite completar y deja el resultado registrado para revisión administrativa.', 'localpilot' ),
+				'id'       => 'lclplt_location_validation_mode',
+				'type'     => 'select',
+				'default'  => 'warning',
+				'options'  => array(
+					'warning' => __( 'Advertir y permitir completar', 'localpilot' ),
+					'blocking' => __( 'Bloquear hasta validar', 'localpilot' ),
+				),
+			),
+
+			array(
 				'title'    => __( 'Tamaño máximo de evidencia', 'localpilot' ),
 				'desc'     => __( 'Tamaño máximo en megabytes (MB) para cada archivo de evidencia subido.', 'localpilot' ),
 				'desc_tip' => __( 'Valor predeterminado: 5 MB. Límite recomendado: 10 MB.', 'localpilot' ),

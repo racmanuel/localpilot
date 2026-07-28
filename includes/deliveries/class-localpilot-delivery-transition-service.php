@@ -201,6 +201,18 @@ class Localpilot_Delivery_Transition_Service {
 				if ( ! empty( $extra['proof_attachment_id'] ) ) {
 					$meta_updates[ Localpilot_Order_Delivery_Meta::PROOF_ATTACHMENT_ID ] = (int) $extra['proof_attachment_id'];
 				}
+				if ( ! empty( $extra['location_validation'] ) && is_array( $extra['location_validation'] ) ) {
+					$location = $extra['location_validation'];
+					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_STATUS ]   = sanitize_key( $location['status'] ?? 'not_validated' );
+					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_DISTANCE ] = null === ( $location['distance_meters'] ?? null ) ? '' : (float) $location['distance_meters'];
+					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_RADIUS ]   = absint( $location['radius_meters'] ?? 0 );
+					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_ACCURACY ] = null === ( $location['accuracy_meters'] ?? null ) ? '' : (float) $location['accuracy_meters'];
+					$meta_updates[ Localpilot_Order_Delivery_Meta::LOCATION_VALIDATION_AT ]       = sanitize_text_field( $location['validated_at'] ?? current_time( 'mysql', true ) );
+					if ( ! empty( $extra['location_driver_lat'] ) && ! empty( $extra['location_driver_lng'] ) ) {
+						$meta_updates[ Localpilot_Order_Delivery_Meta::DELIVERY_LOCATION_LAT ] = (float) $extra['location_driver_lat'];
+						$meta_updates[ Localpilot_Order_Delivery_Meta::DELIVERY_LOCATION_LNG ] = (float) $extra['location_driver_lng'];
+					}
+				}
 				break;
 
 			case Localpilot_Delivery_Status::FAILED:

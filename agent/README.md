@@ -22,6 +22,11 @@ No introducir Composer, namespaces, un contenedor de dependencias, un framework 
 8. Los correos se registran como emails nativos de WooCommerce.
 9. Todo el acceso a pedidos usa CRUD de WooCommerce y funciona con HPOS activo.
 
+La rama de desarrollo añade como mejora intermedia la **validación puntual de
+ubicación al completar**: una sola captura GPS comparada en servidor contra el
+destino geocodificado. No es GPS en vivo, no usa seguimiento en segundo plano y
+no conserva recorridos.
+
 ## Documentos por frente
 
 | Archivo | Frente | Propietario sugerido |
@@ -40,6 +45,7 @@ No introducir Composer, namespaces, un contenedor de dependencias, un framework 
 | [12-coordinacion-multiagente.md](12-coordinacion-multiagente.md) | Protocolo de ejecución | Coordinador |
 | [13-contratos-compartidos.md](13-contratos-compartidos.md) | Estados, hooks y errores | Integrador |
 | [14-checklist-integracion-release.md](14-checklist-integracion-release.md) | Ensamble y salida | Integrador + QA |
+| [15-validacion-ubicacion-entrega.md](15-validacion-ubicacion-entrega.md) | Validación puntual al completar | Integrador + seguridad + QA |
 
 ## Orden recomendado
 
@@ -55,6 +61,8 @@ Pedidos Admin + Mi cuenta + Mapbox
 Evidencias + emails
         ↓
 Seguridad transversal + QA + release
+        ↓
+Validación puntual de ubicación en rama 1.1
 ```
 
 Los frentes de interfaz pueden avanzar en paralelo después de congelar los contratos de `13-contratos-compartidos.md`. La seguridad no se deja para el final: su agente revisa cada entrega parcial.
@@ -133,5 +141,6 @@ Una tarea no está terminada hasta cumplir:
 - Estado WooCommerce al completar y al fallar.
 - Retención y eliminación de evidencia al desinstalar.
 - País, idioma y estilo predeterminados de Mapbox.
+- Si la validación puntual se activa por defecto, su radio inicial y si las excepciones advierten o bloquean.
 
 Hasta recibir estas respuestas, usar los valores provisionales documentados sin convertirlos en decisiones irreversibles.

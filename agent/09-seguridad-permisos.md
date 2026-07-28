@@ -22,6 +22,7 @@ Definir controles obligatorios para Admin, Mi cuenta, REST, archivos y servicios
 | Aceptar/iniciar | Con capacidad y transición válida | Según política | No |
 | Completar/fallar | Con capacidad y transición válida | Según política | No |
 | Subir evidencia | Con capacidad y ownership | Sí | No |
+| Validar ubicación al completar | Sí, con posición puntual y entrega propia | Puede revisar el resultado | No |
 | Asignar/reasignar | No | `lclplt_manage_deliveries` | No |
 | Editar ubicación | No | `lclplt_manage_deliveries` | No |
 | Ver evidencia | Propia si se decide mostrar | Sí | No |
@@ -69,6 +70,19 @@ Definir controles obligatorios para Admin, Mi cuenta, REST, archivos y servicios
 - endpoint de consulta autorizado;
 - no rutas físicas en errores.
 
+### Validación puntual de ubicación
+
+- requiere sesión, capacidad, ownership y transición válida;
+- el servidor obtiene las coordenadas del destino desde el pedido, nunca del cliente;
+- latitud, longitud, precisión y timestamp se validan por tipo, rango y antigüedad;
+- el resultado se calcula en servidor; no se acepta un `passed` enviado por el navegador;
+- el radio solo procede de los ajustes del gestor y tiene límites configurados;
+- no se guardan recorridos ni tracking continuo;
+- las coordenadas GPS del repartidor se persisten como metadatos del pedido y solo se muestran en el mapa administrativo (requiere `lclplt_manage_deliveries`);
+- no se incluyen coordenadas crudas en notas, emails o mensajes visibles;
+- la captura requiere HTTPS y permiso explícito del navegador;
+- los estados pueden ser `passed`, `outside_radius`, `permission_denied`, `unavailable`, `timeout`, `stale`, `low_accuracy`, `no_destination` o `disabled`.
+
 ## Archivos a tocar
 
 Este frente idealmente no implementa una segunda lógica. Revisa y añade utilidades pequeñas:
@@ -90,6 +104,8 @@ Este frente idealmente no implementa una segunda lógica. Revisa y añade utilid
 8. Revisar secretos y logs.
 9. Definir retención de IP y evidencia.
 10. Validar desinstalación opt-in.
+11. Probar manipulación de coordenadas, resultado enviado, timestamp futuro/antiguo y precisión falsa.
+12. Verificar que la política `warning` no se convierta en autorización para cambiar el radio desde el frontend.
 
 ## Criterios de aceptación
 
@@ -100,6 +116,8 @@ Este frente idealmente no implementa una segunda lógica. Revisa y añade utilid
 - Los errores ajenos son indistinguibles.
 - No hay SQL concatenado con input.
 - No aparecen tokens, rutas o stack traces en UI/log normal.
+- La ubicación puntual no revela coordenadas a usuarios no autorizados.
+- Una posición fuera del radio se bloquea o advierte según la configuración persistida.
 - Los uploads maliciosos se rechazan.
 - Todas las mutaciones son POST/REST mutativo.
 

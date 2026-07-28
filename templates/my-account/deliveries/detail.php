@@ -238,8 +238,36 @@ $assignment_id = (int) $assignment->id;
 			</small>
 		</p>
 
+		<?php if ( Localpilot_Location_Validation_Service::is_enabled() ) : ?>
+		<p class="form-row lclplt-location-validation" data-lclplt-location-validation="1"
+			data-mode="<?php echo esc_attr( Localpilot_Location_Validation_Service::get_mode() ); ?>"
+			data-message-request="<?php esc_attr_e( 'Obteniendo tu ubicación actual…', 'localpilot' ); ?>"
+			data-message-success="<?php esc_attr_e( 'Ubicación obtenida. Se validará en el servidor al completar.', 'localpilot' ); ?>"
+			data-message-permission="<?php esc_attr_e( 'Debes permitir el acceso a tu ubicación o continuar con advertencia.', 'localpilot' ); ?>"
+			data-message-unavailable="<?php esc_attr_e( 'No se pudo obtener tu ubicación. Activa el GPS e inténtalo nuevamente.', 'localpilot' ); ?>"
+			data-message-timeout="<?php esc_attr_e( 'La solicitud de ubicación tardó demasiado. Inténtalo nuevamente.', 'localpilot' ); ?>">
+			<strong><?php esc_html_e( 'Validación de ubicación', 'localpilot' ); ?></strong>
+			<small class="lclplt-location-validation__message" role="status" aria-live="polite" style="display:block;color:#666;margin-top:4px;">
+				<?php esc_html_e( 'Al completar, se solicitará tu ubicación actual para compararla con el destino.', 'localpilot' ); ?>
+			</small>
+			<input type="hidden" name="lclplt_location_latitude" value="" />
+			<input type="hidden" name="lclplt_location_longitude" value="" />
+			<input type="hidden" name="lclplt_location_accuracy" value="" />
+			<input type="hidden" name="lclplt_location_timestamp" value="" />
+			<input type="hidden" name="lclplt_location_status" value="" />
+			<button type="button" class="button lclplt-location-retry" style="display:none;margin-top:6px;">
+				<?php esc_html_e( 'Intentar nuevamente', 'localpilot' ); ?>
+			</button>
+			<?php if ( 'warning' === Localpilot_Location_Validation_Service::get_mode() ) : ?>
+				<button type="button" class="button lclplt-location-continue" style="display:none;margin-top:6px;">
+					<?php esc_html_e( 'Continuar con advertencia', 'localpilot' ); ?>
+				</button>
+			<?php endif; ?>
+		</p>
+		<?php endif; ?>
+
 		<input type="hidden" name="lclplt_delivery_action" value="complete" />
-		<button type="submit" class="woocommerce-button button alt">
+		<button type="submit" class="woocommerce-button button alt lclplt-complete-submit">
 			<?php esc_html_e( 'Completar entrega', 'localpilot' ); ?>
 		</button>
 	</form>

@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Geocodificar la dirección del pedido, guardar el resultado, mostrar el destino en la entrega y permitir corrección manual administrativa. No incluye tracking en vivo ni optimización.
+Geocodificar la dirección del pedido, guardar el resultado, mostrar el destino en la entrega y permitir corrección manual administrativa. Sus coordenadas también pueden usarse para validar una posición puntual al completar. No incluye tracking en vivo ni optimización.
 
 ## Dependencias
 
@@ -10,6 +10,7 @@ Geocodificar la dirección del pedido, guardar el resultado, mostrar el destino 
 - Settings nativos de WooCommerce.
 - Editor de pedido.
 - Mi cuenta.
+- Servicio de validación puntual de ubicación, si se activa.
 - Seguridad para endpoints administrativos.
 
 ## Configuración
@@ -81,11 +82,12 @@ Salida fallida: código interno estable, mensaje seguro y contexto técnico sani
 3. Implementar servicio con caché en meta.
 4. Agregar ajuste de token sin exponerlo fuera de páginas necesarias.
 5. Mostrar marcador en detalle del driver.
-6. Implementar mapa admin con marcador arrastrable.
+6. Implementar mapa admin con marcador arrastrable y modo dual si hay GPS de entrega.
 7. Guardar corrección manual con nonce/capacidad.
 8. Añadir enlace de navegación por coordenadas usando opción soportada.
 9. Cargar SDK/estilos únicamente cuando se renderiza mapa.
 10. Documentar atribución requerida por Mapbox.
+11. Dibujar círculo geodésico del radio de validación si la función está activa.
 
 ## Criterios de aceptación
 
@@ -97,6 +99,8 @@ Salida fallida: código interno estable, mensaje seguro y contexto técnico sani
 - El token no aparece en logs ni páginas ajenas.
 - Mapa y atribución cumplen requisitos de Mapbox.
 - La UI ofrece dirección textual si JS o Mapbox fallan.
+- El mapa admin puede mostrar un segundo marcador 🟢 con la ubicación GPS registrada en la entrega.
+- El mapa admin dibuja un círculo 🟢 alrededor del destino con el radio configurado en la validación puntual.
 
 ## Riesgos
 
@@ -108,7 +112,8 @@ Salida fallida: código interno estable, mensaje seguro y contexto técnico sani
 
 ## Fuera de alcance
 
-- posición del conductor;
+- posición del conductor en vivo;
+- tracking continuo o ubicación en segundo plano;
 - navegación turn-by-turn embebida;
 - optimización multi-parada;
 - ETA;

@@ -84,7 +84,7 @@ class Localpilot
 
         } else {
 
-            $this->version = '1.0.0';
+            $this->version = '1.1.0-dev';
 
         }
 
@@ -192,6 +192,7 @@ class Localpilot
         // Maps / geocoding.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-mapbox-client.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-service.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/location/class-localpilot-location-validation-service.php';
 
         // Integrations.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-user-profile.php';

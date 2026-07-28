@@ -235,24 +235,6 @@ class Localpilot_My_Account {
 		$order_id = (int) $assignment->order_id;
 		$extra    = array();
 
-		// Process proof upload for complete/fail actions.
-		if ( in_array( $action, array( 'complete', 'fail' ), true ) ) {
-			$require_proof = 'yes' === get_option( 'lclplt_require_proof', 'yes' );
-			$has_file      = ! empty( $_FILES['lclplt_proof'] ) && ! empty( $_FILES['lclplt_proof']['name'] );
-
-			if ( $has_file ) {
-				$attachment_id = Localpilot_Proof_Service::handle_upload( $order_id, 'lclplt_proof', $driver_id );
-				if ( is_wp_error( $attachment_id ) ) {
-					wc_add_notice( $attachment_id->get_error_message(), 'error' );
-					return;
-				}
-				$extra['proof_attachment_id'] = $attachment_id;
-			} elseif ( $require_proof ) {
-				wc_add_notice( __( 'La evidencia (foto) es obligatoria para completar la entrega.', 'localpilot' ), 'error' );
-				return;
-			}
-		}
-
 		switch ( $action ) {
 			case 'accept':
 				$target = 'accepted';
@@ -272,6 +254,46 @@ class Localpilot_My_Account {
 				break;
 			default:
 				return;
+		}
+
+		// Validate one browser location at the moment of completion. This is
+		// intentionally before proof upload so a rejected request cannot leave
+		// an orphan attachment behind.
+		if ( 'complete' === $action ) {
+			$location_validation = Localpilot_Location_Validation_Service::validate(
+				$order_id,
+				isset( $_POST['lclplt_location_latitude'] ) ? wp_unslash( $_POST['lclplt_location_latitude'] ) : '',
+				isset( $_POST['lclplt_location_longitude'] ) ? wp_unslash( $_POST['lclplt_location_longitude'] ) : '',
+				isset( $_POST['lclplt_location_accuracy'] ) ? wp_unslash( $_POST['lclplt_location_accuracy'] ) : '',
+				isset( $_POST['lclplt_location_timestamp'] ) ? wp_unslash( $_POST['lclplt_location_timestamp'] ) : '',
+				isset( $_POST['lclplt_location_status'] ) ? wp_unslash( $_POST['lclplt_location_status'] ) : ''
+			);
+
+			$extra['location_validation'] = $location_validation;
+			$extra['location_driver_lat'] = isset( $_POST['lclplt_location_latitude'] ) ? sanitize_text_field( wp_unslash( $_POST['lclplt_location_latitude'] ) ) : '';
+			$extra['location_driver_lng'] = isset( $_POST['lclplt_location_longitude'] ) ? sanitize_text_field( wp_unslash( $_POST['lclplt_location_longitude'] ) ) : '';
+			if ( ! $location_validation['allowed'] ) {
+				wc_add_notice( Localpilot_Location_Validation_Service::get_error_message( $location_validation['status'] ), 'error' );
+				return;
+			}
+		}
+
+		// Process proof upload for complete/fail actions.
+		if ( in_array( $action, array( 'complete', 'fail' ), true ) ) {
+			$require_proof = 'yes' === get_option( 'lclplt_require_proof', 'yes' );
+			$has_file      = ! empty( $_FILES['lclplt_proof'] ) && ! empty( $_FILES['lclplt_proof']['name'] );
+
+			if ( $has_file ) {
+				$attachment_id = Localpilot_Proof_Service::handle_upload( $order_id, 'lclplt_proof', $driver_id );
+				if ( is_wp_error( $attachment_id ) ) {
+					wc_add_notice( $attachment_id->get_error_message(), 'error' );
+					return;
+				}
+				$extra['proof_attachment_id'] = $attachment_id;
+			} elseif ( $require_proof && 'complete' === $action ) {
+				wc_add_notice( __( 'La evidencia (foto) es obligatoria para completar la entrega.', 'localpilot' ), 'error' );
+				return;
+			}
 		}
 
 		$result = Localpilot_Delivery_Transition_Service::transition( $order_id, $target, $driver_id, $extra );

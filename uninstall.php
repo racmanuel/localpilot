@@ -83,6 +83,9 @@ function lclplt_uninstall() {
 		'lclplt_show_order_total',
 		'lclplt_require_received_by',
 		'lclplt_require_proof',
+		'lclplt_location_validation_enabled',
+		'lclplt_location_validation_radius',
+		'lclplt_location_validation_mode',
 		'lclplt_max_proof_size',
 		'lclplt_completed_order_status',
 		'lclplt_failed_order_status',
@@ -129,6 +132,13 @@ function lclplt_uninstall() {
 		'_lclplt_geocoded_address',
 		'_lclplt_geocoded_at',
 		'_lclplt_geocoding_status',
+		'_lclplt_location_validation_status',
+		'_lclplt_location_validation_distance',
+		'_lclplt_location_validation_radius',
+		'_lclplt_location_validation_accuracy',
+		'_lclplt_location_validation_at',
+		'_lclplt_delivery_location_lat',
+		'_lclplt_delivery_location_lng',
 	);
 
 	if ( function_exists( 'wc_get_container' ) ) {

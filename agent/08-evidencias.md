@@ -84,6 +84,7 @@ La biblioteca de medios de WordPress suele servir archivos por URL directa; marc
 - Un archivo no permitido se rechaza antes de cambiar estado.
 - Una carga válida queda asociada al pedido, asignación y evento.
 - Completar falla de forma segura si evidencia es obligatoria y falta.
+- La validación puntual de ubicación, cuando está activa, se procesa antes de subir la evidencia para evitar attachments huérfanos en una solicitud rechazada.
 - El admin autorizado puede revisar la imagen.
 - Clientes normales no reciben enlaces a evidencia.
 - Repetir el request no crea múltiples completados.

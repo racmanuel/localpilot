@@ -32,6 +32,10 @@
 - [ ] Notas y eventos se generan.
 - [ ] Emails se envían una sola vez.
 - [ ] Mapbox falla de forma no bloqueante.
+- [ ] Validación puntual de ubicación se ejecuta solo al completar y usa el destino geocodificado.
+- [ ] El radio y la política `warning`/`blocking` se leen de ajustes del servidor.
+- [ ] La validación no guarda tracking continuo ni recorridos.
+- [ ] El mapa admin muestra dos marcadores (destino 🔴 + GPS entrega 🟢) y un círculo del radio configurado.
 
 ## Experiencia nativa
 
@@ -55,6 +59,9 @@
 - [ ] Token Mapbox ausente de logs.
 - [ ] Política de IP/evidencia documentada.
 - [ ] Pruebas IDOR y CSRF aprobadas.
+- [ ] Coordenadas, precisión y timestamp se validan en servidor.
+- [ ] El resultado de ubicación no se acepta desde el frontend ni se expone a usuarios no autorizados.
+- [ ] HTTPS, permiso denegado, GPS no disponible y reintento están probados.
 
 ## QA
 
@@ -82,6 +89,7 @@
 - [ ] ZIP instala con un único directorio raíz.
 - [ ] Instalación limpia del ZIP aprobada.
 - [ ] Upgrade desde versión de prueba aprobado.
+- [ ] Si se incluye la validación puntual, su documentación, traducciones y pruebas LOC están incluidas.
 
 ## Go / No-Go
 

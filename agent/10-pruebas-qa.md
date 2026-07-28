@@ -47,6 +47,12 @@ La matriz parte de los metadatos confirmados del plugin:
 | PRF-02 | PHP renombrado JPG | rechazado |
 | MAIL-01 | Asignación | un email |
 | MAIL-02 | Falta recipient | transición no falla |
+| LOC-01 | Ubicación dentro del radio | `passed`, completado permitido |
+| LOC-02 | Ubicación fuera del radio en modo warning | advertencia registrada, completado permitido |
+| LOC-03 | Ubicación fuera del radio en modo blocking | completado rechazado |
+| LOC-04 | Permiso denegado/GPS no disponible | mensaje de reintento y política aplicada |
+| LOC-05 | Coordenadas manipuladas o timestamp inválido | resultado calculado/rechazado por servidor |
+| LOC-06 | Pedido sin coordenadas de destino | `no_destination`, no fatal y política documentada |
 | UI-01 | 320 px | acciones utilizables |
 | UN-01 | Desinstalar sin opt-in | datos conservados |
 
@@ -55,6 +61,10 @@ La matriz parte de los metadatos confirmados del plugin:
 ### Camino feliz
 
 Crear driver → crear pedido elegible → geocodificar → asignar → recibir email → abrir Mi cuenta → aceptar → iniciar → completar con receptor/evidencia → actualizar pedido → revisar nota/evento.
+
+Si la validación puntual está activa, al completar se obtiene una sola posición
+mediante el navegador. El servidor compara esa posición con el destino y
+registra únicamente el resumen de validación.
 
 ### Fallo
 
@@ -84,6 +94,8 @@ Asignar a A → A ve entrega → gestor reasigna a B → A pierde acceso → B r
 8. Probar uploads límite y maliciosos.
 9. Revisar accesibilidad básica.
 10. Ejecutar smoke test de activación, upgrade, desactivación y uninstall.
+11. Probar la validación puntual con radio configurable, precisión insuficiente, permiso denegado, ubicación fuera del radio y destino sin geocodificar.
+12. Confirmar que la validación no bloquea asignación, inicio, fallo de entrega ni el flujo cuando Mapbox está desactivado.
 
 ## Criterios de aceptación
 
@@ -110,6 +122,9 @@ Asignar a A → A ve entrega → gestor reasigna a B → A pierde acceso → B r
 - **Baja:** defectos cosméticos sin impacto operativo.
 
 No liberar 1.0.0 con incidencias bloqueantes o altas abiertas. Toda corrección bloqueante/alta debe incorporar una prueba de regresión.
+
+Para la versión de desarrollo 1.1, no aprobar la validación puntual sin pruebas
+negativas de servidor y una prueba móvil bajo HTTPS.
 
 ## Definición de terminado
 

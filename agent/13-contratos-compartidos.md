@@ -151,8 +151,58 @@ lclplt_mapbox_country
 lclplt_mapbox_language
 lclplt_auto_geocode
 lclplt_allow_manual_location
+lclplt_location_validation_enabled
+lclplt_location_validation_radius
+lclplt_location_validation_mode
 lclplt_delete_data_on_uninstall
 ```
+
+### Meta keys de ubicación
+
+```text
+_lclplt_delivery_latitude        — destino geocodificado
+_lclplt_delivery_longitude       — destino geocodificado
+_lclplt_delivery_location_lat    — GPS del repartidor al completar
+_lclplt_delivery_location_lng    — GPS del repartidor al completar
+_lclplt_location_validation_status
+_lclplt_location_validation_distance
+_lclplt_location_validation_radius
+_lclplt_location_validation_accuracy
+_lclplt_location_validation_at
+```
+
+## Validación puntual de ubicación
+
+No es GPS en vivo. Al completar una entrega, el navegador puede enviar una sola
+posición y el servidor calcula la distancia hasta las coordenadas del destino.
+
+```text
+lclplt_location_validation_enabled: yes|no
+lclplt_location_validation_radius: 10..5000 metros
+lclplt_location_validation_mode: warning|blocking
+```
+
+El cliente nunca envía un resultado confiable: `passed` o `outside_radius` se
+determinan en servidor mediante Haversine. Se conserva solo un resumen en el
+pedido (`status`, distancia, radio, precisión y fecha), no un historial de
+coordenadas.
+
+Resultados técnicos previstos:
+
+```text
+passed
+outside_radius
+permission_denied
+unavailable
+timeout
+stale
+low_accuracy
+no_destination
+disabled
+```
+
+En modo `warning`, la entrega puede continuar y el gestor revisa el resultado.
+En modo `blocking`, los resultados distintos de `passed` impiden completar.
 
 ## Idempotencia
 

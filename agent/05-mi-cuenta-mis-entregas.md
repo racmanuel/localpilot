@@ -11,6 +11,7 @@ Crear el endpoint nativo de WooCommerce para que el repartidor opere sus entrega
 - Servicio de transiciones.
 - Mapbox para detalle.
 - Evidencias para completar/fallar.
+- Validación puntual de ubicación al completar, si está activa.
 - Contratos de errores y estados.
 
 ## Endpoint
@@ -46,6 +47,7 @@ Mostrar solo lo necesario:
 - mapa;
 - acciones válidas;
 - evidencia/historial resumido cuando corresponda.
+- control de ubicación y reintento de permisos al completar, si está configurado.
 
 Nunca mostrar datos financieros sensibles, notas internas ajenas a LocalPilot o pedidos de otro repartidor.
 
@@ -82,6 +84,7 @@ Usar el localizador de templates existente o uno pequeño compatible con overrid
 8. Integrar mapa de forma lazy/condicional.
 9. Implementar estados vacíos y errores accesibles.
 10. Probar con temas clásicos y de bloques dentro del alcance.
+11. Capturar una sola posición al completar cuando la validación esté activa; mostrar reintento si el navegador deniega el permiso.
 
 ## Criterios de aceptación
 
@@ -94,6 +97,8 @@ Usar el localizador de templates existente o uno pequeño compatible con overrid
 - Los notices siguen el estilo de WooCommerce.
 - La vista es usable a 320 px y con teclado.
 - Mapbox solo se carga en el detalle que tiene coordenadas/token.
+- La ubicación se obtiene únicamente al completar; no se ejecuta `watchPosition()` ni tracking en segundo plano.
+- El formulario funciona bajo HTTPS y muestra una alternativa explícita según la política `warning`/`blocking`.
 
 ## Riesgos
 
