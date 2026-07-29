@@ -84,7 +84,7 @@ class Localpilot
 
         } else {
 
-            $this->version = '1.0.0';
+            $this->version = '1.1.6-dev';
 
         }
 
@@ -188,10 +188,12 @@ class Localpilot
 
         // Helpers.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/helpers/class-localpilot-capabilities.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/helpers/class-localpilot-event-presenter.php';
 
         // Maps / geocoding.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-mapbox-client.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-service.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/location/class-localpilot-location-validation-service.php';
 
         // Integrations.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-user-profile.php';

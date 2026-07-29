@@ -49,6 +49,15 @@ class Localpilot_Order_Delivery_Meta {
 	const GEOCODED_ADDRESS      = '_lclplt_geocoded_address';
 	const GEOCODED_AT           = '_lclplt_geocoded_at';
 	const GEOCODING_STATUS      = '_lclplt_geocoding_status';
+	const LOCATION_VALIDATION_STATUS   = '_lclplt_location_validation_status';
+	const LOCATION_VALIDATION_DISTANCE = '_lclplt_location_validation_distance';
+	const LOCATION_VALIDATION_RADIUS   = '_lclplt_location_validation_radius';
+	const LOCATION_VALIDATION_ACCURACY = '_lclplt_location_validation_accuracy';
+	const LOCATION_VALIDATION_AT       = '_lclplt_location_validation_at';
+	const LOCATION_VALIDATION_TARGET_LAT = '_lclplt_location_validation_target_lat';
+	const LOCATION_VALIDATION_TARGET_LNG = '_lclplt_location_validation_target_lng';
+	const DELIVERY_LOCATION_LAT         = '_lclplt_delivery_location_lat';
+	const DELIVERY_LOCATION_LNG         = '_lclplt_delivery_location_lng';
 
 	/**
 	 * All meta keys for iteration or bulk operations.
@@ -75,6 +84,15 @@ class Localpilot_Order_Delivery_Meta {
 			self::GEOCODED_ADDRESS,
 			self::GEOCODED_AT,
 			self::GEOCODING_STATUS,
+			self::LOCATION_VALIDATION_STATUS,
+			self::LOCATION_VALIDATION_DISTANCE,
+			self::LOCATION_VALIDATION_RADIUS,
+			self::LOCATION_VALIDATION_ACCURACY,
+			self::LOCATION_VALIDATION_AT,
+			self::LOCATION_VALIDATION_TARGET_LAT,
+			self::LOCATION_VALIDATION_TARGET_LNG,
+			self::DELIVERY_LOCATION_LAT,
+			self::DELIVERY_LOCATION_LNG,
 		);
 	}
 
@@ -237,6 +255,42 @@ class Localpilot_Order_Delivery_Meta {
 
 	public function get_geocoding_status() {
 		return $this->get( self::GEOCODING_STATUS );
+	}
+
+	public function get_location_validation_status() {
+		return $this->get( self::LOCATION_VALIDATION_STATUS );
+	}
+
+	public function get_location_validation_distance() {
+		return $this->get( self::LOCATION_VALIDATION_DISTANCE );
+	}
+
+	public function get_location_validation_radius() {
+		return $this->get( self::LOCATION_VALIDATION_RADIUS );
+	}
+
+	public function get_location_validation_accuracy() {
+		return $this->get( self::LOCATION_VALIDATION_ACCURACY );
+	}
+
+	public function get_location_validation_at() {
+		return $this->get( self::LOCATION_VALIDATION_AT );
+	}
+
+	public function get_location_validation_target_lat() {
+		return $this->get( self::LOCATION_VALIDATION_TARGET_LAT );
+	}
+
+	public function get_location_validation_target_lng() {
+		return $this->get( self::LOCATION_VALIDATION_TARGET_LNG );
+	}
+
+	public function get_delivery_location_lat() {
+		return $this->get( self::DELIVERY_LOCATION_LAT );
+	}
+
+	public function get_delivery_location_lng() {
+		return $this->get( self::DELIVERY_LOCATION_LNG );
 	}
 
 	/**

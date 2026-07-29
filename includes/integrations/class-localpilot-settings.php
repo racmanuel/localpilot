@@ -126,6 +126,42 @@ class Localpilot_Settings extends WC_Settings_Page {
 			),
 
 			array(
+				'title'    => __( 'Validar ubicación al completar', 'localpilot' ),
+				'desc'     => __( 'Obtener una ubicación puntual del repartidor al completar y compararla con el destino geocodificado.', 'localpilot' ),
+				'desc_tip' => __( 'No es seguimiento en vivo. Requiere HTTPS y permiso de ubicación en el navegador.', 'localpilot' ),
+				'id'       => 'lclplt_location_validation_enabled',
+				'type'     => 'checkbox',
+				'default'  => 'no',
+			),
+
+			array(
+				'title'    => __( 'Radio de validación', 'localpilot' ),
+				'desc'     => __( 'Distancia máxima permitida entre el repartidor y el destino, en metros.', 'localpilot' ),
+				'desc_tip' => __( 'Recomendado: 100 metros. La validación se calcula nuevamente en el servidor.', 'localpilot' ),
+				'id'       => 'lclplt_location_validation_radius',
+				'type'     => 'number',
+				'default'  => 100,
+				'custom_attributes' => array(
+					'min'  => 10,
+					'max'  => 5000,
+					'step' => 10,
+				),
+			),
+
+			array(
+				'title'    => __( 'Política si no se valida', 'localpilot' ),
+				'desc'     => __( 'Determina si una ubicación ausente o fuera del radio bloquea el completado.', 'localpilot' ),
+				'desc_tip' => __( 'Advertencia permite completar y deja el resultado registrado para revisión administrativa.', 'localpilot' ),
+				'id'       => 'lclplt_location_validation_mode',
+				'type'     => 'select',
+				'default'  => 'warning',
+				'options'  => array(
+					'warning' => __( 'Advertir y permitir completar', 'localpilot' ),
+					'blocking' => __( 'Bloquear hasta validar', 'localpilot' ),
+				),
+			),
+
+			array(
 				'title'    => __( 'Tamaño máximo de evidencia', 'localpilot' ),
 				'desc'     => __( 'Tamaño máximo en megabytes (MB) para cada archivo de evidencia subido.', 'localpilot' ),
 				'desc_tip' => __( 'Valor predeterminado: 5 MB. Límite recomendado: 10 MB.', 'localpilot' ),
@@ -308,6 +344,39 @@ class Localpilot_Settings extends WC_Settings_Page {
 			),
 
 			array(
+				'title'   => __( 'Rutas para repartidores', 'localpilot' ),
+				'desc'    => __( 'Permitir que el repartidor calcule bajo demanda una ruta desde su ubicación actual hasta el destino de una entrega activa.', 'localpilot' ),
+				'desc_tip'=> __( 'La ubicación se solicita una sola vez por cada cálculo y no se guarda en LocalPilot. Requiere HTTPS y puede generar consumo facturable en Mapbox Directions API.', 'localpilot' ),
+				'id'      => 'lclplt_enable_routes',
+				'type'    => 'checkbox',
+				'default' => 'no',
+			),
+
+			array(
+				'title'    => __( 'Perfil de ruta predeterminado', 'localpilot' ),
+				'desc'     => __( 'Medio de transporte utilizado inicialmente para calcular distancia y duración estimadas.', 'localpilot' ),
+				'desc_tip' => __( 'Auto con tráfico utiliza información de tráfico disponible. Las estimaciones dependen de la cobertura y condiciones de Mapbox.', 'localpilot' ),
+				'id'       => 'lclplt_route_default_profile',
+				'type'     => 'select',
+				'default'  => 'driving-traffic',
+				'options'  => array(
+					'driving-traffic' => __( 'Auto con tráfico', 'localpilot' ),
+					'driving'         => __( 'Auto', 'localpilot' ),
+					'cycling'         => __( 'Bicicleta', 'localpilot' ),
+					'walking'         => __( 'Caminando', 'localpilot' ),
+				),
+			),
+
+			array(
+				'title'   => __( 'Selector de perfil', 'localpilot' ),
+				'desc'    => __( 'Permitir que el repartidor cambie temporalmente entre auto, tráfico, bicicleta y caminando antes de calcular.', 'localpilot' ),
+				'desc_tip'=> __( 'El cambio solo afecta la ruta visible en esa página. No modifica los ajustes ni recalcula automáticamente.', 'localpilot' ),
+				'id'      => 'lclplt_route_profile_selector',
+				'type'    => 'checkbox',
+				'default' => 'yes',
+			),
+
+			array(
 				'type' => 'sectionend',
 				'id'   => 'lclplt_mapbox_options',
 			),
@@ -328,7 +397,15 @@ class Localpilot_Settings extends WC_Settings_Page {
 		$desc .= esc_html__( 'Necesitas un Access Token público desde tu cuenta de Mapbox. Se recomienda restringir el token por URL (origen HTTP) para evitar su uso no autorizado.', 'localpilot' );
 		$desc .= ' <a href="https://account.mapbox.com/access-tokens/" target="_blank" rel="noopener">';
 		$desc .= esc_html__( 'Crear token en Mapbox', 'localpilot' );
-		$desc .= '</a>.</p><p>';
+		$desc .= '</a>.</p><p><strong>';
+		$desc .= esc_html__( 'Rutas y consumo:', 'localpilot' );
+		$desc .= '</strong> ';
+		$desc .= esc_html__( 'Las rutas usan Mapbox Directions API y cada cálculo manual cuenta como una solicitud independiente. Usa un token público dedicado con los permisos mínimos, restringe los orígenes de producción y desarrollo, supervisa el consumo y revisa los precios y términos vigentes de Mapbox antes de activar esta función en producción.', 'localpilot' );
+		$desc .= '</p><p><strong>';
+		$desc .= esc_html__( 'Privacidad:', 'localpilot' );
+		$desc .= '</strong> ';
+		$desc .= esc_html__( 'LocalPilot no almacena la ubicación de origen, la geometría, la distancia ni la duración de las rutas calculadas por el repartidor.', 'localpilot' );
+		$desc .= '</p><p>';
 		$desc .= esc_html__( 'Atribución requerida por Mapbox: © Mapbox, © OpenStreetMap.', 'localpilot' );
 		$desc .= '</p>';
 		return $desc;

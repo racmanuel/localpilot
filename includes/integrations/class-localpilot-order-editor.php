@@ -132,6 +132,26 @@ class Localpilot_Order_Editor {
 	}
 
 	/**
+	 * Get a human-readable event label for the admin timeline.
+	 *
+	 * @param string $event_type Event type.
+	 * @return string
+	 */
+	public static function event_label( $event_type ) {
+		return Localpilot_Event_Presenter::label( $event_type );
+	}
+
+	/**
+	 * Get a Dashicon class for an event type.
+	 *
+	 * @param string $event_type Event type.
+	 * @return string
+	 */
+	public static function event_icon( $event_type ) {
+		return Localpilot_Event_Presenter::icon( $event_type );
+	}
+
+	/**
 	 * Handle delivery actions from the meta box.
 	 *
 	 * @param int      $order_id Order ID.
@@ -139,6 +159,11 @@ class Localpilot_Order_Editor {
 	 */
 	public function handle_actions( $order_id, $order ) {
 		if ( ! isset( $_POST['lclplt_delivery_action'] ) ) {
+			return;
+		}
+
+		$action = sanitize_key( wp_unslash( $_POST['lclplt_delivery_action'] ) );
+		if ( '' === $action ) {
 			return;
 		}
 
@@ -155,7 +180,6 @@ class Localpilot_Order_Editor {
 			return;
 		}
 
-		$action  = sanitize_key( $_POST['lclplt_delivery_action'] );
 		$allowed = array( 'assign', 'reassign', 'unassign', 'update_location' );
 
 		if ( ! in_array( $action, $allowed, true ) ) {
@@ -167,6 +191,12 @@ class Localpilot_Order_Editor {
 		$order_obj = wc_get_order( $order_id );
 		if ( ! $order_obj ) {
 			WC_Admin_Meta_Boxes::add_error( __( 'Pedido no encontrado.', 'localpilot' ) );
+			return;
+		}
+
+		$meta_obj = new Localpilot_Order_Delivery_Meta( $order_obj );
+		if ( Localpilot_Delivery_Status::is_terminal( $meta_obj->get_delivery_status() ) ) {
+			WC_Admin_Meta_Boxes::add_error( __( 'La entrega está cerrada y no se puede modificar.', 'localpilot' ) );
 			return;
 		}
 
@@ -197,12 +227,14 @@ class Localpilot_Order_Editor {
 				$lat = isset( $_POST['lclplt_correction_lat'] ) ? sanitize_text_field( wp_unslash( $_POST['lclplt_correction_lat'] ) ) : '';
 				$lng = isset( $_POST['lclplt_correction_lng'] ) ? sanitize_text_field( wp_unslash( $_POST['lclplt_correction_lng'] ) ) : '';
 
-				if ( ! is_numeric( $lat ) || ! is_numeric( $lng ) ) {
+				if ( ! is_numeric( $lat ) || ! is_numeric( $lng )
+					|| (float) $lat < -90 || (float) $lat > 90
+					|| (float) $lng < -180 || (float) $lng > 180
+				) {
 					WC_Admin_Meta_Boxes::add_error( __( 'Coordenadas no válidas.', 'localpilot' ) );
 					return;
 				}
 
-				$meta_obj = new Localpilot_Order_Delivery_Meta( $order_obj );
 				$meta_obj->set_bulk( array(
 					Localpilot_Order_Delivery_Meta::DELIVERY_LATITUDE  => (float) $lat,
 					Localpilot_Order_Delivery_Meta::DELIVERY_LONGITUDE => (float) $lng,
@@ -220,10 +252,9 @@ class Localpilot_Order_Editor {
 					'driver_id'      => $driver_id,
 					'user_id'        => $actor_id,
 					'event_type'     => 'delivery_location_updated',
-					'event_data'     => wp_json_encode( array(
-						'latitude'  => (float) $lat,
-						'longitude' => (float) $lng,
-					) ),
+					'event_data'     => array(
+						'source' => 'manual',
+					),
 				) );
 
 				$result = true;

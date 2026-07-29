@@ -86,6 +86,7 @@ class Localpilot_Public {
 		}
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/localpilot-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'dashicons' );
 
 	}
 
@@ -125,7 +126,11 @@ class Localpilot_Public {
 		}
 
 		$assignment = Localpilot_Assignment_Repository::get( $assignment_id );
-		if ( ! $assignment ) {
+		if ( ! $assignment || (int) $assignment->driver_id !== get_current_user_id() ) {
+			return;
+		}
+
+		if ( ! current_user_can( Localpilot_Capabilities::VIEW_ASSIGNED_DELIVERIES ) ) {
 			return;
 		}
 

@@ -9,11 +9,13 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Asigna pedidos de WooCommerce a repartidores locales, gestiona entregas desde Mi cuenta y registra evidencia con Mapbox.
+Assign orders to local drivers, track deliveries from My Account, collect photo proof with Mapbox, and calculate routes on demand. No admin access required for drivers.
 
 == Description ==
 
-LocalPilot extiende WooCommerce para operar entregas locales con repartidores. Está construido sobre las pantallas nativas de WooCommerce — sin tableros duplicados.
+LocalPilot extends WooCommerce to manage local deliveries with drivers — all from the native WooCommerce screens, no duplicate dashboards.
+
+Drivers work from **My Account → My Deliveries** on their phone. No admin panel access needed. They can accept orders, start deliveries, upload photo proof, validate their location with GPS, and calculate routes with Mapbox — all without leaving WooCommerce.
 
 = Funcionalidades actuales (v1.0.0) =
 
@@ -26,9 +28,20 @@ LocalPilot extiende WooCommerce para operar entregas locales con repartidores. E
 * **Eventos y notas**: cada acción genera un evento estructurado y una nota privada en el pedido.
 * **HPOS**: compatible con High-Performance Order Storage y almacenamiento heredado.
 * **Mi cuenta — Mis entregas**: los repartidores aceptan, inician, completan o fallan entregas desde el frontend.
+* **Resumen operativo para repartidores**: contadores por estado, filtros visibles y listado responsive con acciones contextuales.
 * **Mapbox**: geocodificación automática de direcciones al asignar, mapa interactivo en Mi cuenta y mapa admin con corrección manual de coordenadas.
 * **Evidencia fotográfica**: sube una foto (JPG/PNG/WebP) al completar o fallar una entrega. Vista previa en el panel del pedido.
 * **Correos nativos de WooCommerce**: 5 notificaciones configurables desde WooCommerce → Ajustes → Correos electrónicos (asignado, retirado, en reparto, completado, fallido).
+
+= En desarrollo (1.1.6-dev) =
+
+* **Validación puntual de ubicación**: al completar una entrega, solicita una ubicación del navegador y compara la distancia con el destino geocodificado. El radio y la política de advertencia/bloqueo son configurables. No es GPS en vivo ni guarda recorridos.
+* **Panel operativo rediseñado**: resumen, progreso, prueba de entrega, mapa de auditoría y timeline de actividad en el editor nativo del pedido.
+* **Auditoría geográfica histórica**: conserva el radio y destino usados al validar, muestra destino y GPS de entrega y bloquea cambios en entregas cerradas.
+* **Detalle de entrega rediseñado**: prioriza el mapa y la ruta cuando están disponibles, continúa con cliente y destino, y ofrece acciones rápidas, productos compactos, prueba de entrega, formularios contextuales y timeline traducido con diseño responsive.
+* **Rutas Mapbox bajo demanda**: en entregas activas, el repartidor puede calcular desde su ubicación una ruta con marcador de origen, línea, distancia y duración estimadas.
+* **Perfiles configurables**: auto con tráfico, auto, bicicleta y caminando, con perfil global y selector temporal opcional.
+* **Privacidad de rutas**: el origen, la geometría, la distancia y la duración solo existen mientras la página está abierta; LocalPilot no los guarda ni implementa tracking continuo.
 
 == Installation ==
 
@@ -53,7 +66,19 @@ No. Los repartidores pueden operar sus entregas desde Mi cuenta en el frontend (
 
 = ¿Qué datos almacena LocalPilot? =
 
-Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas, receptor, evidencia) y metadatos de perfil de repartidores. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
+Asignaciones, eventos del ciclo de entrega, metadatos en pedidos (coordenadas puntuales, snapshot del destino, receptor, evidencia y resumen de validación de ubicación) y metadatos de perfil de repartidores. La validación puntual no guarda un historial de recorridos y las coordenadas crudas no se incluyen en eventos, notas ni emails. Por defecto los datos se conservan al desinstalar. Puedes activar la eliminación en Ajustes → Datos y privacidad.
+
+= ¿Cuándo puede un repartidor calcular una ruta? =
+
+Únicamente al abrir el detalle de una entrega propia en estado Asignado, Aceptado o En reparto, siempre que Mapbox y Rutas para repartidores estén activados y el destino tenga coordenadas. La ruta requiere pulsar un botón: nunca se calcula automáticamente al abrir la página o cambiar de perfil.
+
+= ¿LocalPilot guarda la ruta o sigue al repartidor? =
+
+No. La ubicación se solicita una sola vez por cada cálculo y se usa directamente con Mapbox Directions API. LocalPilot no guarda el origen, la línea, la distancia ni la duración, no usa GPS en segundo plano y no implementa seguimiento continuo. La captura usada para calcular una ruta es independiente de la validación puntual realizada al completar.
+
+= ¿Las rutas de Mapbox pueden generar costos? =
+
+Sí. Cada cálculo manual es una solicitud a Mapbox Directions API y está sujeto a sus precios y términos vigentes. Usa un token público dedicado con scopes mínimos, restricciones por URL y monitoreo de consumo antes de habilitar rutas en producción.
 
 = ¿Soporta multisite? =
 
@@ -72,6 +97,26 @@ El repartidor deja de aparecer en el selector de asignaciones, pero sus entregas
 5. Email de pedido asignado en WooCommerce → Correos electrónicos.
 
 == Changelog ==
+
+= 1.1.6-dev =
+* Rutas Mapbox bajo demanda para entregas activas desde Mi cuenta.
+* Selector configurable entre auto con tráfico, auto, bicicleta y caminando.
+* Marcador temporal de origen, línea GeoJSON, distancia y duración estimadas.
+* Manejo accesible de permisos GPS y errores de Directions API con fallback externo.
+* Ubicación y resultados de ruta efímeros, sin persistencia ni tracking continuo.
+
+= 1.1.5-dev =
+* Detalle de Mis entregas rediseñado para entregas activas y cerradas.
+* Cliente, destino, navegación, productos y prueba de entrega organizados en tarjetas responsive.
+* Completar se presenta como acción principal y reportar fallo como panel secundario plegable.
+* Estados accesibles para GPS, carga de Mapbox y timeline de actividad traducido.
+
+= 1.1.4-dev =
+* Validación puntual de ubicación al completar una entrega.
+* Snapshot privado del destino y radio usados en la validación.
+* Panel LocalPilot rediseñado con resumen, progreso, prueba, mapa y timeline.
+* Mapa administrativo con marcador dual, círculo histórico, línea de distancia y encuadre automático.
+* Entregas terminales en modo de solo lectura.
 
 = 1.0.0 =
 * Versión inicial del MVP.

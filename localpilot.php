@@ -14,8 +14,8 @@
  * @wordpress-plugin
  * Plugin Name:       LocalPilot
  * Plugin URI:       https://racmanuel.dev/localpilot/
- * Description:       LocalPilot – Local Delivery Drivers for WooCommerce. Asigna pedidos a repartidores locales, gestiona entregas desde Mi cuenta, y registra evidencia con Mapbox.
- * Version:           1.0.0
+ * Description:       LocalPilot – Local Delivery Drivers for WooCommerce. Assign orders to local drivers, track deliveries from My Account, collect photo proof with Mapbox, and calculate routes on demand. No admin access required for drivers.
+ * Version:           1.1.6-dev
  * Author:            racmanuel
  * Requires at least: 6.9
  * Requires PHP:      7.4
@@ -39,7 +39,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'LOCALPILOT_VERSION', '1.0.0' );
+define( 'LOCALPILOT_VERSION', '1.1.6-dev' );
 
 /**
  * CSS framework selected during generation.

@@ -108,10 +108,15 @@ class Localpilot_My_Account {
 	 */
 	private static function render_list( $driver_id, $nonce_field ) {
 		$filter  = isset( $_GET['filter'] ) ? sanitize_key( $_GET['filter'] ) : 'pendientes'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$valid_filters = array( 'pendientes', 'en_reparto', 'entregadas', 'fallidas', 'todas' );
+		if ( ! in_array( $filter, $valid_filters, true ) ) {
+			$filter = 'pendientes';
+		}
 		$paged   = isset( $_GET['pag'] ) ? max( 1, (int) $_GET['pag'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$per_page = apply_filters( 'lclplt_deliveries_per_page', 20 );
 
 		$statuses = self::get_statuses_for_filter( $filter );
+		$filter_counts = self::get_filter_counts( $driver_id );
 		$result   = Localpilot_Delivery_Query::get_for_driver( $driver_id, array(
 			'statuses' => $statuses,
 			'page'     => $paged,
@@ -129,6 +134,7 @@ class Localpilot_My_Account {
 				'filter'      => $filter,
 				'nonce_field' => $nonce_field,
 				'driver_id'   => $driver_id,
+				'filter_counts' => $filter_counts,
 			),
 			'',
 			plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
@@ -149,7 +155,7 @@ class Localpilot_My_Account {
 			wc_add_notice( __( 'No tienes acceso a esta entrega.', 'localpilot' ), 'error' );
 			wc_get_template(
 				'my-account/deliveries/list.php',
-				array( 'deliveries' => array(), 'total' => 0, 'total_pages' => 0, 'current_page' => 1, 'per_page' => 20, 'filter' => 'pendientes', 'nonce_field' => $nonce_field, 'driver_id' => $driver_id ),
+				array( 'deliveries' => array(), 'total' => 0, 'total_pages' => 0, 'current_page' => 1, 'per_page' => 20, 'filter' => 'pendientes', 'filter_counts' => self::get_filter_counts( $driver_id ), 'nonce_field' => $nonce_field, 'driver_id' => $driver_id ),
 				'',
 				plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
 			);
@@ -235,24 +241,6 @@ class Localpilot_My_Account {
 		$order_id = (int) $assignment->order_id;
 		$extra    = array();
 
-		// Process proof upload for complete/fail actions.
-		if ( in_array( $action, array( 'complete', 'fail' ), true ) ) {
-			$require_proof = 'yes' === get_option( 'lclplt_require_proof', 'yes' );
-			$has_file      = ! empty( $_FILES['lclplt_proof'] ) && ! empty( $_FILES['lclplt_proof']['name'] );
-
-			if ( $has_file ) {
-				$attachment_id = Localpilot_Proof_Service::handle_upload( $order_id, 'lclplt_proof', $driver_id );
-				if ( is_wp_error( $attachment_id ) ) {
-					wc_add_notice( $attachment_id->get_error_message(), 'error' );
-					return;
-				}
-				$extra['proof_attachment_id'] = $attachment_id;
-			} elseif ( $require_proof ) {
-				wc_add_notice( __( 'La evidencia (foto) es obligatoria para completar la entrega.', 'localpilot' ), 'error' );
-				return;
-			}
-		}
-
 		switch ( $action ) {
 			case 'accept':
 				$target = 'accepted';
@@ -272,6 +260,46 @@ class Localpilot_My_Account {
 				break;
 			default:
 				return;
+		}
+
+		// Validate one browser location at the moment of completion. This is
+		// intentionally before proof upload so a rejected request cannot leave
+		// an orphan attachment behind.
+		if ( 'complete' === $action ) {
+			$location_validation = Localpilot_Location_Validation_Service::validate(
+				$order_id,
+				isset( $_POST['lclplt_location_latitude'] ) ? wp_unslash( $_POST['lclplt_location_latitude'] ) : '',
+				isset( $_POST['lclplt_location_longitude'] ) ? wp_unslash( $_POST['lclplt_location_longitude'] ) : '',
+				isset( $_POST['lclplt_location_accuracy'] ) ? wp_unslash( $_POST['lclplt_location_accuracy'] ) : '',
+				isset( $_POST['lclplt_location_timestamp'] ) ? wp_unslash( $_POST['lclplt_location_timestamp'] ) : '',
+				isset( $_POST['lclplt_location_status'] ) ? wp_unslash( $_POST['lclplt_location_status'] ) : ''
+			);
+
+			$extra['location_validation'] = $location_validation;
+			$extra['location_driver_lat'] = isset( $_POST['lclplt_location_latitude'] ) ? sanitize_text_field( wp_unslash( $_POST['lclplt_location_latitude'] ) ) : '';
+			$extra['location_driver_lng'] = isset( $_POST['lclplt_location_longitude'] ) ? sanitize_text_field( wp_unslash( $_POST['lclplt_location_longitude'] ) ) : '';
+			if ( ! $location_validation['allowed'] ) {
+				wc_add_notice( Localpilot_Location_Validation_Service::get_error_message( $location_validation['status'] ), 'error' );
+				return;
+			}
+		}
+
+		// Process proof upload for complete/fail actions.
+		if ( in_array( $action, array( 'complete', 'fail' ), true ) ) {
+			$require_proof = 'yes' === get_option( 'lclplt_require_proof', 'yes' );
+			$has_file      = ! empty( $_FILES['lclplt_proof'] ) && ! empty( $_FILES['lclplt_proof']['name'] );
+
+			if ( $has_file ) {
+				$attachment_id = Localpilot_Proof_Service::handle_upload( $order_id, 'lclplt_proof', $driver_id );
+				if ( is_wp_error( $attachment_id ) ) {
+					wc_add_notice( $attachment_id->get_error_message(), 'error' );
+					return;
+				}
+				$extra['proof_attachment_id'] = $attachment_id;
+			} elseif ( $require_proof && 'complete' === $action ) {
+				wc_add_notice( __( 'La evidencia (foto) es obligatoria para completar la entrega.', 'localpilot' ), 'error' );
+				return;
+			}
 		}
 
 		$result = Localpilot_Delivery_Transition_Service::transition( $order_id, $target, $driver_id, $extra );
@@ -306,5 +334,23 @@ class Localpilot_My_Account {
 			'todas'       => array( 'assigned', 'accepted', 'out_for_delivery', 'delivered', 'failed', 'cancelled' ),
 		);
 		return isset( $map[ $filter ] ) ? $map[ $filter ] : $map['pendientes'];
+	}
+
+	/**
+	 * Get counts used by the driver filter tabs and summary cards.
+	 *
+	 * @param int $driver_id Driver user ID.
+	 * @return array<string, int>
+	 */
+	private static function get_filter_counts( $driver_id ) {
+		$counts = Localpilot_Delivery_Query::count_by_driver_status( $driver_id );
+
+		return array(
+			'pendientes' => (int) ( $counts['assigned'] + $counts['accepted'] ),
+			'en_reparto' => (int) $counts['out_for_delivery'],
+			'entregadas' => (int) $counts['delivered'],
+			'fallidas'   => (int) $counts['failed'],
+			'todas'      => (int) array_sum( $counts ),
+		);
 	}
 }

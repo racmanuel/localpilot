@@ -113,11 +113,9 @@ class Localpilot_Geocoding_Service {
 			'driver_id'      => $driver_id,
 			'user_id'        => 0,
 			'event_type'     => 'delivery_geocoded',
-			'event_data'     => wp_json_encode( array(
-				'latitude'  => $result['latitude'],
-				'longitude' => $result['longitude'],
+			'event_data'     => array(
 				'status'    => 'success',
-			) ),
+			),
 		) );
 
 		return $result;
