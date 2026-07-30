@@ -176,14 +176,37 @@ class Localpilot_Email extends WC_Email {
 	}
 
 	/**
+	 * Resolve the order for rendering, falling back to a recent order for preview.
+	 *
+	 * @return WC_Order|false
+	 */
+	protected function get_preview_order() {
+		$order = wc_get_order( $this->order_id );
+		if ( $order ) {
+			return $order;
+		}
+
+		// Preview mode — grab the most recent customer order.
+		$orders = wc_get_orders(
+			array(
+				'limit'   => 1,
+				'orderby' => 'date',
+				'order'   => 'DESC',
+				'type'    => 'shop_order',
+			)
+		);
+		return ! empty( $orders ) ? reset( $orders ) : false;
+	}
+
+	/**
 	 * Get content HTML.
 	 *
 	 * @return string
 	 */
 	public function get_content_html() {
-		$order = wc_get_order( $this->order_id );
+		$order = $this->get_preview_order();
 		if ( ! $order ) {
-			return '<p>' . esc_html__( 'Para previsualizar este correo, asigna un pedido a un repartidor.', 'localpilot' ) . '</p>';
+			return '<p>' . esc_html__( 'Crea un pedido para ver la previsualización.', 'localpilot' ) . '</p>';
 		}
 
 		ob_start();
@@ -192,7 +215,7 @@ class Localpilot_Email extends WC_Email {
 			array(
 				'email'    => $this,
 				'order'    => $order,
-				'order_id' => $this->order_id,
+				'order_id' => $order->get_id(),
 				'extra'    => $this->extra,
 				'sent_to_admin' => false,
 				'plain_text'    => false,
@@ -210,9 +233,9 @@ class Localpilot_Email extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_plain() {
-		$order = wc_get_order( $this->order_id );
+		$order = $this->get_preview_order();
 		if ( ! $order ) {
-			return esc_html__( 'Para previsualizar este correo, asigna un pedido a un repartidor.', 'localpilot' );
+			return esc_html__( 'Crea un pedido para ver la previsualización.', 'localpilot' );
 		}
 
 		ob_start();
@@ -221,7 +244,7 @@ class Localpilot_Email extends WC_Email {
 			array(
 				'email'    => $this,
 				'order'    => $order,
-				'order_id' => $this->order_id,
+				'order_id' => $order->get_id(),
 				'extra'    => $this->extra,
 				'sent_to_admin' => false,
 				'plain_text'    => true,
