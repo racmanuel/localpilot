@@ -9,7 +9,7 @@
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 
 /**
@@ -17,7 +17,7 @@
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 class Localpilot_Order_Editor {
 
@@ -29,18 +29,6 @@ class Localpilot_Order_Editor {
 	const NONCE_ACTION = 'lclplt_order_delivery';
 
 	/**
-	 * Register hooks.
-	 */
-	public function __construct() {
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
-		add_action( 'woocommerce_process_shop_order_meta', array( $this, 'handle_actions' ), 50, 2 );
-
-		// Force the LocalPilot meta box to the normal (main) area, even if
-		// HPOS saved a user preference for the sidebar.
-		add_filter( "get_user_option_meta-box-order_{$this->get_order_screen()}", array( $this, 'force_normal_context' ), 100 );
-	}
-
-	/**
 	 * Get the order edit screen ID (HPOS-compatible).
 	 *
 	 * @return string
@@ -50,6 +38,15 @@ class Localpilot_Order_Editor {
 			return wc_get_page_screen_id( 'shop-order' );
 		}
 		return 'shop_order';
+	}
+
+	/**
+	 * Get the dynamic user-option filter that controls the meta box order.
+	 *
+	 * @return string
+	 */
+	public function get_meta_box_order_filter_hook() {
+		return "get_user_option_meta-box-order_{$this->get_order_screen()}";
 	}
 
 	/**
@@ -125,7 +122,7 @@ class Localpilot_Order_Editor {
 		$can_manage = current_user_can( Localpilot_Capabilities::MANAGE_DELIVERIES );
 
 		// Load the partial view.
-		$panel_path = plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'admin/partials/localpilot-order-delivery-panel.php';
+		$panel_path = plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/localpilot-order-delivery-panel.php';
 		if ( file_exists( $panel_path ) ) {
 			include $panel_path;
 		}

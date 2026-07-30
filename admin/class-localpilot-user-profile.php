@@ -9,7 +9,7 @@
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 
 /**
@@ -17,7 +17,7 @@
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 class Localpilot_User_Profile {
 
@@ -33,23 +33,6 @@ class Localpilot_User_Profile {
 	const VEHICLE_PLATE = '_lclplt_driver_vehicle_plate';
 	const CAPACITY      = '_lclplt_driver_capacity';
 	const NOTES         = '_lclplt_driver_notes';
-
-	/**
-	 * Constructor — register hooks.
-	 */
-	public function __construct() {
-		// Show fields in the user profile (self + admin edit).
-		add_action( 'show_user_profile', array( $this, 'render_fields' ) );
-		add_action( 'edit_user_profile', array( $this, 'render_fields' ) );
-
-		// Save fields.
-		add_action( 'personal_options_update', array( $this, 'save_fields' ) );
-		add_action( 'edit_user_profile_update', array( $this, 'save_fields' ) );
-
-		// Column in users list.
-		add_filter( 'manage_users_columns', array( $this, 'add_columns' ) );
-		add_filter( 'manage_users_custom_column', array( $this, 'render_column' ), 10, 3 );
-	}
 
 	/**
 	 * Check if a user should see/save driver fields.

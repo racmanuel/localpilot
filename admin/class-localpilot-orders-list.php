@@ -9,7 +9,7 @@
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 
 /**
@@ -17,30 +17,9 @@
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 class Localpilot_Orders_List {
-
-	/**
-	 * Constructor — register hooks for both HPOS and legacy screens.
-	 */
-	public function __construct() {
-		// HPOS columns.
-		add_filter( 'woocommerce_shop_order_list_table_columns', array( $this, 'add_columns' ), 20 );
-		add_action( 'woocommerce_shop_order_list_table_custom_column', array( $this, 'render_columns_hpos' ), 20, 2 );
-
-		// Legacy columns (posts). Hook suffix matches the CPT screen.
-		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_columns' ), 20 );
-		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'render_columns_legacy' ), 20, 2 );
-
-		// Filters — HPOS.
-		add_action( 'woocommerce_order_list_table_restrict_manage_orders', array( $this, 'render_filters_hpos' ), 20, 2 );
-		add_filter( 'woocommerce_shop_order_list_table_prepare_items_query_args', array( $this, 'apply_filters_hpos' ) );
-
-		// Filters — legacy.
-		add_action( 'restrict_manage_posts', array( $this, 'render_filters_legacy' ), 20 );
-		add_filter( 'request', array( $this, 'apply_filters_legacy' ) );
-	}
 
 	/**
 	 * Add LocalPilot columns to the orders list.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Email registry — registers emails with WooCommerce and hooks into domain events.
+ * Email registry callbacks for WooCommerce and delivery domain events.
  *
  * @since      1.0.0
  * @package    Localpilot
@@ -30,21 +30,6 @@ class Localpilot_Email_Registry {
 		'lclplt_email_completed'  => 'Localpilot_Email_Completed',
 		'lclplt_email_failed'     => 'Localpilot_Email_Failed',
 	);
-
-	/**
-	 * Hook into WooCommerce and domain events.
-	 */
-	public static function init() {
-		add_filter( 'woocommerce_email_classes', array( __CLASS__, 'register_emails' ) );
-
-		// Subscribe to domain events — handlers load WC_Emails on demand.
-		add_action( 'lclplt_delivery_assigned', array( __CLASS__, 'delivery_assigned' ), 20, 4 );
-		add_action( 'lclplt_delivery_unassigned', array( __CLASS__, 'delivery_unassigned' ), 20, 3 );
-		add_action( 'lclplt_delivery_reassigned', array( __CLASS__, 'delivery_reassigned' ), 20, 5 );
-		add_action( 'lclplt_delivery_started', array( __CLASS__, 'delivery_started' ), 20, 4 );
-		add_action( 'lclplt_delivery_completed', array( __CLASS__, 'delivery_completed' ), 20, 4 );
-		add_action( 'lclplt_delivery_failed', array( __CLASS__, 'delivery_failed' ), 20, 4 );
-	}
 
 	/**
 	 * Lazy-load the email class file for a given ID.

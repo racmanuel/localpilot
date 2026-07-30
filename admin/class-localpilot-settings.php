@@ -9,7 +9,7 @@
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 
 /**
@@ -17,7 +17,7 @@
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/admin
  */
 class Localpilot_Settings extends WC_Settings_Page {
 

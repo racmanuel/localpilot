@@ -2,15 +2,14 @@
 /**
  * My Account — Mis entregas endpoint.
  *
- * Registers the mis-entregas endpoint, adds a menu item in My Account,
- * renders a paginated list of deliveries for the current driver, and
- * processes accept/start/complete/fail transitions.
+ * Provides the mis-entregas endpoint callback, menu item, delivery rendering,
+ * and processing for accept/start/complete/fail transitions.
  *
  * @link       https://racmanuel.dev/
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/public
  */
 
 /**
@@ -18,7 +17,7 @@
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/integrations
+ * @subpackage Localpilot/public
  */
 class Localpilot_My_Account {
 
@@ -37,17 +36,12 @@ class Localpilot_My_Account {
 	const NONCE_ACTION = 'lclplt_delivery_action';
 
 	/**
-	 * Register endpoint, menu, and content callback.
+	 * Register the rewrite endpoint during init.
+	 *
+	 * The Localpilot core registers the corresponding menu and render callbacks.
 	 */
-	public static function register() {
-		// Register rewrite endpoint.
+	public static function register_endpoint() {
 		add_rewrite_endpoint( self::ENDPOINT, EP_ROOT | EP_PAGES );
-
-		// Add menu item.
-		add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'add_menu_item' ), 40 );
-
-		// Render endpoint content.
-		add_action( 'woocommerce_account_' . self::ENDPOINT . '_endpoint', array( __CLASS__, 'render' ) );
 	}
 
 	/**
@@ -137,7 +131,7 @@ class Localpilot_My_Account {
 				'filter_counts' => $filter_counts,
 			),
 			'',
-			plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
+			plugin_dir_path( dirname( __FILE__ ) ) . 'templates/'
 		);
 	}
 
@@ -157,7 +151,7 @@ class Localpilot_My_Account {
 				'my-account/deliveries/list.php',
 				array( 'deliveries' => array(), 'total' => 0, 'total_pages' => 0, 'current_page' => 1, 'per_page' => 20, 'filter' => 'pendientes', 'filter_counts' => self::get_filter_counts( $driver_id ), 'nonce_field' => $nonce_field, 'driver_id' => $driver_id ),
 				'',
-				plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
+				plugin_dir_path( dirname( __FILE__ ) ) . 'templates/'
 			);
 			return;
 		}
@@ -197,7 +191,7 @@ class Localpilot_My_Account {
 				'driver_id'    => $driver_id,
 			),
 			'',
-			plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/'
+			plugin_dir_path( dirname( __FILE__ ) ) . 'templates/'
 		);
 	}
 

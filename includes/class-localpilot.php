@@ -95,6 +95,8 @@ class Localpilot
         
         $this->set_locale();
         
+        $this->define_shared_hooks();
+
         
         $this->define_admin_hooks();
         
@@ -121,10 +123,18 @@ class Localpilot
      * - Localpilot_Event_Repository. Event data access.
      * - Localpilot_Driver_Role. Role and capability registration.
      * - Localpilot_Driver_Repository. Driver user queries.
-     * - Localpilot_User_Profile. Driver profile fields.
      * - Localpilot_Assignment_Service. Assign/reassign/unassign.
      * - Localpilot_Delivery_Query. Filtered delivery queries.
      * - Localpilot_Delivery_Transition_Service. State machine.
+     *
+     * Admin modules (loaded on is_admin()):
+     * - Localpilot_User_Profile. Admin driver profile fields.
+     * - Localpilot_Orders_List. Columns and filters in orders list.
+     * - Localpilot_Order_Editor. Meta box and admin actions.
+     * - Localpilot_Settings. WooCommerce settings tab.
+     *
+     * Public modules (loaded on front-end requests):
+     * - Localpilot_My_Account. Mis-entregas endpoint and rendering.
      *
      * Create an instance of the loader which will be used to register the hooks
      * with WordPress.
@@ -166,8 +176,8 @@ class Localpilot
          * classes or trigger WC-side effects at file-load time. They are safe
          * to require before WooCommerce itself has initialised.
          *
-         * The init_* guard methods (called on `init` / `woocommerce_init`)
-         * prevent runtime usage when WooCommerce is absent.
+         * Context-specific integrations are loaded by their respective hook
+         * definitions below, so API and frontend requests avoid admin code.
          * ------------------------------------------------------------------
          */
 
@@ -195,10 +205,7 @@ class Localpilot
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-service.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/location/class-localpilot-location-validation-service.php';
 
-        // Integrations.
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-user-profile.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-orders-list.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-order-editor.php';
+        // Cross-context integrations.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-email-registry.php';
 
         $this->loader = new Localpilot_Loader();
@@ -236,6 +243,14 @@ class Localpilot
     private function define_admin_hooks()
     {
 
+        if ( ! is_admin() ) {
+            return;
+        }
+
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-user-profile.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-orders-list.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-order-editor.php';
+
         $plugin_admin = new Localpilot_Admin($this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version());
 
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
@@ -247,26 +262,35 @@ class Localpilot
         // Register/re-register driver role and capabilities on admin_init.
         $this->loader->add_action('admin_init', $this, 'register_driver_role');
 
-        // User profile fields (driver-specific).
-        $this->loader->add_action('init', $this, 'init_user_profile');
+        $user_profile = new Localpilot_User_Profile();
+        $orders_list  = new Localpilot_Orders_List();
+        $order_editor = new Localpilot_Order_Editor();
 
-        // Register My Account endpoint.
-        $this->loader->add_action('init', $this, 'init_my_account');
+        // User profile fields (driver-specific).
+        $this->loader->add_action('show_user_profile', $user_profile, 'render_fields');
+        $this->loader->add_action('edit_user_profile', $user_profile, 'render_fields');
+        $this->loader->add_action('personal_options_update', $user_profile, 'save_fields');
+        $this->loader->add_action('edit_user_profile_update', $user_profile, 'save_fields');
+        $this->loader->add_filter('manage_users_columns', $user_profile, 'add_columns');
+        $this->loader->add_filter('manage_users_custom_column', $user_profile, 'render_column', 10, 3);
 
         // Register WooCommerce Settings tab (WC_Settings_Page parent needs WC loaded).
-        $this->loader->add_action('woocommerce_init', $this, 'init_settings_page');
+        $this->loader->add_filter('woocommerce_get_settings_pages', $this, 'register_settings_page');
 
-        // Email registry — subscribe to domain hooks.
-        $this->loader->add_action('woocommerce_init', $this, 'init_email_registry');
+        // Orders list columns and filters for HPOS and legacy order screens.
+        $this->loader->add_filter('woocommerce_shop_order_list_table_columns', $orders_list, 'add_columns', 20);
+        $this->loader->add_action('woocommerce_shop_order_list_table_custom_column', $orders_list, 'render_columns_hpos', 20, 2);
+        $this->loader->add_filter('manage_edit-shop_order_columns', $orders_list, 'add_columns', 20);
+        $this->loader->add_action('manage_shop_order_posts_custom_column', $orders_list, 'render_columns_legacy', 20, 2);
+        $this->loader->add_action('woocommerce_order_list_table_restrict_manage_orders', $orders_list, 'render_filters_hpos', 20, 2);
+        $this->loader->add_filter('woocommerce_shop_order_list_table_prepare_items_query_args', $orders_list, 'apply_filters_hpos');
+        $this->loader->add_action('restrict_manage_posts', $orders_list, 'render_filters_legacy', 20);
+        $this->loader->add_filter('request', $orders_list, 'apply_filters_legacy');
 
-        // Register orders list columns/filters.
-        $this->loader->add_action('init', $this, 'init_orders_list');
-
-        // Register order editor meta box.
-        $this->loader->add_action('init', $this, 'init_order_editor');
-
-        // Geocoding on delivery assignment.
-        $this->loader->add_action('lclplt_delivery_assigned', $this, 'maybe_geocode_order', 10, 4);
+        // Order editor meta box and delivery action handler.
+        $this->loader->add_action('add_meta_boxes', $order_editor, 'add_meta_box');
+        $this->loader->add_action('woocommerce_process_shop_order_meta', $order_editor, 'handle_actions', 50, 2);
+        $this->loader->add_filter($order_editor->get_meta_box_order_filter_hook(), $order_editor, 'force_normal_context', 100);
 
         // Show admin notice after successful delivery action redirect.
         $this->loader->add_action('admin_notices', $this, 'show_delivery_notice');
@@ -274,6 +298,27 @@ class Localpilot
         // Register the transient-based admin notice cleaner.
         $this->loader->add_action('admin_init', $this, 'clean_delivery_notice');
         
+    }
+
+    /**
+     * Register callbacks that must run in every WordPress execution context.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function define_shared_hooks()
+    {
+        // Email registry and delivery event notifications.
+        $this->loader->add_filter('woocommerce_email_classes', 'Localpilot_Email_Registry', 'register_emails');
+        $this->loader->add_action('lclplt_delivery_assigned', 'Localpilot_Email_Registry', 'delivery_assigned', 20, 4);
+        $this->loader->add_action('lclplt_delivery_unassigned', 'Localpilot_Email_Registry', 'delivery_unassigned', 20, 3);
+        $this->loader->add_action('lclplt_delivery_reassigned', 'Localpilot_Email_Registry', 'delivery_reassigned', 20, 5);
+        $this->loader->add_action('lclplt_delivery_started', 'Localpilot_Email_Registry', 'delivery_started', 20, 4);
+        $this->loader->add_action('lclplt_delivery_completed', 'Localpilot_Email_Registry', 'delivery_completed', 20, 4);
+        $this->loader->add_action('lclplt_delivery_failed', 'Localpilot_Email_Registry', 'delivery_failed', 20, 4);
+
+        // Geocoding on delivery assignment.
+        $this->loader->add_action('lclplt_delivery_assigned', $this, 'maybe_geocode_order', 10, 4);
     }
 
     /**
@@ -307,65 +352,6 @@ class Localpilot
     }
 
     /**
-     * Initialize the user profile integration for drivers.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function init_user_profile()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        new Localpilot_User_Profile();
-    }
-
-    /**
-     * Initialize the My Account endpoint.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function init_my_account()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-my-account.php';
-        Localpilot_My_Account::register();
-    }
-
-    /**
-     * Initialize the WooCommerce Settings tab.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function init_settings_page()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        // Loaded lazily via the filter callback to ensure WC_Settings_Page
-        // parent class is available.
-        add_filter( 'woocommerce_get_settings_pages', array( $this, 'register_settings_page' ) );
-    }
-
-    /**
-     * Init the email registry.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function init_email_registry()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        Localpilot_Email_Registry::init();
-    }
-
-    /**
      * Register the LocalPilot settings page.
      *
      * @param array $pages Existing settings pages.
@@ -373,37 +359,9 @@ class Localpilot
      */
     public function register_settings_page( $pages )
     {
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-settings.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-settings.php';
         $pages[] = new Localpilot_Settings();
         return $pages;
-    }
-
-    /**
-     * Initialize the orders list columns and filters.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function init_orders_list()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        new Localpilot_Orders_List();
-    }
-
-    /**
-     * Initialize the order editor meta box and handler.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function init_order_editor()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        new Localpilot_Order_Editor();
     }
 
     /**
@@ -480,11 +438,22 @@ class Localpilot
     private function define_public_hooks()
     {
 
+        if ( is_admin() ) {
+            return;
+        }
+
         $plugin_public = new Localpilot_Public($this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version());
+
+        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-localpilot-my-account.php';
 
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_mapbox_scripts');
+
+        // My Account endpoint, menu, and rendering.
+        $this->loader->add_action('init', 'Localpilot_My_Account', 'register_endpoint');
+        $this->loader->add_filter('woocommerce_account_menu_items', 'Localpilot_My_Account', 'add_menu_item', 40);
+        $this->loader->add_action('woocommerce_account_' . Localpilot_My_Account::ENDPOINT . '_endpoint', 'Localpilot_My_Account', 'render');
 
         
         // Shortcode name must be the same as in shortcode_atts() third parameter.
