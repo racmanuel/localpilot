@@ -182,8 +182,15 @@ class Localpilot_Email extends WC_Email {
 	 */
 	public function get_content_html() {
 		$order = wc_get_order( $this->order_id );
+
+		// Preview mode: use the most recent order for display.
 		if ( ! $order ) {
-			return '<p>' . esc_html__( 'Para previsualizar este correo, asigna un pedido a un repartidor.', 'localpilot' ) . '</p>';
+			$orders = wc_get_orders( array( 'limit' => 1 ) );
+			$order  = ! empty( $orders ) ? reset( $orders ) : false;
+		}
+
+		if ( ! $order ) {
+			return '<p>' . esc_html__( 'Crea un pedido primero para poder previsualizar este correo.', 'localpilot' ) . '</p>';
 		}
 
 		ob_start();
@@ -192,8 +199,12 @@ class Localpilot_Email extends WC_Email {
 			array(
 				'email'    => $this,
 				'order'    => $order,
-				'order_id' => $this->order_id,
+				'order_id' => $order->get_id(),
 				'extra'    => $this->extra,
+				'sent_to_admin'    => false,
+				'plain_text'       => false,
+				'email_heading'    => $this->get_heading(),
+				'additional_content' => $this->get_additional_content(),
 				'sent_to_admin'    => false,
 				'plain_text'       => false,
 				'email_heading'    => $this->get_heading(),
@@ -212,8 +223,15 @@ class Localpilot_Email extends WC_Email {
 	 */
 	public function get_content_plain() {
 		$order = wc_get_order( $this->order_id );
+
+		// Preview mode: use the most recent order for display.
 		if ( ! $order ) {
-			return esc_html__( 'Para previsualizar este correo, asigna un pedido a un repartidor.', 'localpilot' );
+			$orders = wc_get_orders( array( 'limit' => 1 ) );
+			$order  = ! empty( $orders ) ? reset( $orders ) : false;
+		}
+
+		if ( ! $order ) {
+			return esc_html__( 'Crea un pedido primero para poder previsualizar este correo.', 'localpilot' );
 		}
 
 		ob_start();
@@ -222,7 +240,7 @@ class Localpilot_Email extends WC_Email {
 			array(
 				'email'    => $this,
 				'order'    => $order,
-				'order_id' => $this->order_id,
+				'order_id' => $order->get_id(),
 				'extra'    => $this->extra,
 				'sent_to_admin'    => false,
 				'plain_text'       => true,
