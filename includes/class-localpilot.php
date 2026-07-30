@@ -208,6 +208,21 @@ class Localpilot
         // Cross-context integrations.
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/integrations/class-localpilot-email-registry.php';
 
+        // Admin handlers.
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-user-profile.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-orders-list.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-order-editor.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-schema-handler.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-role-handler.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-settings-handler.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-notice-handler.php';
+
+        // Map handlers.
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-handler.php';
+
+        // Public integrations.
+        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-localpilot-my-account.php';
+
         $this->loader = new Localpilot_Loader();
 
     }
@@ -247,17 +262,10 @@ class Localpilot
             return;
         }
 
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-user-profile.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-orders-list.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-order-editor.php';
-
         $plugin_admin = new Localpilot_Admin($this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version());
 
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
-
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-schema-handler.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-role-handler.php';
 
         // Schema upgrade on admin requests (catches plugin updates).
         $this->loader->add_action('admin_init', 'Localpilot_Schema_Handler', 'maybe_upgrade');
@@ -277,8 +285,6 @@ class Localpilot
         $this->loader->add_filter('manage_users_columns', $user_profile, 'add_columns');
         $this->loader->add_filter('manage_users_custom_column', $user_profile, 'render_column', 10, 3);
 
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-settings-handler.php';
-
         // Register WooCommerce Settings tab (WC_Settings_Page parent needs WC loaded).
         $this->loader->add_filter('woocommerce_get_settings_pages', 'Localpilot_Settings_Handler', 'register_settings_page');
 
@@ -296,11 +302,6 @@ class Localpilot
         $this->loader->add_action('add_meta_boxes', $order_editor, 'add_meta_box');
         $this->loader->add_action('woocommerce_process_shop_order_meta', $order_editor, 'handle_actions', 50, 2);
         $this->loader->add_filter($order_editor->get_meta_box_order_filter_hook(), $order_editor, 'force_normal_context', 100);
-
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-notice-handler.php';
-
-        // Show admin notice after successful delivery action redirect.
-        $this->loader->add_action('admin_notices', 'Localpilot_Notice_Handler', 'show_delivery_notice');
 
         // Register the transient-based admin notice cleaner.
         $this->loader->add_action('admin_init', 'Localpilot_Notice_Handler', 'clean_delivery_notice');
@@ -322,9 +323,7 @@ class Localpilot
         $this->loader->add_action('lclplt_delivery_reassigned', 'Localpilot_Email_Registry', 'delivery_reassigned', 20, 5);
         $this->loader->add_action('lclplt_delivery_started', 'Localpilot_Email_Registry', 'delivery_started', 20, 4);
         $this->loader->add_action('lclplt_delivery_completed', 'Localpilot_Email_Registry', 'delivery_completed', 20, 4);
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-handler.php';
 
-        // Geocoding on delivery assignment.
         $this->loader->add_action('lclplt_delivery_assigned', 'Localpilot_Geocoding_Handler', 'maybe_geocode_order', 10, 4);
     }
 
@@ -347,8 +346,6 @@ class Localpilot
         }
 
         $plugin_public = new Localpilot_Public($this->get_plugin_name(), $this->get_plugin_prefix(), $this->get_version());
-
-        require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-localpilot-my-account.php';
 
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
