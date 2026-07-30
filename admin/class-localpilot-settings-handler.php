@@ -25,7 +25,7 @@ class Localpilot_Settings_Handler {
 	 * @return array
 	 */
 	public static function register_settings_page( $pages ) {
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class-localpilot-settings.php';
+		require_once plugin_dir_path( __FILE__ ) . 'class-localpilot-settings.php';
 		$pages[] = new Localpilot_Settings();
 		return $pages;
 	}

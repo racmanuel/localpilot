@@ -342,7 +342,7 @@ class Localpilot_Orders_List {
 	private function get_order_ids_by_filters( $driver_id, $dlv_status ) {
 		global $wpdb;
 
-		$table  = Localpilot_DB_Schema::assignments_table();
+		$table  = $wpdb->prefix . 'lclplt_assignments';
 		$where  = array( '1=1' );
 		$params = array();
 

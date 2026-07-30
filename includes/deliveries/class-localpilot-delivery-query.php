@@ -55,7 +55,7 @@ class Localpilot_Delivery_Query {
 		);
 
 		$args    = wp_parse_args( $args, $defaults );
-		$table   = Localpilot_DB_Schema::assignments_table();
+		$table   = $wpdb->prefix . 'lclplt_assignments';
 		$where   = array( '1=1' );
 		$params  = array();
 
@@ -131,7 +131,7 @@ class Localpilot_Delivery_Query {
 		);
 
 		$args  = wp_parse_args( $args, $defaults );
-		$table = Localpilot_DB_Schema::assignments_table();
+		$table = $wpdb->prefix . 'lclplt_assignments';
 
 		if ( ! empty( $args['statuses'] ) && is_array( $args['statuses'] ) ) {
 			$items = Localpilot_Assignment_Repository::get_by_driver_statuses(
@@ -184,7 +184,7 @@ class Localpilot_Delivery_Query {
 
 		$statuses = Localpilot_Delivery_Status::all();
 		$counts  = array_fill_keys( $statuses, 0 );
-		$table   = Localpilot_DB_Schema::assignments_table();
+		$table   = $wpdb->prefix . 'lclplt_assignments';
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
@@ -217,7 +217,7 @@ class Localpilot_Delivery_Query {
 			return 0;
 		}
 
-		$table        = Localpilot_DB_Schema::assignments_table();
+		$table        = $wpdb->prefix . 'lclplt_assignments';
 		$placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 		$params       = array_merge( array( $driver_id ), $statuses );
 

@@ -27,7 +27,8 @@ class Localpilot_Event_Repository {
 	 * @return string
 	 */
 	private static function table() {
-		return Localpilot_DB_Schema::events_table();
+		global $wpdb;
+		return $wpdb->prefix . 'lclplt_events';
 	}
 
 	/**

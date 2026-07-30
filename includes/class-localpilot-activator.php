@@ -76,7 +76,6 @@ class Localpilot_Activator {
 
 			require_once $plugin_root . '/includes/deliveries/class-localpilot-delivery-status.php';
 			require_once $plugin_root . '/includes/helpers/class-localpilot-capabilities.php';
-			require_once $plugin_root . '/includes/database/class-localpilot-db-schema.php';
 			require_once $plugin_root . '/includes/database/class-localpilot-assignment-repository.php';
 			require_once $plugin_root . '/includes/database/class-localpilot-event-repository.php';
 			require_once $plugin_root . '/includes/deliveries/class-localpilot-driver-role.php';
@@ -194,8 +193,8 @@ class Localpilot_Activator {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$assignments_table = Localpilot_DB_Schema::assignments_table();
-		$events_table      = Localpilot_DB_Schema::events_table();
+		$assignments_table = $wpdb->prefix . 'lclplt_assignments';
+		$events_table      = $wpdb->prefix . 'lclplt_events';
 
 		$sql = "CREATE TABLE {$assignments_table} (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -239,7 +238,7 @@ class Localpilot_Activator {
 		dbDelta( $sql );
 		dbDelta( $sql_events );
 
-		update_option( Localpilot_DB_Schema::DB_VERSION_OPTION, Localpilot_DB_Schema::DB_VERSION );
+		update_option( 'lclplt_db_version', 1 );
 	}
 
 }

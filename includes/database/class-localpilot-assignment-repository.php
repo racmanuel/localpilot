@@ -27,7 +27,8 @@ class Localpilot_Assignment_Repository {
 	 * @return string
 	 */
 	private static function table() {
-		return Localpilot_DB_Schema::assignments_table();
+		global $wpdb;
+		return $wpdb->prefix . 'lclplt_assignments';
 	}
 
 	/**

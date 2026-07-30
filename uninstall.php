@@ -71,9 +71,10 @@ function lclplt_uninstall() {
 	}
 
 	// Drop custom tables.
-	if ( class_exists( 'Localpilot_DB_Schema' ) ) {
-		Localpilot_DB_Schema::drop_tables();
-	}
+	global $wpdb;
+	$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'lclplt_assignments' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'lclplt_events' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	delete_option( 'lclplt_db_version' );
 
 	// Remove plugin options.
 	$options = array(
