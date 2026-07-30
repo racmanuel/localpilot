@@ -6,7 +6,7 @@
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/admin
+ * @subpackage Localpilot/admin/emails
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/admin
+ * @subpackage Localpilot/admin/emails
  */
 class Localpilot_Emails {
 
