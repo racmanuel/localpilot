@@ -209,10 +209,8 @@ class Localpilot
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/location/class-localpilot-location-validation-service.php';
 
         /**
-         * Emails — WooCommerce email classes for delivery notifications.
+         * Emails — lazy-loaded via Localpilot_Emails when WC_Email is available.
          */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-emails.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-emails.php';
 
         /**

@@ -31,7 +31,17 @@ class Localpilot_Emails {
 			$emails = array();
 		}
 
-		if ( ! class_exists( 'Localpilot_Email' ) ) {
+		if ( ! class_exists( 'WC_Email' ) ) {
+			return $emails;
+		}
+
+		// Load email base class lazily.
+		$base_file = dirname( dirname( __FILE__ ) ) . '/emails/class-localpilot-email.php';
+		if ( file_exists( $base_file ) ) {
+			require_once $base_file;
+		}
+
+		if ( ! class_exists( 'Localpilot_Email', false ) ) {
 			return $emails;
 		}
 
