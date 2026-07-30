@@ -217,6 +217,7 @@ class Localpilot
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-started.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-completed.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-failed.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-emails.php';
 
         /**
          * Admin handlers — profile, orders list, order editor, settings, notices.
@@ -334,15 +335,10 @@ class Localpilot
     private function define_global_hooks()
     {
         /**
-         * Email handler — register emails with WooCommerce and respond to delivery events.
+         * Email classes — register with WooCommerce.
          */
-        $this->loader->add_filter('woocommerce_email_classes', 'Localpilot_Email', 'register_emails');
-        $this->loader->add_action('lclplt_delivery_assigned', 'Localpilot_Email_Assigned', 'on_delivery_assigned', 20, 4);
-        $this->loader->add_action('lclplt_delivery_unassigned', 'Localpilot_Email_Unassigned', 'on_delivery_unassigned', 20, 3);
-        $this->loader->add_action('lclplt_delivery_reassigned', 'Localpilot_Email', 'on_delivery_reassigned', 20, 5);
-        $this->loader->add_action('lclplt_delivery_started', 'Localpilot_Email_Started', 'on_delivery_started', 20, 4);
-        $this->loader->add_action('lclplt_delivery_completed', 'Localpilot_Email_Completed', 'on_delivery_completed', 20, 4);
-        $this->loader->add_action('lclplt_delivery_failed', 'Localpilot_Email_Failed', 'on_delivery_failed', 20, 4);
+        $emails = new Localpilot_Emails();
+        $this->loader->add_filter('woocommerce_email_classes', $emails, 'register_email_classes');
 
         /**
          * Geocoding handler — trigger geocoding when a delivery is assigned.

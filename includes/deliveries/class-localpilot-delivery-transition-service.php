@@ -438,8 +438,9 @@ class Localpilot_Delivery_Transition_Service {
 	 * @param int    $driver_id     Driver ID.
 	 * @param int    $assignment_id Assignment ID.
 	 * @param int    $event_id      Event ID.
+	 * @param array  $extra         Transition extra data.
 	 */
-	private static function fire_hook( $status, $order_id, $driver_id, $assignment_id, $event_id ) {
+	private static function fire_hook( $status, $order_id, $driver_id, $assignment_id, $event_id, $extra = array() ) {
 		switch ( $status ) {
 			case Localpilot_Delivery_Status::ACCEPTED:
 				do_action( 'lclplt_delivery_accepted', $order_id, $driver_id, $assignment_id, $event_id );
@@ -447,14 +448,46 @@ class Localpilot_Delivery_Transition_Service {
 
 			case Localpilot_Delivery_Status::OUT_FOR_DELIVERY:
 				do_action( 'lclplt_delivery_started', $order_id, $driver_id, $assignment_id, $event_id );
+
+				if ( 'yes' === get_option( 'lclplt_email_started_enabled', 'yes' ) ) {
+					Localpilot_Email::trigger_email( 'lclplt_email_started', $order_id, array(
+						'driver_id'     => $driver_id,
+						'assignment_id' => $assignment_id,
+						'event_id'      => $event_id,
+					) );
+				}
 				break;
 
 			case Localpilot_Delivery_Status::DELIVERED:
 				do_action( 'lclplt_delivery_completed', $order_id, $driver_id, $assignment_id, $event_id );
+
+				$driver = get_userdata( $driver_id );
+				$order  = wc_get_order( $order_id );
+				$meta   = $order ? new Localpilot_Order_Delivery_Meta( $order ) : null;
+
+				Localpilot_Email::trigger_email( 'lclplt_email_completed', $order_id, array(
+					'driver_id'     => $driver_id,
+					'driver_name'   => $driver ? $driver->display_name : '',
+					'received_by'   => $meta ? $meta->get_received_by() : '',
+					'assignment_id' => $assignment_id,
+					'event_id'      => $event_id,
+				) );
 				break;
 
 			case Localpilot_Delivery_Status::FAILED:
 				do_action( 'lclplt_delivery_failed', $order_id, $driver_id, $assignment_id, $event_id );
+
+				$driver = get_userdata( $driver_id );
+				$order  = wc_get_order( $order_id );
+				$meta   = $order ? new Localpilot_Order_Delivery_Meta( $order ) : null;
+
+				Localpilot_Email::trigger_email( 'lclplt_email_failed', $order_id, array(
+					'driver_id'     => $driver_id,
+					'driver_name'   => $driver ? $driver->display_name : '',
+					'failed_reason' => $meta ? $meta->get_failed_reason() : '',
+					'assignment_id' => $assignment_id,
+					'event_id'      => $event_id,
+				) );
 				break;
 		}
 	}

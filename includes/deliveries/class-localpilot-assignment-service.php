@@ -182,6 +182,17 @@ class Localpilot_Assignment_Service {
 		 */
 		do_action( 'lclplt_delivery_assigned', $order_id, $driver_id, $assignment_id, $event_id );
 
+		// Send email to the assigned driver.
+		$driver_user = get_userdata( $driver_id );
+		if ( $driver_user && ! empty( $driver_user->user_email ) ) {
+			Localpilot_Email::trigger_email( 'lclplt_email_assigned', $order_id, array(
+				'driver_email'  => $driver_user->user_email,
+				'driver_name'   => $driver_user->display_name,
+				'assignment_id' => $assignment_id,
+				'event_id'      => $event_id,
+			) );
+		}
+
 		return $assignment_id;
 	}
 
@@ -324,6 +335,26 @@ class Localpilot_Assignment_Service {
 		 */
 		do_action( 'lclplt_delivery_reassigned', $order_id, $old_driver_id, $new_driver_id, $new_assignment_id, $event_id );
 
+		// Notify the old driver.
+		$old_driver = get_userdata( $old_driver_id );
+		if ( $old_driver && ! empty( $old_driver->user_email ) ) {
+			Localpilot_Email::trigger_email( 'lclplt_email_unassigned', $order_id, array(
+				'driver_email' => $old_driver->user_email,
+				'driver_name'  => $old_driver->display_name,
+			) );
+		}
+
+		// Notify the new driver.
+		$new_driver = get_userdata( $new_driver_id );
+		if ( $new_driver && ! empty( $new_driver->user_email ) ) {
+			Localpilot_Email::trigger_email( 'lclplt_email_assigned', $order_id, array(
+				'driver_email'  => $new_driver->user_email,
+				'driver_name'   => $new_driver->display_name,
+				'assignment_id' => $new_assignment_id,
+				'event_id'      => $event_id,
+			) );
+		}
+
 		return $new_assignment_id;
 	}
 
@@ -414,6 +445,15 @@ class Localpilot_Assignment_Service {
 		 * @param int $event_id      Event ID.
 		 */
 		do_action( 'lclplt_delivery_unassigned', $order_id, $old_driver_id, $event_id );
+
+		// Notify the previous driver.
+		$old_driver = get_userdata( $old_driver_id );
+		if ( $old_driver && ! empty( $old_driver->user_email ) ) {
+			Localpilot_Email::trigger_email( 'lclplt_email_unassigned', $order_id, array(
+				'driver_email' => $old_driver->user_email,
+				'driver_name'  => $old_driver->display_name,
+			) );
+		}
 
 		return true;
 	}

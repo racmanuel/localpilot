@@ -24,22 +24,6 @@ class Localpilot_Email_Assigned extends Localpilot_Email {
 		);
 	}
 
-	/**
-	 * Domain event handler — hooked to lclplt_delivery_assigned.
-	 */
-	public static function on_delivery_assigned( $order_id, $driver_id, $assignment_id, $event_id ) {
-		$driver = get_userdata( $driver_id );
-		if ( ! $driver || empty( $driver->user_email ) ) {
-			return;
-		}
-		self::trigger_static( 'lclplt_email_assigned', $order_id, array(
-			'driver_email'  => $driver->user_email,
-			'driver_name'   => $driver->display_name,
-			'assignment_id' => $assignment_id,
-			'event_id'      => $event_id,
-		) );
-	}
-
 	public function trigger( $order_id, $extra = array() ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
