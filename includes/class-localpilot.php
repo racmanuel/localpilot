@@ -212,11 +212,7 @@ class Localpilot
          * Emails — WooCommerce email classes for delivery notifications.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-assigned.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-unassigned.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-started.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-completed.php';
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-failed.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-emails.php';
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-emails.php';
 
         /**

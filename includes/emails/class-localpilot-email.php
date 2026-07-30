@@ -26,6 +26,20 @@ class Localpilot_Email extends WC_Email {
 	protected $lclplt_template;
 
 	/**
+	 * How to resolve the recipient: 'driver', 'customer', 'admin', or 'custom'.
+	 *
+	 * @var string
+	 */
+	protected $recipient_type = 'admin';
+
+	/**
+	 * Optional option name to check before sending (e.g. lclplt_email_started_enabled).
+	 *
+	 * @var string
+	 */
+	protected $option_enabled = '';
+
+	/**
 	 * Order ID passed to trigger().
 	 *
 	 * @var int
@@ -45,17 +59,20 @@ class Localpilot_Email extends WC_Email {
 	 * @param string $id            Email ID.
 	 * @param array  $params        {
 	 *     Optional parameters.
-	 *     @type string $title       Email title.
-	 *     @type string $description Description.
-	 *     @type string $subject     Default subject.
-	 *     @type string $heading     Default heading.
-	 *     @type string $template    Template slug (without prefix).
-	 *     @type string $recipient   Default recipient.
+	 *     @type string $title          Email title.
+	 *     @type string $description    Description.
+	 *     @type string $subject        Default subject.
+	 *     @type string $heading        Default heading.
+	 *     @type string $template       Template slug (without prefix).
+	 *     @type string $recipient      Default recipient.
+	 *     @type string $recipient_type 'driver', 'customer', 'admin', or 'custom'.
+	 *     @type string $option_enabled Extra option to check before sending.
+	 *     @type bool   $customer_email Whether this is sent to the customer.
 	 * }
 	 */
 	public function __construct( $id, $params = array() ) {
 		$this->id             = $id;
-		$this->customer_email = false;
+		$this->customer_email = ! empty( $params['customer_email'] );
 		$this->enabled        = $this->get_option( 'enabled', 'yes' );
 
 		if ( isset( $params['title'] ) ) {
@@ -78,8 +95,13 @@ class Localpilot_Email extends WC_Email {
 		if ( isset( $params['recipient'] ) ) {
 			$this->recipient = $params['recipient'];
 		}
+		if ( isset( $params['recipient_type'] ) ) {
+			$this->recipient_type = $params['recipient_type'];
+		}
+		if ( isset( $params['option_enabled'] ) ) {
+			$this->option_enabled = $params['option_enabled'];
+		}
 
-		// Use our plugin's template directory as fallback.
 		$this->template_base = plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/';
 
 		parent::__construct();
@@ -103,6 +125,33 @@ class Localpilot_Email extends WC_Email {
 		$this->placeholders['{order_number}'] = $order->get_order_number();
 		$this->placeholders['{order_date}']   = wc_format_datetime( $order->get_date_created() );
 
+		// Resolve recipient.
+		switch ( $this->recipient_type ) {
+			case 'driver':
+				if ( ! empty( $extra['driver_email'] ) ) {
+					$this->recipient = $extra['driver_email'];
+				} else {
+					$assignment = Localpilot_Assignment_Repository::get_active_by_order( $order_id );
+					if ( $assignment && $assignment->driver_id ) {
+						$driver = get_userdata( $assignment->driver_id );
+						if ( $driver ) {
+							$this->recipient = $driver->user_email;
+						}
+					}
+				}
+				break;
+
+			case 'customer':
+				$this->recipient = $order->get_billing_email();
+				break;
+
+			case 'admin':
+				if ( ! $this->get_recipient() ) {
+					$this->recipient = get_option( 'admin_email' );
+				}
+				break;
+		}
+
 		if ( $this->is_enabled() && $this->get_recipient() ) {
 			$this->send(
 				$this->get_recipient(),
@@ -112,6 +161,16 @@ class Localpilot_Email extends WC_Email {
 				$this->get_attachments()
 			);
 		}
+	}
+
+	/**
+	 * Check if the email is enabled, considering an extra option if set.
+	 */
+	public function is_enabled() {
+		if ( $this->option_enabled && 'yes' !== get_option( $this->option_enabled, 'yes' ) ) {
+			return false;
+		}
+		return parent::is_enabled();
 	}
 
 	/**
