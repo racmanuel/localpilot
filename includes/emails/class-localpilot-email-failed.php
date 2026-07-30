@@ -25,6 +25,23 @@ class Localpilot_Email_Failed extends Localpilot_Email {
 		);
 	}
 
+	/**
+	 * Domain event handler — hooked to lclplt_delivery_failed.
+	 */
+	public static function on_delivery_failed( $order_id, $driver_id, $assignment_id, $event_id ) {
+		$driver = get_userdata( $driver_id );
+		$order  = wc_get_order( $order_id );
+		$meta   = $order ? new Localpilot_Order_Delivery_Meta( $order ) : null;
+
+		self::trigger_static( 'lclplt_email_failed', $order_id, array(
+			'driver_id'     => $driver_id,
+			'driver_name'   => $driver ? $driver->display_name : '',
+			'failed_reason' => $meta ? $meta->get_failed_reason() : '',
+			'assignment_id' => $assignment_id,
+			'event_id'      => $event_id,
+		) );
+	}
+
 	public function trigger( $order_id, $extra = array() ) {
 		$recipient = $this->get_recipient();
 		if ( ! $recipient ) {

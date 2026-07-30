@@ -25,6 +25,23 @@ class Localpilot_Email_Completed extends Localpilot_Email {
 		);
 	}
 
+	/**
+	 * Domain event handler — hooked to lclplt_delivery_completed.
+	 */
+	public static function on_delivery_completed( $order_id, $driver_id, $assignment_id, $event_id ) {
+		$driver = get_userdata( $driver_id );
+		$order  = wc_get_order( $order_id );
+		$meta   = $order ? new Localpilot_Order_Delivery_Meta( $order ) : null;
+
+		self::trigger_static( 'lclplt_email_completed', $order_id, array(
+			'driver_id'     => $driver_id,
+			'driver_name'   => $driver ? $driver->display_name : '',
+			'received_by'   => $meta ? $meta->get_received_by() : '',
+			'assignment_id' => $assignment_id,
+			'event_id'      => $event_id,
+		) );
+	}
+
 	public function trigger( $order_id, $extra = array() ) {
 		$recipient = $this->get_recipient();
 		if ( ! $recipient ) {

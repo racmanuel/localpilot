@@ -24,6 +24,20 @@ class Localpilot_Email_Unassigned extends Localpilot_Email {
 		);
 	}
 
+	/**
+	 * Domain event handler — hooked to lclplt_delivery_unassigned and delivery_reassigned.
+	 */
+	public static function on_delivery_unassigned( $order_id, $old_driver_id, $event_id ) {
+		$driver = get_userdata( $old_driver_id );
+		if ( ! $driver || empty( $driver->user_email ) ) {
+			return;
+		}
+		self::trigger_static( 'lclplt_email_unassigned', $order_id, array(
+			'driver_email' => $driver->user_email,
+			'driver_name'  => $driver->display_name,
+		) );
+	}
+
 	public function trigger( $order_id, $extra = array() ) {
 		$driver_email = ! empty( $extra['driver_email'] ) ? $extra['driver_email'] : '';
 		if ( ! $driver_email ) {

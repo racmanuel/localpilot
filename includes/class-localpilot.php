@@ -209,9 +209,14 @@ class Localpilot
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/location/class-localpilot-location-validation-service.php';
 
         /**
-         * Cross-context integrations — email delivery event responses.
+         * Emails — WooCommerce email classes for delivery notifications.
          */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-handler.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-assigned.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-unassigned.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-started.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-completed.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-email-failed.php';
 
         /**
          * Admin handlers — profile, orders list, order editor, settings, notices.
@@ -331,14 +336,13 @@ class Localpilot
         /**
          * Email handler — register emails with WooCommerce and respond to delivery events.
          */
-        $email_handler = new Localpilot_Email_Handler();
-        $this->loader->add_filter('woocommerce_email_classes', $email_handler, 'register_emails');
-        $this->loader->add_action('lclplt_delivery_assigned', $email_handler, 'delivery_assigned', 20, 4);
-        $this->loader->add_action('lclplt_delivery_unassigned', $email_handler, 'delivery_unassigned', 20, 3);
-        $this->loader->add_action('lclplt_delivery_reassigned', $email_handler, 'delivery_reassigned', 20, 5);
-        $this->loader->add_action('lclplt_delivery_started', $email_handler, 'delivery_started', 20, 4);
-        $this->loader->add_action('lclplt_delivery_completed', $email_handler, 'delivery_completed', 20, 4);
-        $this->loader->add_action('lclplt_delivery_failed', $email_handler, 'delivery_failed', 20, 4);
+        $this->loader->add_filter('woocommerce_email_classes', 'Localpilot_Email', 'register_emails');
+        $this->loader->add_action('lclplt_delivery_assigned', 'Localpilot_Email_Assigned', 'on_delivery_assigned', 20, 4);
+        $this->loader->add_action('lclplt_delivery_unassigned', 'Localpilot_Email_Unassigned', 'on_delivery_unassigned', 20, 3);
+        $this->loader->add_action('lclplt_delivery_reassigned', 'Localpilot_Email', 'on_delivery_reassigned', 20, 5);
+        $this->loader->add_action('lclplt_delivery_started', 'Localpilot_Email_Started', 'on_delivery_started', 20, 4);
+        $this->loader->add_action('lclplt_delivery_completed', 'Localpilot_Email_Completed', 'on_delivery_completed', 20, 4);
+        $this->loader->add_action('lclplt_delivery_failed', 'Localpilot_Email_Failed', 'on_delivery_failed', 20, 4);
 
         /**
          * Geocoding handler — trigger geocoding when a delivery is assigned.

@@ -25,6 +25,20 @@ class Localpilot_Email_Started extends Localpilot_Email {
 		$this->customer_email = true;
 	}
 
+	/**
+	 * Domain event handler — hooked to lclplt_delivery_started.
+	 */
+	public static function on_delivery_started( $order_id, $driver_id, $assignment_id, $event_id ) {
+		if ( 'yes' !== get_option( 'lclplt_email_started_enabled', 'yes' ) ) {
+			return;
+		}
+		self::trigger_static( 'lclplt_email_started', $order_id, array(
+			'driver_id'     => $driver_id,
+			'assignment_id' => $assignment_id,
+			'event_id'      => $event_id,
+		) );
+	}
+
 	public function trigger( $order_id, $extra = array() ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {

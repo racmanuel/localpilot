@@ -218,4 +218,56 @@ class Localpilot_Email extends WC_Email {
 		$address = get_option( 'woocommerce_email_from_address' );
 		return $address ? $address : get_option( 'admin_email' );
 	}
+
+	/**
+	 * Register all LocalPilot email classes with WooCommerce.
+	 *
+	 * @param array $emails Existing email classes.
+	 * @return array
+	 */
+	public static function register_emails( $emails ) {
+		$emails['lclplt_email_assigned']   = new Localpilot_Email_Assigned();
+		$emails['lclplt_email_unassigned'] = new Localpilot_Email_Unassigned();
+		$emails['lclplt_email_started']    = new Localpilot_Email_Started();
+		$emails['lclplt_email_completed']  = new Localpilot_Email_Completed();
+		$emails['lclplt_email_failed']     = new Localpilot_Email_Failed();
+		return $emails;
+	}
+
+	/**
+	 * Get a WooCommerce email instance and trigger it.
+	 *
+	 * @param string $email_id Email ID.
+	 * @param int    $order_id Order ID.
+	 * @param array  $extra    Extra data.
+	 */
+	protected static function trigger_static( $email_id, $order_id, $extra = array() ) {
+		$emails = WC_Emails::instance()->get_emails();
+		if ( isset( $emails[ $email_id ] ) ) {
+			$emails[ $email_id ]->trigger( $order_id, $extra );
+		}
+	}
+
+	/**
+	 * Domain event for reassignment — notifies old and new driver.
+	 *
+	 * @param int $order_id         Order ID.
+	 * @param int $old_driver_id    Previous driver ID.
+	 * @param int $new_driver_id    New driver ID.
+	 * @param int $new_assignment_id New assignment ID.
+	 * @param int $event_id         Event ID.
+	 */
+	public static function on_delivery_reassigned( $order_id, $old_driver_id, $new_driver_id, $new_assignment_id, $event_id ) {
+		Localpilot_Email_Unassigned::on_delivery_unassigned( $order_id, $old_driver_id, $event_id );
+
+		$new_driver = get_userdata( $new_driver_id );
+		if ( $new_driver && ! empty( $new_driver->user_email ) ) {
+			self::trigger_static( 'lclplt_email_assigned', $order_id, array(
+				'driver_email'  => $new_driver->user_email,
+				'driver_name'   => $new_driver->display_name,
+				'assignment_id' => $new_assignment_id,
+				'event_id'      => $event_id,
+			) );
+		}
+	}
 }
