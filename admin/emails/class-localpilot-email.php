@@ -181,12 +181,17 @@ class Localpilot_Email extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_html() {
+		$order = wc_get_order( $this->order_id );
+		if ( ! $order ) {
+			return '<p>' . esc_html__( 'Para previsualizar este correo, asigna un pedido a un repartidor.', 'localpilot' ) . '</p>';
+		}
+
 		ob_start();
 		wc_get_template(
 			$this->template_html,
 			array(
 				'email'    => $this,
-				'order'    => wc_get_order( $this->order_id ),
+				'order'    => $order,
 				'order_id' => $this->order_id,
 				'extra'    => $this->extra,
 				'sent_to_admin' => false,
@@ -205,12 +210,17 @@ class Localpilot_Email extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_plain() {
+		$order = wc_get_order( $this->order_id );
+		if ( ! $order ) {
+			return esc_html__( 'Para previsualizar este correo, asigna un pedido a un repartidor.', 'localpilot' );
+		}
+
 		ob_start();
 		wc_get_template(
 			$this->template_plain,
 			array(
 				'email'    => $this,
-				'order'    => wc_get_order( $this->order_id ),
+				'order'    => $order,
 				'order_id' => $this->order_id,
 				'extra'    => $this->extra,
 				'sent_to_admin' => false,
