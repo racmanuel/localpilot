@@ -256,11 +256,14 @@ class Localpilot
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-schema-handler.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-role-handler.php';
+
         // Schema upgrade on admin requests (catches plugin updates).
-        $this->loader->add_action('admin_init', $this, 'maybe_upgrade_schema');
+        $this->loader->add_action('admin_init', 'Localpilot_Schema_Handler', 'maybe_upgrade');
 
         // Register/re-register driver role and capabilities on admin_init.
-        $this->loader->add_action('admin_init', $this, 'register_driver_role');
+        $this->loader->add_action('admin_init', 'Localpilot_Role_Handler', 'register');
 
         $user_profile = new Localpilot_User_Profile();
         $orders_list  = new Localpilot_Orders_List();
@@ -274,8 +277,10 @@ class Localpilot
         $this->loader->add_filter('manage_users_columns', $user_profile, 'add_columns');
         $this->loader->add_filter('manage_users_custom_column', $user_profile, 'render_column', 10, 3);
 
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-settings-handler.php';
+
         // Register WooCommerce Settings tab (WC_Settings_Page parent needs WC loaded).
-        $this->loader->add_filter('woocommerce_get_settings_pages', $this, 'register_settings_page');
+        $this->loader->add_filter('woocommerce_get_settings_pages', 'Localpilot_Settings_Handler', 'register_settings_page');
 
         // Orders list columns and filters for HPOS and legacy order screens.
         $this->loader->add_filter('woocommerce_shop_order_list_table_columns', $orders_list, 'add_columns', 20);
@@ -292,11 +297,13 @@ class Localpilot
         $this->loader->add_action('woocommerce_process_shop_order_meta', $order_editor, 'handle_actions', 50, 2);
         $this->loader->add_filter($order_editor->get_meta_box_order_filter_hook(), $order_editor, 'force_normal_context', 100);
 
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-notice-handler.php';
+
         // Show admin notice after successful delivery action redirect.
-        $this->loader->add_action('admin_notices', $this, 'show_delivery_notice');
+        $this->loader->add_action('admin_notices', 'Localpilot_Notice_Handler', 'show_delivery_notice');
 
         // Register the transient-based admin notice cleaner.
-        $this->loader->add_action('admin_init', $this, 'clean_delivery_notice');
+        $this->loader->add_action('admin_init', 'Localpilot_Notice_Handler', 'clean_delivery_notice');
         
     }
 
@@ -315,116 +322,13 @@ class Localpilot
         $this->loader->add_action('lclplt_delivery_reassigned', 'Localpilot_Email_Registry', 'delivery_reassigned', 20, 5);
         $this->loader->add_action('lclplt_delivery_started', 'Localpilot_Email_Registry', 'delivery_started', 20, 4);
         $this->loader->add_action('lclplt_delivery_completed', 'Localpilot_Email_Registry', 'delivery_completed', 20, 4);
-        $this->loader->add_action('lclplt_delivery_failed', 'Localpilot_Email_Registry', 'delivery_failed', 20, 4);
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-handler.php';
 
         // Geocoding on delivery assignment.
-        $this->loader->add_action('lclplt_delivery_assigned', $this, 'maybe_geocode_order', 10, 4);
+        $this->loader->add_action('lclplt_delivery_assigned', 'Localpilot_Geocoding_Handler', 'maybe_geocode_order', 10, 4);
     }
 
-    /**
-     * Run schema upgrade if the stored version is behind.
-     *
-     * Fires on admin_init to catch plugin updates that skip activation hook.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function maybe_upgrade_schema()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        Localpilot_DB_Schema::maybe_upgrade();
-    }
 
-    /**
-     * Register the driver role and capabilities idempotently.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function register_driver_role()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        Localpilot_Driver_Role::register();
-    }
-
-    /**
-     * Register the LocalPilot settings page.
-     *
-     * @param array $pages Existing settings pages.
-     * @return array
-     */
-    public function register_settings_page( $pages )
-    {
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-settings.php';
-        $pages[] = new Localpilot_Settings();
-        return $pages;
-    }
-
-    /**
-     * Show admin notice after a successful delivery action redirect.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function show_delivery_notice()
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-        $user_id  = get_current_user_id();
-        $notice   = get_transient( 'lclplt_admin_notice_' . $user_id );
-        if ( $notice ) {
-            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $notice ) . '</p></div>';
-        }
-    }
-
-    /**
-     * Trigger geocoding when a delivery is assigned.
-     *
-     * Hooked to lclplt_delivery_assigned. Runs silently — failures are
-     * logged but never block the assignment flow.
-     *
-     * @since    1.0.0
-     * @access   public
-     * @param    int    $order_id      Order ID.
-     * @param    int    $driver_id     Driver user ID.
-     * @param    int    $assignment_id Assignment ID.
-     * @param    int    $event_id      Event ID.
-     */
-    public function maybe_geocode_order( $order_id, $driver_id, $assignment_id, $event_id )
-    {
-        if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
-            return;
-        }
-
-        $enabled = get_option( 'lclplt_enable_mapbox', 'no' );
-        if ( 'yes' !== $enabled ) {
-            return;
-        }
-
-        $auto = get_option( 'lclplt_auto_geocode', 'yes' );
-        if ( 'yes' !== $auto ) {
-            return;
-        }
-
-        Localpilot_Geocoding_Service::geocode_order( $order_id );
-    }
-
-    /**
-     * Clean the delivery notice transient after display.
-     *
-     * @since    1.0.0
-     * @access   public
-     */
-    public function clean_delivery_notice()
-    {
-        $user_id = get_current_user_id();
-        delete_transient( 'lclplt_admin_notice_' . $user_id );
-    }
     
 
     
