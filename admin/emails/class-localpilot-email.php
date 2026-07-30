@@ -181,9 +181,9 @@ class Localpilot_Email extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_html() {
-		$order = wc_get_order( $this->order_id );
+		$order = $this->object instanceof WC_Order ? $this->object : wc_get_order( $this->order_id );
 
-		// Preview mode: use the most recent order for display.
+		// Fallback for contexts that do not provide an order object.
 		if ( ! $order ) {
 			$orders = wc_get_orders( array( 'limit' => 1 ) );
 			$order  = ! empty( $orders ) ? reset( $orders ) : false;
@@ -222,9 +222,9 @@ class Localpilot_Email extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_plain() {
-		$order = wc_get_order( $this->order_id );
+		$order = $this->object instanceof WC_Order ? $this->object : wc_get_order( $this->order_id );
 
-		// Preview mode: use the most recent order for display.
+		// Fallback for contexts that do not provide an order object.
 		if ( ! $order ) {
 			$orders = wc_get_orders( array( 'limit' => 1 ) );
 			$order  = ! empty( $orders ) ? reset( $orders ) : false;
@@ -257,35 +257,35 @@ class Localpilot_Email extends WC_Email {
 	 * Initialise settings form fields.
 	 */
 	public function init_form_fields() {
-		$this->form_fields = array(
-			'enabled' => array(
+		parent::init_form_fields();
+
+		$this->form_fields['enabled'] = array(
 				'title'   => __( 'Habilitar', 'localpilot' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Habilitar esta notificación', 'localpilot' ),
 				'default' => 'yes',
-			),
-			'subject' => array(
+			);
+		$this->form_fields['subject'] = array(
 				'title'       => __( 'Asunto', 'localpilot' ),
 				'type'        => 'text',
 				'description' => sprintf( __( 'Variables disponibles: %s.', 'localpilot' ), '<code>{order_number}</code>, <code>{order_date}</code>' ),
 				'placeholder' => $this->subject,
 				'default'     => '',
-			),
-			'heading' => array(
+			);
+		$this->form_fields['heading'] = array(
 				'title'       => __( 'Encabezado', 'localpilot' ),
 				'type'        => 'text',
 				'description' => sprintf( __( 'Variables disponibles: %s.', 'localpilot' ), '<code>{order_number}</code>, <code>{order_date}</code>' ),
 				'placeholder' => $this->heading,
 				'default'     => '',
-			),
-			'recipient' => array(
+			);
+		$this->form_fields['recipient'] = array(
 				'title'       => __( 'Destinatario', 'localpilot' ),
 				'type'        => 'text',
 				'description' => __( 'Correo(s) separados por coma. Vacío usa el valor por defecto.', 'localpilot' ),
 				'placeholder' => $this->recipient,
 				'default'     => '',
-			),
-		);
+			);
 	}
 
 	/**

@@ -45,7 +45,12 @@ class Localpilot_Emails {
 			return $emails;
 		}
 
-		$emails['lclplt_email_assigned']   = new Localpilot_Email( 'lclplt_email_assigned', array(
+		$email_types_file = dirname( __FILE__ ) . '/class-localpilot-email-types.php';
+		if ( file_exists( $email_types_file ) ) {
+			require_once $email_types_file;
+		}
+
+		$emails['lclplt_email_assigned']   = new Localpilot_Email_Assigned( 'lclplt_email_assigned', array(
 			'title'          => __( 'LocalPilot — Pedido asignado', 'localpilot' ),
 			'description'    => __( 'Se envía al repartidor cuando se le asigna un pedido.', 'localpilot' ),
 			'subject'        => __( '[{site_title}] Pedido #{order_number} asignado — {order_date}', 'localpilot' ),
@@ -54,7 +59,7 @@ class Localpilot_Emails {
 			'recipient_type' => 'driver',
 		) );
 
-		$emails['lclplt_email_unassigned'] = new Localpilot_Email( 'lclplt_email_unassigned', array(
+		$emails['lclplt_email_unassigned'] = new Localpilot_Email_Unassigned( 'lclplt_email_unassigned', array(
 			'title'          => __( 'LocalPilot — Asignación retirada', 'localpilot' ),
 			'description'    => __( 'Se envía al repartidor cuando se le retira o reasigna un pedido.', 'localpilot' ),
 			'subject'        => __( '[{site_title}] Pedido #{order_number} — asignación retirada', 'localpilot' ),
@@ -63,7 +68,7 @@ class Localpilot_Emails {
 			'recipient_type' => 'driver',
 		) );
 
-		$emails['lclplt_email_started']    = new Localpilot_Email( 'lclplt_email_started', array(
+		$emails['lclplt_email_started']    = new Localpilot_Email_Started( 'lclplt_email_started', array(
 			'title'          => __( 'LocalPilot — Pedido en reparto', 'localpilot' ),
 			'description'    => __( 'Se envía al cliente cuando el repartidor inicia el reparto.', 'localpilot' ),
 			'subject'        => __( '[{site_title}] Tu pedido #{order_number} está en camino', 'localpilot' ),
@@ -74,7 +79,7 @@ class Localpilot_Emails {
 			'option_enabled' => 'lclplt_email_started_enabled',
 		) );
 
-		$emails['lclplt_email_completed']  = new Localpilot_Email( 'lclplt_email_completed', array(
+		$emails['lclplt_email_completed']  = new Localpilot_Email_Completed( 'lclplt_email_completed', array(
 			'title'          => __( 'LocalPilot — Entrega completada', 'localpilot' ),
 			'description'    => __( 'Se envía al administrador cuando una entrega se completa.', 'localpilot' ),
 			'subject'        => __( '[{site_title}] Entrega #{order_number} completada', 'localpilot' ),
@@ -83,7 +88,7 @@ class Localpilot_Emails {
 			'recipient_type' => 'admin',
 		) );
 
-		$emails['lclplt_email_failed']     = new Localpilot_Email( 'lclplt_email_failed', array(
+		$emails['lclplt_email_failed']     = new Localpilot_Email_Failed( 'lclplt_email_failed', array(
 			'title'          => __( 'LocalPilot — Entrega fallida', 'localpilot' ),
 			'description'    => __( 'Se envía al administrador cuando una entrega se marca como fallida.', 'localpilot' ),
 			'subject'        => __( '[{site_title}] Entrega #{order_number} fallida', 'localpilot' ),
