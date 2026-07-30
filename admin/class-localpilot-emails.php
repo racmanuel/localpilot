@@ -6,7 +6,7 @@
  * @since      1.0.0
  *
  * @package    Localpilot
- * @subpackage Localpilot/includes/emails
+ * @subpackage Localpilot/admin
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/emails
+ * @subpackage Localpilot/admin
  */
 class Localpilot_Emails {
 
@@ -36,7 +36,7 @@ class Localpilot_Emails {
 		}
 
 		// Load email base class lazily.
-		$base_file = dirname( dirname( __FILE__ ) ) . '/emails/class-localpilot-email.php';
+		$base_file = dirname( __FILE__ ) . '/class-localpilot-email.php';
 		if ( file_exists( $base_file ) ) {
 			require_once $base_file;
 		}

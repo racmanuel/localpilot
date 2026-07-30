@@ -211,7 +211,7 @@ class Localpilot
         /**
          * Emails — lazy-loaded via Localpilot_Emails when WC_Email is available.
          */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/emails/class-localpilot-emails.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-emails.php';
 
         /**
          * Admin handlers — profile, orders list, order editor, settings, notices.

@@ -2,9 +2,11 @@
 /**
  * LocalPilot base email class.
  *
+ * @link       https://racmanuel.dev/
  * @since      1.0.0
+ *
  * @package    Localpilot
- * @subpackage Localpilot/includes/emails
+ * @subpackage Localpilot/admin
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -14,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since      1.0.0
  * @package    Localpilot
- * @subpackage Localpilot/includes/emails
+ * @subpackage Localpilot/admin
  */
 class Localpilot_Email extends WC_Email {
 
@@ -102,7 +104,7 @@ class Localpilot_Email extends WC_Email {
 			$this->option_enabled = $params['option_enabled'];
 		}
 
-		$this->template_base = plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'templates/';
+		$this->template_base = plugin_dir_path( dirname( __FILE__ ) ) . 'templates/';
 
 		parent::__construct();
 	}
