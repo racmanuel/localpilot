@@ -81,7 +81,7 @@ class Localpilot_Activator {
 			require_once $plugin_root . '/includes/database/class-localpilot-event-repository.php';
 			require_once $plugin_root . '/includes/deliveries/class-localpilot-driver-role.php';
 
-			Localpilot_DB_Schema::maybe_upgrade();
+			self::create_tables();
 			Localpilot_Driver_Role::register();
 
 			// Flush rewrite rules so the mis-entregas endpoint works immediately.
@@ -177,6 +177,69 @@ class Localpilot_Activator {
 
 		return false;
 
+	}
+
+	/**
+	 * Create or update the custom database tables using dbDelta.
+	 *
+	 * Idempotent — safe to call multiple times.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private static function create_tables() {
+		global $wpdb;
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$assignments_table = Localpilot_DB_Schema::assignments_table();
+		$events_table      = Localpilot_DB_Schema::events_table();
+
+		$sql = "CREATE TABLE {$assignments_table} (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			order_id bigint(20) unsigned NOT NULL,
+			driver_id bigint(20) unsigned NOT NULL,
+			assigned_by bigint(20) unsigned NOT NULL,
+			status varchar(32) NOT NULL DEFAULT 'assigned',
+			assigned_at datetime DEFAULT NULL,
+			accepted_at datetime DEFAULT NULL,
+			out_for_delivery_at datetime DEFAULT NULL,
+			delivered_at datetime DEFAULT NULL,
+			failed_at datetime DEFAULT NULL,
+			cancelled_at datetime DEFAULT NULL,
+			created_at datetime NOT NULL,
+			updated_at datetime NOT NULL,
+			PRIMARY KEY (id),
+			KEY order_id (order_id),
+			KEY driver_id (driver_id),
+			KEY status (status),
+			KEY driver_status (driver_id, status),
+			KEY order_status (order_id, status)
+		) {$charset_collate};";
+
+		$sql_events = "CREATE TABLE {$events_table} (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			order_id bigint(20) unsigned NOT NULL,
+			assignment_id bigint(20) unsigned DEFAULT NULL,
+			driver_id bigint(20) unsigned DEFAULT NULL,
+			user_id bigint(20) unsigned DEFAULT NULL,
+			event_type varchar(64) NOT NULL,
+			event_data longtext DEFAULT NULL,
+			ip_address varchar(45) DEFAULT NULL,
+			created_at datetime NOT NULL,
+			PRIMARY KEY (id),
+			KEY order_id (order_id),
+			KEY assignment_id (assignment_id),
+			KEY driver_id (driver_id),
+			KEY event_type (event_type)
+		) {$charset_collate};";
+
+		dbDelta( $sql );
+		dbDelta( $sql_events );
+
+		update_option( Localpilot_DB_Schema::DB_VERSION_OPTION, Localpilot_DB_Schema::DB_VERSION );
 	}
 
 }
