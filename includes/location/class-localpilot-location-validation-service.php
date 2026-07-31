@@ -130,17 +130,13 @@ class Localpilot_Location_Validation_Service {
 
 		$client_status = sanitize_key( (string) $client_status );
 		if ( in_array( $client_status, array( 'permission_denied', 'unavailable', 'timeout' ), true ) ) {
-			$result['status']  = $client_status;
-			$result['allowed'] = 'warning' === $mode;
-			return $result;
+			return self::fail( $result, $client_status, $mode );
 		}
 
 		$driver_lat = self::normalise_coordinate( $latitude, -90, 90 );
 		$driver_lng = self::normalise_coordinate( $longitude, -180, 180 );
 		if ( null === $driver_lat || null === $driver_lng ) {
-			$result['status']  = 'unavailable';
-			$result['allowed'] = 'warning' === $mode;
-			return $result;
+			return self::fail( $result, 'unavailable', $mode );
 		}
 
 		$accuracy = self::normalise_accuracy( $accuracy );
@@ -148,18 +144,14 @@ class Localpilot_Location_Validation_Service {
 
 		$client_timestamp = self::normalise_timestamp( $timestamp );
 		if ( null !== $client_timestamp && ( $client_timestamp > time() + 60 || $client_timestamp < time() - 300 ) ) {
-			$result['status']  = 'stale';
-			$result['allowed'] = 'warning' === $mode;
-			return $result;
+			return self::fail( $result, 'stale', $mode );
 		}
 
 		$distance = self::distance_in_meters( $driver_lat, $driver_lng, $target_lat, $target_lng );
 		$result['distance_meters'] = round( $distance, 2 );
 
 		if ( null !== $accuracy && $accuracy > max( 100, $radius ) ) {
-			$result['status']  = 'low_accuracy';
-			$result['allowed'] = 'warning' === $mode;
-			return $result;
+			return self::fail( $result, 'low_accuracy', $mode );
 		}
 
 		if ( $distance <= $radius ) {
@@ -167,7 +159,23 @@ class Localpilot_Location_Validation_Service {
 			return $result;
 		}
 
-		$result['status']  = 'outside_radius';
+		return self::fail( $result, 'outside_radius', $mode );
+	}
+
+	/**
+	 * Mark a validation result as failed.
+	 *
+	 * Failures are advisory in "warning" mode and blocking in "blocking"
+	 * mode, so `allowed` is derived from the policy here instead of being
+	 * repeated at every failure branch.
+	 *
+	 * @param array  $result Validation result being built.
+	 * @param string $status Failure status.
+	 * @param string $mode   Failure policy (warning|blocking).
+	 * @return array
+	 */
+	private static function fail( $result, $status, $mode ) {
+		$result['status']  = $status;
 		$result['allowed'] = 'warning' === $mode;
 		return $result;
 	}
