@@ -22,6 +22,31 @@
 class Localpilot_Geocoding_Service {
 
 	/**
+	 * Trigger automatic geocoding when a delivery is assigned.
+	 *
+	 * Hooked to lclplt_delivery_assigned. Runs silently — failures are
+	 * logged but never block the assignment flow. The Mapbox "enabled"
+	 * check lives inside geocode_order(), so it is not duplicated here.
+	 *
+	 * @param int $order_id      Order ID.
+	 * @param int $driver_id     Driver user ID.
+	 * @param int $assignment_id Assignment ID.
+	 * @param int $event_id      Event ID.
+	 */
+	public static function maybe_geocode_order( $order_id, $driver_id, $assignment_id, $event_id ) {
+		if ( ! function_exists( 'lclplt_is_woocommerce_active' ) || ! lclplt_is_woocommerce_active() ) {
+			return;
+		}
+
+		$auto = get_option( 'lclplt_auto_geocode', 'yes' );
+		if ( 'yes' !== $auto ) {
+			return;
+		}
+
+		self::geocode_order( $order_id );
+	}
+
+	/**
 	 * Geocode the shipping address of an order and persist the result.
 	 *
 	 * Only geocodes if:
@@ -175,22 +200,5 @@ class Localpilot_Geocoding_Service {
 		}
 
 		return implode( ', ', $parts );
-	}
-
-	/**
-	 * Check if an order has valid geocoding coordinates.
-	 *
-	 * @param int $order_id Order ID.
-	 * @return bool
-	 */
-	public static function has_coordinates( $order_id ) {
-		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
-			return false;
-		}
-		$meta = new Localpilot_Order_Delivery_Meta( $order );
-		$lat  = $meta->get_latitude();
-		$lng  = $meta->get_longitude();
-		return ! empty( $lat ) && ! empty( $lng );
 	}
 }

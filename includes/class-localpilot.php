@@ -224,11 +224,6 @@ class Localpilot
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-localpilot-notice-handler.php';
 
         /**
-         * Map handlers — geocoding trigger on delivery assignment.
-         */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/maps/class-localpilot-geocoding-handler.php';
-
-        /**
          * Public integrations — My Account deliveries endpoint.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-localpilot-my-account.php';
@@ -335,10 +330,9 @@ class Localpilot
         $this->loader->add_filter('woocommerce_email_classes', $emails, 'register_email_classes');
 
         /**
-         * Geocoding handler — trigger geocoding when a delivery is assigned.
+         * Geocoding — trigger geocoding when a delivery is assigned.
          */
-        $geocoding_handler = new Localpilot_Geocoding_Handler();
-        $this->loader->add_action('lclplt_delivery_assigned', $geocoding_handler, 'maybe_geocode_order', 10, 4);
+        $this->loader->add_action('lclplt_delivery_assigned', 'Localpilot_Geocoding_Service', 'maybe_geocode_order', 10, 4);
     }
 
     /**
